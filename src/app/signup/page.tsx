@@ -4,7 +4,7 @@ import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import {Input} from "@nextui-org/input";
 import {Button} from "@nextui-org/react";
-import {AuthResponse, AuthTokenResponsePassword} from "@supabase/gotrue-js";
+import {AuthResponse} from "@supabase/gotrue-js";
 import {Database} from "../../../database.types";
 import Link from "next/link";
 
@@ -23,31 +23,12 @@ export default function Login() {
                 emailRedirectTo: `${location.origin}/api/auth/callback`,
             },
         })
-        router.refresh()
-    }
-
-    const handleSignIn = async () => {
-        const data:AuthTokenResponsePassword = await supabase.auth.signInWithPassword({
-            email,
-            password,
-        })
-
-        if(data.error){
-            setError(data.error.message)
-        }else{
-            router.push("/")
-        }
-    }
-
-    const handleSignOut = async () => {
-        await supabase.auth.signOut()
-        router.push("/")
     }
 
     return (
         <>
             <div className={"h-screen flex flex-col justify-center items-center"}>
-                <p className={"text-5xl text-center p-14"}>ログイン</p>
+                <p className={"text-5xl text-center p-14"}>サインアップ</p>
                 <div className={" w-1/4 flex flex-col gap-10"}>
                     <Input className={""} label="Email" onChange={(e) => setEmail(e.target.value)} value={email} />
                     <Input
@@ -58,10 +39,10 @@ export default function Login() {
                     {Error ? <p className={"text-red-700"}>{Error}</p> : <></>}
 
                     <div className={"flex flex-col gap-5"}>
-                            <Button onClick={handleSignIn}>Log in</Button>
+                        <Button onClick={handleSignUp}>Sign up</Button>
                     </div>
 
-                    <Link href={"/signup"} className={"text-center"}>アカウント作成はこちら</Link>
+                    <Link href={"/login"} className={"text-center"}>ログインはこちら</Link>
                 </div>
             </div>
         </>
