@@ -1,89 +1,60 @@
 "use client"
-import {
-    Autocomplete,
-    AutocompleteItem
-} from "@nextui-org/react";
-import {Button} from "@nextui-org/react";
-import {Card, CardBody} from "@nextui-org/react";
+import {Autocomplete, AutocompleteItem, Button, Card, CardBody} from "@nextui-org/react";
 import {useState} from "react";
-import { redirect,useRouter } from "next/navigation";
-import Link from "next/link";
+import {getCurrentUser} from "../../utils/getCurrentUser";
 
 
-export default function MainCasrd(json){
+export default function MainCard(json){
     const onInputChange = (value) => {
-        console.log(json.data[value -1])
         setdata(json.data[value -1])
     };
 
-    const [data,setdata] = useState(json.data[0])
+    let count = 0
 
-    let count =0
+    const [data,setdata] = useState(json.data[0])
 
     return(
         <main className="p-20 h-full">
             <div className="flex justify-between mb-10 items-center">
-                <Autocomplete label="Select an Stage" className="max-w-xs" defaultItems={json.data[0].attributes.accessToken} defaultInputValue={json.data[0].attributes.accessToken} onSelectionChange={onInputChange}>
+                <Autocomplete label="Select an Stage" className="max-w-xs" defaultItems={json.data[0].attributes.access_token} defaultInputValue={json.data[0].attributes.access_token} onSelectionChange={onInputChange}>
                     {json.data.map((_data)=>{
                         count +=1
+
                         return(
-                            <AutocompleteItem key={count} textValue={_data.attributes.accessToken}>
-                                <p>{_data.attributes.accessToken}</p>
+                            <AutocompleteItem key={count} textValue={_data.attributes.access_token}>
+                                <p>{_data.attributes.access_token}</p>
                             </AutocompleteItem>
                         )
                     })}
                 </Autocomplete>
-                <Button className="max-w-xs" onClick={()=>{createStage().then((data) => json.data.push(data))}}> + New Stage</Button>
+                <Button className="max-w-xs" onClick={()=>{}}> + New Stage</Button>
             </div>
-            <DataCard {...data}/>
-        </main>
-    )
-}
-
-function DataCard(data){
-    if(data !== undefined){
-        return (
             <Card className="h-full">
                 <CardBody>
                     <div className="flex justify-between">
                         <div className="flex flex-col">
                             {data.id}
-
                         </div>
                         <div className="flex flex-col">
-                            <Button className="max-w-xs" color="danger" onClick={()=>{deleteStage(data.id).then()}}> Remove</Button>
+                            <Button className="max-w-xs" color="danger" onClick={()=>{}}> Remove</Button>
                         </div>
                     </div>
                 </CardBody>
             </Card>
-        )
-    }else{
-        return (
-            <Card className="h-full">
-                <CardBody>
-                    <div className="flex justify-between">
-                        <div className="flex flex-col">
-                            データがありません。ステージを選択するか、作成してください
-                        </div>
-                        <div className="flex flex-col">
-                        </div>
-                    </div>
-                </CardBody>
-            </Card>
-        )
-    }
+        </main>
+    )
 }
 
 async function createStage(){
-    const data = await fetch("/api/createStage",{
+    let response
+    await fetch("/api/stage/create",{
         method: "POST"
-    })
-    return data
+    }).then((response) => response.json()).then((data) => {response = data})
+    return response
 }
 
 async function deleteStage(id){
-    const data= await fetch(`/api/deleteStage/${id}`,{
+    const data= await fetch(`/api/stage/delete/${id}`,{
         method: "DELETE"
     })
 }
-
