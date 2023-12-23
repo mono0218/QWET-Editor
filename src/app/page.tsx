@@ -1,5 +1,5 @@
 "use server"
-import Image from 'next/image'
+
 import {createClientComponentClient, createServerComponentClient} from "@supabase/auth-helpers-nextjs";
 import {cookies} from "next/headers";
 import {Database} from "../../database.types";
