@@ -4,8 +4,8 @@ import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import {Input} from "@nextui-org/input";
 import {Button} from "@nextui-org/react";
-import {AuthResponse} from "@supabase/gotrue-js";
-import {Database} from "../../../database.types";
+import {AuthResponse, AuthTokenResponsePassword} from "@supabase/gotrue-js";
+import {Database} from "../../../../database.types";
 import Link from "next/link";
 
 export default function Login() {
@@ -15,20 +15,23 @@ export default function Login() {
     const router = useRouter()
     const [Error,setError] = useState<string>()
 
-    const handleSignUp = async () => {
-        const data:AuthResponse = await supabase.auth.signUp({
+    const handleSignIn = async () => {
+        const data:AuthTokenResponsePassword = await supabase.auth.signInWithPassword({
             email,
             password,
-            options: {
-                emailRedirectTo: `${location.origin}/api/auth/callback`,
-            },
         })
+
+        if(data.error){
+            setError(data.error.message)
+        }else{
+            router.push("/")
+        }
     }
 
     return (
         <>
             <div className={"h-screen flex flex-col justify-center items-center"}>
-                <p className={"text-5xl text-center p-14"}>サインアップ</p>
+                <p className={"text-5xl text-center p-14"}>ログイン</p>
                 <div className={" w-1/4 flex flex-col gap-10"}>
                     <Input className={""} label="Email" onChange={(e) => setEmail(e.target.value)} value={email} />
                     <Input
@@ -39,10 +42,10 @@ export default function Login() {
                     {Error ? <p className={"text-red-700"}>{Error}</p> : <></>}
 
                     <div className={"flex flex-col gap-5"}>
-                        <Button onClick={handleSignUp}>Sign up</Button>
+                            <Button onClick={handleSignIn}>Log in</Button>
                     </div>
 
-                    <Link href={"/login"} className={"text-center"}>ログインはこちら</Link>
+                    <Link href={"/signup"} className={"text-center"}>アカウント作成はこちら</Link>
                 </div>
             </div>
         </>
