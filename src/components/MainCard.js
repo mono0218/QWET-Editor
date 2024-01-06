@@ -10,7 +10,7 @@ import { redirect,useRouter } from "next/navigation";
 import Link from "next/link";
 
 
-export default function MainCasrd(json){
+export default function MainCard(json){
     const onInputChange = (value) => {
         console.log(json.data[value -1])
         setdata(json.data[value -1])
