@@ -17,54 +17,76 @@ import { Scene, Vector3 } from "@babylonjs/core";
 import {MmdMesh, MmdPhysics, MmdRuntime, VmdLoader} from "babylon-mmd";
 import "babylon-mmd/esm/Loader/pmxLoader";
 import HavokPhysics from "@babylonjs/havok";
+import "@babylonjs/inspector"
 import "@babylonjs/core/Rendering/prePassRendererSceneComponent";
 import "@babylonjs/core/Rendering/depthRendererSceneComponent";
-import { Inspector } from '@babylonjs/inspector';
-
 
 let mmdRuntime:MmdRuntime
 let TPlayer:Player
 
-export default function Home(): JSX.Element  {
+export default function MMD(){
     const canvas = document.createElement("canvas");
+    canvas.style.width = "100%";
+    canvas.style.height = "100%";
+    canvas.style.display = "block";
+    canvas.style.position= "relative"
+
+    const media = document.createElement("media");
+    media.style.position = "absolute"
+    media.style.zIndex = "1000"
+    media.style.right = "0"
+    media.style.bottom = "0"
+
     useEffect(() => {
-        TPlayer = new Player({app: {token: "W93sKiETsRLte1ML"},mediaElement: document.querySelector("#media"),});
-        canvas.style.width = "100%";
-        canvas.style.height = "100%";
-        canvas.style.display = "block";
+        document.body.appendChild(media);
         document.body.appendChild(canvas);
 
+        TPlayer = new Player({app: {token: "W93sKiETsRLte1ML"}, mediaElement: media});
+        TPlayer.addListener({
+            onAppReady() {
+                console.log("APPReady")
+                TPlayer.createFromSongUrl("https://www.youtube.com/watch?v=joTyBhemAGo")
+            },
+            onPlay() {
+                mmdRuntime.playAnimation().then(() => console.log("再生しました"))
+            },
+            onPause() {
+                mmdRuntime.pauseAnimation()
+            }
+        })
+
         const engine = new Engine(canvas)
+
         BaseRuntime.Create({
-            canvas,
-            engine,
+            canvas:canvas,
+            engine:engine,
             sceneBuilder: new SceneBuilder()
         }).then(runtime => runtime.run());
     }, [])
     return (
         <>
             <button onClick={() => {
-                mmdRuntime.pauseAnimation()
+               TPlayer.requestPlay()
             }}>aaaa
             </button>
             <button onClick={() => {
-                mmdRuntime.playAnimation()
+                TPlayer.requestPause()
             }}>bbbb
             </button>
             <button onClick={() => {
-                mmdRuntime.seekAnimation(300,false)
+                mmdRuntime.seekAnimation(300,false).then(() => console.log("時間を同期しました"))
             }}>cccc
             </button>
 
             <style>
                 button {
-                "z-index: 10000"
-            }
+                    "position: absolute;z-index: 10000"
+                }
             </style>
-
         </>
     )
 }
+
 
 export interface ISceneBuilder {
     build(canvas: HTMLCanvasElement, engine: Engine): Scene | Promise<Scene>;
@@ -131,26 +153,22 @@ export class SceneBuilder implements ISceneBuilder {
         camera.speed = 3
         camera.attachControl( true)
 
-        const hemisphericLight = new HemisphericLight("HemisphericLight", new Vector3(0, 1, 0), scene);
-        hemisphericLight.intensity = 0.4;
-        hemisphericLight.specular.set(0, 0, 0);
-        hemisphericLight.groundColor.set(1, 1, 1);
-
-        const directionalLight = new DirectionalLight("DirectionalLight", new Vector3(0.5, -1, 1), scene);
-        directionalLight.intensity = 0.8;
+        const directionalLight = new DirectionalLight("DirectionalLight", new Vector3(0, 75, -130), scene);
+        directionalLight.direction = new Vector3(100,-75,-260)
+        directionalLight.intensity = 10000;
         directionalLight.autoCalcShadowZBounds = false
         directionalLight.autoUpdateExtends = false
-        directionalLight.shadowMaxZ = 20
-        directionalLight.shadowMinZ = -20
-        directionalLight.orthoTop = 18
-        directionalLight.orthoBottom = -3
-        directionalLight.orthoLeft = -10
-        directionalLight.orthoRight= -10
-        directionalLight.shadowOrthoScale = 0
+        directionalLight.shadowMaxZ = 1000
+        directionalLight.shadowMinZ = -1000
+        directionalLight.orthoTop = 1000
+        directionalLight.orthoBottom = -1000
+        directionalLight.orthoLeft = -1000
+        directionalLight.orthoRight= -1000
+        directionalLight.shadowOrthoScale = 1000
 
         const shadowGenerator = new ShadowGenerator(2048, directionalLight, true,);
         shadowGenerator.usePercentageCloserFiltering = true
-        shadowGenerator.filteringQuality = ShadowGenerator.QUALITY_LOW
+        shadowGenerator.filteringQuality = ShadowGenerator.QUALITY_HIGH
         shadowGenerator.forceBackFacesOnly = false
         shadowGenerator.frustumEdgeFalloff = 0.1
         shadowGenerator.bias = 0.01;
@@ -158,17 +176,14 @@ export class SceneBuilder implements ISceneBuilder {
         //MMDモデルロード
         const mmdMesh = await SceneLoader.ImportMeshAsync("", "/res/yoisaku/", "knd.pmx", scene)
             .then((result) => result.meshes[0] as MmdMesh);
-        const stageMesh = await SceneLoader.ImportMeshAsync("","/res/sekaistage/","stage.pmx",scene)
+        const stageMesh = await SceneLoader.ImportMeshAsync("","/res/kotami/","stage.pmx",scene)
             .then((result) => result.meshes[0] as MmdMesh);
-        const backMesh = await SceneLoader.ImportMeshAsync("","/res/sekaistage/","天空球.pmx",scene)
-            .then((result) => result.meshes[0] as MmdMesh);
-        shadowGenerator.addShadowCaster(mmdMesh);
+        //shadowGenerator.addShadowCaster(mmdMesh);
         shadowGenerator.addShadowCaster(stageMesh)
-        shadowGenerator.addShadowCaster(backMesh)
 
 
-        let gl = new GlowLayer("glow", scene,);
-        gl.intensity = 1.0;
+        let gl = new GlowLayer("glow", scene);
+        gl.intensity = 0.1;
         gl.referenceMeshToUseItsOwnMaterial(stageMesh);
 
         const defaultPipeline = new DefaultRenderingPipeline("default", true, scene, [camera]);
@@ -203,6 +218,9 @@ export class SceneBuilder implements ISceneBuilder {
         mmdModel.addAnimation(motion)
         mmdModel.setAnimation("motion")
         console.log(engine.getFps().toFixed() + " fps")
+        mmdRuntime.loggingEnabled = true
+
+        await scene.debugLayer.show();
 
         return scene;
     }

@@ -1,8 +1,9 @@
 "use server"
-
-import {createClientComponentClient, createServerComponentClient} from "@supabase/auth-helpers-nextjs";
+import {createServerComponentClient} from "@supabase/auth-helpers-nextjs";
 import {cookies} from "next/headers";
 import {Database} from "../../database.types";
+import React from "react";
+import MainCard from "@/components/MainCard";
 
 export default async function Home() {
   const supabase = createServerComponentClient<Database>({ cookies })
@@ -11,5 +12,7 @@ export default async function Home() {
         <div>
           {session ? <div>ログイン</div> : <div>未ログイン</div>}
         </div>
+
+
     )
 }
