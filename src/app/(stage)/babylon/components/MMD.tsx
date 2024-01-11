@@ -21,6 +21,7 @@ import {
     Scene,
     Vector3
 } from "@babylonjs/core";
+import {GLTFFileLoader} from "@babylonjs/loaders";
 let TPlayer:Player
 
 export default function MMD(){
@@ -84,14 +85,7 @@ async function vrm(engine:Engine,canvas: HTMLCanvasElement){
     // Default intensity is 1. Let's dim the light a small amount
     light.intensity = 0.7;
 
-    let res = await fetch('/tukuyomi.gltf');
-    let blob = await res.blob();
-    console.log(URL.createObjectURL(blob))
-
-
-    SceneLoader.Append("", URL.createObjectURL(blob), scene, function (mesh) {
-        console.log(mesh);
-    });
+    const mesh = await SceneLoader.ImportMeshAsync(null, "http://localhost:3000/", "testtukuyomi.glb", scene,null,".glb")
 
 
 
