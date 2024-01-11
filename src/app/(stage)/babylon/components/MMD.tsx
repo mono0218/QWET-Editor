@@ -15,7 +15,7 @@ import { SceneLoader } from '@babylonjs/core/Loading/sceneLoader';
 
 import {
     ArcRotateCamera,
-    DirectionalLight, FreeCamera,
+    DirectionalLight, FlyCamera, FreeCamera,
     HemisphericLight,
     MeshBuilder,
     Scene,
@@ -75,11 +75,10 @@ async function vrm(engine:Engine,canvas: HTMLCanvasElement){
     const scene = new Scene(engine);
 
     // This creates and positions a free camera (non-mesh)
-    const camera = new FreeCamera("camera1", new Vector3(0, 5, -10), scene);
-    // This targets the camera to scene origin
-    camera.setTarget(Vector3.Zero());
+    const camera = new FlyCamera("camera1", new Vector3(0, 5, -10), scene);
+    camera.speed=0.1
     // This attaches the camera to the canvas
-    camera.attachControl(canvas, true);
+    camera.attachControl(true,canvas);
     // This creates a light, aiming 0,1,0 - to the sky (non-mesh)
     const light = new HemisphericLight("light", new Vector3(0, 1, 0), scene);
     // Default intensity is 1. Let's dim the light a small amount
