@@ -21,6 +21,7 @@ import {
 import {GLTFFileLoader} from "@babylonjs/loaders";
 import '@babylonjs/inspector';
 import {Inspector} from "@babylonjs/inspector";
+import {after} from "node:test";
 let TPlayer:Player
 
 export default function MMD(){
@@ -72,28 +73,35 @@ export class VRMFileLoader extends GLTFFileLoader {
 
 async function vrm(engine:Engine,canvas: HTMLCanvasElement){
     const scene = new Scene(engine);
+    scene.useRightHandedSystem = true;
 
     const camera = new FlyCamera("camera1", new Vector3(0, 5, -10), scene);
     camera.speed=0.1
     camera.attachControl(true,canvas);
 
     SceneLoader.RegisterPlugin(new VRMFileLoader());
-    await SceneLoader.AppendAsync("http://localhost:3000/","a.vrm",scene)
-    await SceneLoader.AppendAsync("http://localhost:3000/", "aipai.glb",scene)
+    const loaded = await  SceneLoader.ImportMeshAsync("","http://localhost:3000/","testtukuyomi.vrm",scene)
+    await SceneLoader.ImportAnimationsAsync("http://localhost:3000/", "aipai.glb",scene,true,null,(oldTarget)=>{
+        let target = oldTarget;
 
-    scene.skeletons[0].bones.map((bone)=>{
-        const animatables = searchAnimation(bone.name)
-        console.log(bone)
-        animatables.map((animatable)=>{
-            bone.animations.push (animatable.target)
-        })
+        for (let node of loaded.transformNodes) {
+            const afterId = convertNameJson[node.id]
+            if (afterId != undefined){
+                if (target.id === afterId) {
+                    console.log(afterId,node)
+                    target = node;
+                    break;
+                }
+            }
+        }
+
+        return target;
     })
 
-    console.log(scene)
-    const sambaAnim = scene.getAnimationGroupByName("Take1");
-    console.log(sambaAnim)
-    sambaAnim.start()
+
     Inspector.Show(scene,{})
+
+    console.log(scene)
 
     scene.registerBeforeRender(function () {
 
@@ -102,11 +110,6 @@ async function vrm(engine:Engine,canvas: HTMLCanvasElement){
     engine.runRenderLoop(() => {
         scene.render();
     });
-
-    function searchAnimation(boneName:String){
-        console.log(boneName)
-        return scene.animationGroups[0].animatables.filter((animatable) => animatable.target.name === convertNameJson[boneName] )
-    }
 }
 
 const convertNameJson = {
