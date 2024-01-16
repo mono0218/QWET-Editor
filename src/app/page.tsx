@@ -1,4 +1,3 @@
-"use server"
 import Home from './getvrm';
 import {getServerSession} from "next-auth/next";
 import {options} from "../../auth.config";
