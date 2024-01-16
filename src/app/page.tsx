@@ -1,15 +1,19 @@
-"use server"
+import Home from './getvrm';
+import {getServerSession} from "next-auth/next";
+import {options} from "../../auth.config";
+import {getHeartModel, getUserPostModel} from "../lib/vroid/VroidInfo";
 
-import {createClientComponentClient, createServerComponentClient} from "@supabase/auth-helpers-nextjs";
-import {cookies} from "next/headers";
-import {Database} from "../../database.types";
+export default async function Page() {
+    const session = await getServerSession(options)
+    let a
 
-export default async function Home() {
-  const supabase = createServerComponentClient<Database>({ cookies })
-  const {data: {session}} = await supabase.auth.getSession()
+    if(session.user!= null){
+        a = await getHeartModel(session.user.accessToken)
+    }
+
     return(
-        <div>
-          {session ? <div>ログイン</div> : <div>未ログイン</div>}
-        </div>
+        <>
+            <Home {...a}></Home>
+        </>
     )
 }
