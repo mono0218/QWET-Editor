@@ -1,24 +1,19 @@
-"use client"
-import {signIn, signOut, useSession} from 'next-auth/react'
+import Home from './getvrm';
+import {getServerSession} from "next-auth/next";
+import {options} from "../../auth.config";
+import {getHeartModel, getUserPostModel} from "../lib/vroid/VroidInfo";
 
-export default function Home() {
-    const session = useSession()
-    console.log(session)
-    if(session.data != null){
-        fetch("https://hub.vroid.com/api/staff_picks",{
-            mode:"no-cors",
-            headers:{
-                "X-Api-Version":"11",
-                "Authorization": `Bearer ${session.data.token.access_token}`
-            }
-        }).then((data)=>{console.log(data)})
+export default async function Page() {
+    const session = await getServerSession(options)
+    let a
+
+    if(session.user!= null){
+        a = await getHeartModel(session.user.accessToken)
     }
-    const SignInHandle = async ()=>{
-        await signIn("vroid")
-    }
+
     return(
         <>
-            <button onClick={SignInHandle}>aaa</button>
+            <Home {...a}></Home>
         </>
     )
 }

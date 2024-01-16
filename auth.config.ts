@@ -6,9 +6,9 @@ import {JWT} from "next-auth/jwt";
 
 declare module "next-auth" {
     interface Session extends DefaultSession {
-        token: JWT,
         user: {
             id: string;
+            accessToken: string;
         } & DefaultSession["user"];
     }
 }
@@ -35,6 +35,7 @@ export const options: NextAuthOptions = {
 
             profile(profile) {
                 return {
+                    token:profile.accessToken,
                     id: profile.data.user_detail.user.id,
                     name: profile.data.user_detail.user.name,
                     image: profile.data.user_detail.user.icon.sq170.url,
@@ -60,7 +61,7 @@ export const options: NextAuthOptions = {
             session: ({session, token}) => {
                 if (session?.user) {
                     session.user.id = token.sub;
-                    session.token = token
+                    session.user.accessToken = token.accessToken
                 }
                 token.accessToken
                 return {
