@@ -80,7 +80,7 @@ async function vrm(engine:Engine,canvas: HTMLCanvasElement){
     SceneLoader.RegisterPlugin(new VRMFileLoader());
     const loaded = await  SceneLoader.ImportMeshAsync("","http://localhost:3000/","vrm-1.vrm",scene,)
 
-    await SceneLoader.ImportAnimationsAsync("http://localhost:3000/", "aipai-blender.glb",scene,true,SceneLoaderAnimationGroupLoadingMode.NoSync,(oldTarget)=>{
+    await SceneLoader.ImportAnimationsAsync("http://localhost:3000/", "aipai.glb",scene,true,SceneLoaderAnimationGroupLoadingMode.NoSync,(oldTarget)=>{
         let target = oldTarget;
         for (let node of loaded.transformNodes) {
             const afterId = convertNameJson[node.id]
@@ -97,14 +97,12 @@ async function vrm(engine:Engine,canvas: HTMLCanvasElement){
     })
 
     loaded.meshes.map((mesh)=>{
+        mesh.rotation = new Vector3(0,180,0)
     })
 
     Inspector.Show(scene,{})
 
     console.log(scene)
-    const  hk = new HavokPlugin();
-    scene.enablePhysics(new Vector3(0, -9.81, 0), hk);
-
 
     scene.registerBeforeRender(function () {
 
