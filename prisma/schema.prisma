@@ -10,12 +10,24 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model User {
+  id      Int      @id
+  name    String
+  content String?
+  Motion  Motion[]
+  Stage   Stage[]
+
+  createdAt DateTime @default(now())
+}
+
 model Motion {
   id      Int      @id @default(autoincrement())
   name    String
   content String
   url     String
+  config    Config[]
   license String[]
+
   userId  Int
   user    User     @relation(fields: [userId], references: [id])
 
@@ -28,7 +40,9 @@ model Stage {
   name    String
   content String
   url     String
+  config    Config[]
   license String[]
+
   userId  Int
   user    User     @relation(fields: [userId], references: [id])
 
@@ -36,12 +50,23 @@ model Stage {
   updatedAt DateTime @default(now())
 }
 
-model User {
-  id      Int      @id
-  name    String
-  content String?
-  Motion  Motion[]
-  Stage   Stage[]
+model Room {
+  id        Int    @id @default(autoincrement())
+  userId    Int
+  apiUrl    String
+  masterKey String
+  userKey   String
+  userLimit Int
+  configId  Int
+}
 
-  createdAt DateTime @default(now())
+model Config {
+  id       Int    @id @default(autoincrement())
+  avaterId Int
+  motionId Int
+  stageId  Int
+  motion   Motion @relation(fields: [motionId], references: [id])
+  stage    Stage  @relation(fields: [stageId], references: [id])
+
+  configUrl String
 }
