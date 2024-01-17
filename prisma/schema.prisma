@@ -1,0 +1,47 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Motion {
+  id      Int      @id @default(autoincrement())
+  name    String
+  content String
+  url     String
+  license String[]
+  userId  Int
+  user    User     @relation(fields: [userId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+}
+
+model Stage {
+  id      Int      @id @default(autoincrement())
+  name    String
+  content String
+  url     String
+  license String[]
+  userId  Int
+  user    User     @relation(fields: [userId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+}
+
+model User {
+  id      Int      @id
+  name    String
+  content String?
+  Motion  Motion[]
+  Stage   Stage[]
+
+  createdAt DateTime @default(now())
+}
