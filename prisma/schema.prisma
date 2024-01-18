@@ -1,0 +1,80 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id      Int      @id
+  name    String
+  content String?
+  Motion  Motion[]
+  Stage   Stage[]
+  live    Live[]
+
+  createdAt DateTime @default(now())
+}
+
+model Motion {
+  id      Int     @id @default(autoincrement())
+  name    String
+  content String?
+  url     String
+  live    Live[]
+  license String?
+
+  userId Int
+  user   User @relation(fields: [userId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+}
+
+model Stage {
+  id      Int     @id @default(autoincrement())
+  name    String
+  content String?
+  url     String
+  live    Live[]
+  license String?
+
+  userId Int
+  user   User @relation(fields: [userId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+}
+
+model Room {
+  id        Int    @id @default(autoincrement())
+  userId    Int
+  apiUrl    String
+  masterKey String
+  userKey   String
+  userLimit Int
+  liveId    Int
+}
+
+model Live {
+  id       Int     @id @default(autoincrement())
+  name     String
+  content  String?
+  lisence  String?
+  avaterId Int
+
+  motionId Int
+  stageId  Int
+  motion   Motion @relation(fields: [motionId], references: [id])
+  stage    Stage  @relation(fields: [stageId], references: [id])
+
+  authorId Int
+  user     User @relation(fields: [authorId], references: [id])
+
+  liveConfigUrl String
+}

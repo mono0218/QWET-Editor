@@ -2,19 +2,23 @@
 import Home from './getvrm';
 import {getServerSession} from "next-auth/next";
 import {options} from "../../auth.config";
-import {getHeartModel, getUserPostModel} from "../lib/vroid/VroidInfo";
+import {getHeartModel} from "@/lib/vroid/VroidInfo";
+import {userDB} from "@/lib/db/user";
 
 export default async function Page() {
     const session = await getServerSession(options)
-    let a
+    let data
 
-    if(session.user!= null){
-        a = await getHeartModel(session.user.accessToken)
+    if(session != null){
+        data = await getHeartModel(session.user.accessToken)
     }
 
     return(
-        <>
-            <Home {...a}></Home>
-        </>
+        session?(
+                <>
+                    <Home {...data.data}></Home>
+                </>
+            ):
+        (<></>)
     )
 }
