@@ -6,7 +6,7 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "mysql"
   url      = env("DATABASE_URL")
 }
 
@@ -16,35 +16,36 @@ model User {
   content String?
   Motion  Motion[]
   Stage   Stage[]
+  live    Live[]
 
   createdAt DateTime @default(now())
 }
 
 model Motion {
-  id      Int      @id @default(autoincrement())
+  id      Int     @id @default(autoincrement())
   name    String
-  content String
+  content String?
   url     String
-  config    Config[]
-  license String[]
+  live    Live[]
+  license String?
 
-  userId  Int
-  user    User     @relation(fields: [userId], references: [id])
+  userId Int
+  user   User @relation(fields: [userId], references: [id])
 
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now())
 }
 
 model Stage {
-  id      Int      @id @default(autoincrement())
+  id      Int     @id @default(autoincrement())
   name    String
-  content String
+  content String?
   url     String
-  config    Config[]
-  license String[]
+  live    Live[]
+  license String?
 
-  userId  Int
-  user    User     @relation(fields: [userId], references: [id])
+  userId Int
+  user   User @relation(fields: [userId], references: [id])
 
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now())
@@ -57,16 +58,23 @@ model Room {
   masterKey String
   userKey   String
   userLimit Int
-  configId  Int
+  liveId    Int
 }
 
-model Config {
-  id       Int    @id @default(autoincrement())
+model Live {
+  id       Int     @id @default(autoincrement())
+  name     String
+  content  String?
+  lisence  String?
   avaterId Int
+
   motionId Int
   stageId  Int
   motion   Motion @relation(fields: [motionId], references: [id])
   stage    Stage  @relation(fields: [stageId], references: [id])
 
-  configUrl String
+  authorId Int
+  user     User @relation(fields: [authorId], references: [id])
+
+  liveConfigUrl String
 }

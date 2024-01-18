@@ -3,6 +3,8 @@ import Home from './getvrm';
 import {getServerSession} from "next-auth/next";
 import {options} from "../../auth.config";
 import {getHeartModel} from "@/lib/vroid/VroidInfo";
+import {userDB} from "@/lib/db/user";
+
 export default async function Page() {
     const session = await getServerSession(options)
     let data
