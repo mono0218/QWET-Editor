@@ -73,14 +73,14 @@ export class VRMFileLoader extends GLTFFileLoader {
 async function vrm(engine:Engine,canvas: HTMLCanvasElement){
     const scene = new Scene(engine);
 
-    const camera = new FlyCamera("camera1", new Vector3(0, 0, 0), scene);
+    const camera = new FlyCamera("camera1", new Vector3(0, 0, -2), scene);
     camera.speed=1
     camera.attachControl(true,canvas);
 
     SceneLoader.RegisterPlugin(new VRMFileLoader());
-    const loaded = await  SceneLoader.ImportMeshAsync("","http://localhost:3000/","vrm-1.vrm",scene,)
+    const loaded = await  SceneLoader.ImportMeshAsync("","https://ec65-103-115-217-203.ngrok-free.app/","vrm-1.vrm",scene,)
 
-    await SceneLoader.ImportAnimationsAsync("http://localhost:3000/", "aipai.glb",scene,true,SceneLoaderAnimationGroupLoadingMode.NoSync,(oldTarget)=>{
+    await SceneLoader.ImportAnimationsAsync("https://ec65-103-115-217-203.ngrok-free.app/", "aipai.glb",scene,true,SceneLoaderAnimationGroupLoadingMode.NoSync,(oldTarget)=>{
         let target = oldTarget;
         for (let node of loaded.transformNodes) {
             const afterId = convertNameJson[node.id]
@@ -99,8 +99,7 @@ async function vrm(engine:Engine,canvas: HTMLCanvasElement){
     loaded.meshes.map((mesh)=>{
         mesh.rotation = new Vector3(0,180,0)
     })
-
-    Inspector.Show(scene,{})
+    await scene.createDefaultXRExperienceAsync();
 
     console.log(scene)
 
