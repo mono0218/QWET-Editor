@@ -8,7 +8,15 @@ export class motionDB{
         this.userId = Number(session.user.id)
     }
 
-    async create({name,content,url,license}:{id:number,name:string,content:string,url:string,license?:string}){
+    async Get({id}:{id:string}){
+        return prisma.motion.findUnique({
+            where:{
+                id: Number(id)
+            },
+        })
+    }
+
+    async Create({name,content,url,license}:{name:string,content:string,url:string,license?:string}){
         await prisma.motion.create({
             data: {
                 name:name,
@@ -20,10 +28,10 @@ export class motionDB{
         })
     }
 
-    async update({id,name,content,url,license}:{id:number,name?:string,content?:string,url?:string,license?:string}){
+    async Update({id,name,content,url,license}:{id:string,name?:string,content?:string,url?:string,license?:string}){
         await prisma.motion.update({
             where:{
-                id: id,
+                id: Number(id),
                 userId: this.userId
             },
             data:{
@@ -35,11 +43,11 @@ export class motionDB{
         })
     }
 
-    async remove({id}:{id:number}) {
+    async Remove({id}:{id:string}) {
         //TODO remove at R2
         await prisma.motion.delete({
             where:{
-                id: id,
+                id: Number(id),
                 userId:this.userId,
             },
         })
