@@ -2,52 +2,34 @@ import prisma from "@/lib/prisma";
 import {Session} from "next-auth";
 
 export class userDB{
-    id: number;
-    name: string;
 
-    constructor(session:Session) {
-        this.id = Number(session.user.id)
-        this.name = session.user.name
+    async Get({id}:{id:number}){
+        return prisma.user.findUnique({
+            where: {
+                id: Number(id)
+            }
+        });
     }
 
-    async create(){
-        await prisma.user.create({
+    async Create({id,name,iconUrl}:{id:string,name:string,iconUrl:string}){
+        return prisma.user.create({
             data: {
-                id:this.id,
-                name:this.name
+                id: Number(id),
+                name: name,
+                iconUrl: iconUrl,
             },
-        })
+        });
     }
 
-    async nameUpdate(){
-        await prisma.user.update({
+    async Update({id,name,iconUrl,content}:{id:string,name:string,iconUrl:string,content:string}){
+        return prisma.user.update({
             where:{
-                id:this.id,
+                id:Number(id),
             },
             data:{
-                name:this.name
-            }
-        })
-    }
-
-    async loginInit(){
-        try{
-            await this.create()
-        }catch(e){
-            if(e.code === "P2002"){
-                await this.nameUpdate()
-            }
-        }
-    }
-
-    async profileUpdate({content}:{content:string}){
-        await prisma.user.update({
-            where:{
-                id:this.id,
-                name:this.name
-            },
-            data:{
-                content
+                name:name,
+                iconUrl: iconUrl,
+                content:content
             }
         })
     }

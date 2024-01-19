@@ -14,8 +14,8 @@ import {SceneLoader, SceneLoaderAnimationGroupLoadingMode} from '@babylonjs/core
 
 import {
     FlyCamera, HavokPlugin, Mesh,
-    Scene,
-    Vector3
+    Scene, Sound,
+    Vector3, WebXRControllerMovement, WebXRSessionManager
 } from "@babylonjs/core";
 import {GLTFFileLoader} from "@babylonjs/loaders";
 import '@babylonjs/inspector';
@@ -32,7 +32,7 @@ export default function MMD(){
         vrm(engine,canvas).then(data => {
             console.log(data)
         })
-    })
+    },[])
 
     return (
         <>
@@ -79,7 +79,6 @@ async function vrm(engine:Engine,canvas: HTMLCanvasElement){
 
     SceneLoader.RegisterPlugin(new VRMFileLoader());
     const loaded = await  SceneLoader.ImportMeshAsync("","https://ec65-103-115-217-203.ngrok-free.app/","vrm-1.vrm",scene,)
-
     await SceneLoader.ImportAnimationsAsync("https://ec65-103-115-217-203.ngrok-free.app/", "aipai.glb",scene,true,SceneLoaderAnimationGroupLoadingMode.NoSync,(oldTarget)=>{
         let target = oldTarget;
         for (let node of loaded.transformNodes) {
@@ -94,14 +93,29 @@ async function vrm(engine:Engine,canvas: HTMLCanvasElement){
         }
 
         return target;
+    },function (){
+        console.log(scene.getAnimationGroupByName("Take1"))
     })
+
 
     loaded.meshes.map((mesh)=>{
         mesh.rotation = new Vector3(0,180,0)
     })
+
+    await SceneLoader.ImportMeshAsync("","https://ec65-103-115-217-203.ngrok-free.app/","CyberStage_AB.glb",scene)
+
     await scene.createDefaultXRExperienceAsync();
 
+    const music = new Sound("Music", "https://ec65-103-115-217-203.ngrok-free.app/himehina.wav", scene, function(){
+        scene.getAnimationGroupByName("Take1").play()
+    },{
+        loop: true,
+        autoplay: true,
+    })
+
     console.log(scene)
+
+    const sessionManager = new WebXRSessionManager(scene);
 
     scene.registerBeforeRender(function () {
 
