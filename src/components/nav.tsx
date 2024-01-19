@@ -24,7 +24,6 @@ export function Nav(){
     })
 
     const [isLogin,setLogin] = useState(false)
-
     const onclick = (key)=> {
         console.log(key)
         if(key === "mypage"){
@@ -35,7 +34,6 @@ export function Nav(){
             router.push("/api/auth/signout")
         }
     }
-
     return(
         <Navbar>
             <NavbarBrand>
