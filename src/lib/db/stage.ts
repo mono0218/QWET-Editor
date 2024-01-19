@@ -1,14 +1,26 @@
 import prisma from "@/lib/prisma";
 import {Session} from "next-auth";
 
-export class motionDB{
+export class stageDB{
     userId: number;
 
     constructor(session:Session) {
         this.userId = Number(session.user.id)
     }
 
-    async create({name,content,url,license}:{id:number,name:string,content:string,url:string,license?:string}){
+    async Get({id}:{id:string}){
+        return prisma.stage.findUnique({
+            where:{
+                id: Number(id)
+            },
+            include: {
+                user: true
+            }
+        })
+    }
+
+    async Create({name,content,url,license}:{name:string,content:string,url:string,license?:string}){
+        console.log(this.userId)
         await prisma.stage.create({
             data: {
                 name:name,
@@ -20,10 +32,10 @@ export class motionDB{
         })
     }
 
-    async update({id,name,content,url,license}:{id:number,name?:string,content?:string,url?:string,license?:string}){
+    async Update({id,name,content,url,license}:{id:string,name?:string,content?:string,url?:string,license?:string}){
         await prisma.stage.update({
             where:{
-                id: id,
+                id: Number(id),
                 userId: this.userId
             },
             data:{
@@ -35,11 +47,11 @@ export class motionDB{
         })
     }
 
-    async remove({id}:{id:number}) {
+    async Remove({id}:{id:string}) {
         //TODO remove at R2
         await prisma.stage.delete({
             where:{
-                id: id,
+                id: Number(id),
                 userId:this.userId,
             },
         })

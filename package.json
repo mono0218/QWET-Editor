@@ -21,7 +21,8 @@
     "next-auth": "^4.24.5",
     "react": "^18",
     "react-dom": "^18",
-    "textalive-app-api": "^0.3.2"
+    "textalive-app-api": "^0.3.2",
+    "uuid": "^9.0.1"
   },
   "devDependencies": {
     "@babylonjs/core": "^6.38.1",

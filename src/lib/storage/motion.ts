@@ -1,12 +1,12 @@
 import S3 from "../r2"
 import {DeleteObjectCommand, PutObjectCommand} from "@aws-sdk/client-s3";
-class MotionStorage{
+export class MotionStorage{
     async create({id,buffer}:{id:string,buffer:Buffer}){
         await S3.send(
             new PutObjectCommand({
                 Body: buffer,
-                Bucket: 'motion',
-                Key: `${id}.vrm`,
+                Bucket: 'weblive-dev',
+                Key: `motion/${id}/${id}.glb`,
                 ContentType: "model/gltf-binary",
             })
         )
@@ -16,18 +16,18 @@ class MotionStorage{
         await S3.send(
             new PutObjectCommand({
                 Body: buffer,
-                Bucket: 'motion',
-                Key: `${id}.vrm`,
+                Bucket: 'weblive-dev',
+                Key: `motion/${id}/${id}.glb`,
                 ContentType: "model/gltf-binary",
             })
         )
     }
 
-    async remove({id}:{id:string}){
+    async remove({url}:{url:string}){
         await S3.send(
             new DeleteObjectCommand({
-                Bucket: 'motion',
-                Key: `${id}.vrm`,
+                Bucket: 'weblive-dev',
+                Key: url,
             })
         )
     }
