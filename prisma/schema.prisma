@@ -23,10 +23,11 @@ model User {
 }
 
 model Motion {
-  id      Int     @id @default(autoincrement())
+  uuid      String @unique
   name    String
   content String?
-  url     String
+  imageUrl String
+  fileUrl     String
   live    Live[]
   license String?
 
@@ -38,10 +39,11 @@ model Motion {
 }
 
 model Stage {
-  id      Int     @id @default(autoincrement())
+  uuid      String    @unique
   name    String
   content String?
-  url     String
+  imageUrl String
+  fileUrl     String
   live    Live[]
   license String?
 
@@ -53,7 +55,7 @@ model Stage {
 }
 
 model Room {
-  id        Int    @id @default(autoincrement())
+  uuid        String    @unique
   userId    Int
   apiUrl    String
   masterKey String
@@ -63,19 +65,19 @@ model Room {
 }
 
 model Live {
-  id       Int     @id @default(autoincrement())
+  uuid       String     @unique
   name     String
   content  String?
   lisence  String?
-  avaterId Int
+  imageUrl String
+  fileUrl     String
 
-  motionId Int
-  stageId  Int
-  motion   Motion @relation(fields: [motionId], references: [id])
-  stage    Stage  @relation(fields: [stageId], references: [id])
+  avaterId Int
+  motionUUID String
+  stageUUID  String
+  motion   Motion @relation(fields: [motionUUID], references: [uuid])
+  stage    Stage  @relation(fields: [stageUUID], references: [uuid])
 
   authorId Int
   user     User @relation(fields: [authorId], references: [id])
-
-  liveConfigUrl String
 }
