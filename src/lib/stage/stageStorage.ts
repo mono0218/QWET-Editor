@@ -1,23 +1,24 @@
-import S3 from "../r2"
+import S3 from "@/lib/r2";
 import {DeleteObjectCommand, PutObjectCommand} from "@aws-sdk/client-s3";
-export class MotionStorage{
-    async create({id,buffer}:{id:string,buffer:Buffer}){
+
+export class StageStorage{
+    async create({uuid,buffer}:{uuid:string,buffer:Buffer}){
         await S3.send(
             new PutObjectCommand({
                 Body: buffer,
                 Bucket: 'weblive-dev',
-                Key: `motion/${id}/${id}.glb`,
+                Key: `stage/${uuid}/main.glb`,
                 ContentType: "model/gltf-binary",
             })
         )
     }
 
-    async update({id,buffer}:{id:string,buffer:Buffer}){
+    async update({uuid,buffer}:{uuid:string,buffer:Buffer}){
         await S3.send(
             new PutObjectCommand({
                 Body: buffer,
                 Bucket: 'weblive-dev',
-                Key: `motion/${id}/${id}.glb`,
+                Key: `stage/${uuid}/main.glb`,
                 ContentType: "model/gltf-binary",
             })
         )
@@ -31,5 +32,4 @@ export class MotionStorage{
             })
         )
     }
-
 }

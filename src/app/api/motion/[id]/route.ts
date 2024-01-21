@@ -1,83 +1,44 @@
 import {NextRequest, NextResponse} from "next/server";
 import {getServerSession} from "next-auth/next";
-import {motionDB} from "@/lib/db/motion";
-import {json} from "node:stream/consumers";
 import {options} from "../../../../../auth.config";
-import {userDB} from "@/lib/db/user";
-import {MotionStorage} from "@/lib/storage/motion";
-import {v4} from "uuid"
+import {motionDB} from "@/lib/motion/motionDB";
+import {ImageStorage} from "@/lib/common/imageStorage";
+import {MotionStorage} from "@/lib/motion/motionStorage";
+const db = new motionDB()
+const fileStorage = new MotionStorage()
+const imageStorage = new ImageStorage()
 
-
-export async function GET(req:NextRequest){
-    const session = await getServerSession(options)
-    const motiondb = new motionDB(session)
-    const json = await req.json()
-
-    return await motiondb.Get(json.id)
-}
-
-export async function PUT(req:NextRequest,{params}: {params:{id:string}}){
-    const session = await getServerSession(options)
-    const formData = await req.formData()
-
-    if(!session){
-        return NextResponse.json({message:"Unauthorized"},{status:401})
-    }
-
-    const motiondb = new motionDB(session)
-    const stage = await motiondb.Get({id:params.id})
-    const autherid = stage.userId
-
-
-
-    if (String(autherid) != session.user.id){
-        return NextResponse.json({message:"Forbidden"},{status:403})
-    }else if(String(autherid) === session.user.id){
-        const uuid = v4();
-
-        const motionStorage = new MotionStorage()
-
-        const file: any = formData.get("file");
-        const buffer = Buffer.from(await file?.arrayBuffer());
-
-        await motionStorage.update({
-            id:uuid,
-            buffer:buffer
-        })
-
-        const result = await motiondb.Update({
-            id:session.user.id,
-            name: String(formData.get("name")),
-            content: String(formData.get("content")),
-            url: `motion/${uuid}/${uuid}.glb`,
-            license: String(formData.get("license"))
-        })
-
-        return NextResponse.json({message:"Success"},{status:200})
+export async function GET(req:NextRequest,{params}: {params:{id:string}}){
+    try{
+        const result = await db.Get({uuid:params.id})
+        return NextResponse.json({data:result},{status:200})
+    }catch{
+        return NextResponse.json({message:"Database Error"},{status:500})
     }
 }
 
 export async function DELETE(req:NextRequest,{params}:{params:{id:string}}){
+    const result = await db.Get({uuid: params.id})
     const session = await getServerSession(options)
 
-    if(!session){
-        return NextResponse.json({message:"Unauthorized"},{status:401})
-    }
+    if(result.userId === Number(session.user.id)){
+        try{
+            await fileStorage.remove({url:result.fileUrl})
+            await imageStorage.remove({url:result.imageUrl})
+        }catch {
+            return NextResponse.json({message:"R2 Storage Error"},{status:500})
+        }
 
-    const motiondb = new motionDB(session)
-    const stage = await motiondb.Get({id:params.id})
-    const autherid = stage.userId
-
-    if (String(autherid) != session.user.id){
+        try{
+            await db.Remove({
+                uuid: result.uuid,
+                userId: Number(session.user.id)
+            })
+            return NextResponse.json({message:"Success Removed"},{status:200})
+        }catch{
+            return NextResponse.json({message:"Database Error"},{status:500})
+        }
+    }else{
         return NextResponse.json({message:"Forbidden"},{status:403})
-    }else if(String(autherid) === session.user.id){
-        const motionStorage = new MotionStorage()
-
-        await motionStorage.remove({
-            url:stage.url,
-        })
-
-        const result = await motiondb.Remove({id:params.id})
-        return NextResponse.json({message:"Success"},{status:200})
     }
 }
