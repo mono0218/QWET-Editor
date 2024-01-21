@@ -1,9 +1,10 @@
 "use server"
-import Home from './getvrm';
 import {getServerSession} from "next-auth/next";
 import {options} from "../../auth.config";
 import {getHeartModel} from "@/lib/vroid/VroidInfo";
-import {userDB} from "@/lib/db/user";
+import AvatarCardList from "@/components/avatar/avatarCardList";
+import StageCardList from "@/components/stage/stageCardList";
+import MotionCardList from "@/components/motion/motionCardList";
 
 export default async function Page() {
     const session = await getServerSession(options)
@@ -16,7 +17,21 @@ export default async function Page() {
     return(
         session?(
                 <>
-                    <Home {...data.data}></Home>
+                    <div className="ml-32 mr-32">
+
+                        <div className="mt-[450px]">
+                            <AvatarCardList/>
+                        </div>
+
+                        <div>
+                            <StageCardList/>
+                        </div>
+
+                        <div className="mt-10">
+                            <MotionCardList/>
+                        </div>
+
+                    </div>
                 </>
             ):
         (<></>)
