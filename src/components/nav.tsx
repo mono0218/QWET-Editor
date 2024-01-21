@@ -37,7 +37,7 @@ export function Nav(){
     return(
         <Navbar>
             <NavbarBrand>
-                <p className="font-bold text-inherit">ACME</p>
+                <Link className="font-bold text-inherit" href="/">ACME</Link>
             </NavbarBrand>
             <NavbarContent justify="end">
                 {isLogin?
@@ -45,7 +45,7 @@ export function Nav(){
                         <Dropdown placement="bottom-end">
                             <DropdownTrigger>
                                 <Avatar
-                                    size="base"
+                                    size="md"
                                     src="https://i.pravatar.cc/150?u=a042581f4e29026704d"
                                 />
                             </DropdownTrigger>

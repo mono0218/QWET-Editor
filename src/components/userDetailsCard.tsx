@@ -2,7 +2,7 @@ import {CharacterModel} from "@/types/vroidAPI.types";
 import {Avatar, Button, Image, Link} from "@nextui-org/react";
 import React from "react";
 
-export default function UserInfo(){
+export default function UserDetailsCard(){
     return(
         <>
             <div>

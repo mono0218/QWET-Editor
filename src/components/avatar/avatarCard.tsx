@@ -1,7 +1,7 @@
 import {CharacterModel} from "@/types/vroidAPI.types";
 import {Image} from "@nextui-org/react";
 
-export default function AvatarInfo(data:CharacterModel){
+export default function AvatarCard(data:CharacterModel){
     return(
         <>
             <div>
