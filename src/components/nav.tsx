@@ -14,26 +14,32 @@ import {options} from "../../auth.config";
 import {getSession} from "next-auth/react";
 import React, {useState} from "react";
 import { useRouter } from "next/navigation";
+import {Session} from "next-auth";
 
 export function Nav(){
     const router = useRouter();
-    const session =  getSession().then((data)=>{
+    getSession().then((data)=>{
         if(data != null){
             setLogin(true)
+            setSession(data)
         }
     })
 
     const [isLogin,setLogin] = useState(false)
+    const [session, setSession] = useState<Session>()
+
     const onclick = (key)=> {
-        console.log(key)
-        if(key === "mypage"){
-            router.push("/users/70762708")
-        }else if(key === "notification"){
-            router.push("/users/70762708")
-        }else if(key === "logout") {
-            router.push("/api/auth/signout")
+        if(session){
+            if(key === "mypage"){
+                router.push(`/users/${session.user.id}`)
+            }else if(key === "notification"){
+                router.push(`/users/${session.user.id}`)
+            }else if(key === "logout") {
+                router.push("/api/auth/signout")
+            }
         }
     }
+
     return(
         <Navbar>
             <NavbarBrand>
@@ -46,14 +52,14 @@ export function Nav(){
                             <DropdownTrigger>
                                 <Avatar
                                     size="md"
-                                    src="https://i.pravatar.cc/150?u=a042581f4e29026704d"
+                                    src={session.user.image}
                                 />
                             </DropdownTrigger>
 
                             <DropdownMenu aria-label="Profile Actions" variant="flat" onAction={(key) => onclick(key)}>
                                 <DropdownItem key="profile" className="h-14 gap-2">
-                                    <p className="font-semibold">Signed in as</p>
-                                    <p className="font-semibold">zoey@example.com</p>
+                                    <p className="font-semibold">{session.user.name}</p>
+                                    <p className="font-semibold">でログインしています</p>
                                 </DropdownItem>
                                 <DropdownItem key="mypage">マイページ</DropdownItem>
                                 <DropdownItem key="notification">通知</DropdownItem>

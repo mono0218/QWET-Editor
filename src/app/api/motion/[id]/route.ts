@@ -11,6 +11,11 @@ const imageStorage = new ImageStorage()
 export async function GET(req:NextRequest,{params}: {params:{id:string}}){
     try{
         const result = await db.Get({uuid:params.id})
+
+        if(result === null){
+            return NextResponse.json({message:"NotFound"},{status:404})
+        }
+
         return NextResponse.json({data:result},{status:200})
     }catch{
         return NextResponse.json({message:"Database Error"},{status:500})

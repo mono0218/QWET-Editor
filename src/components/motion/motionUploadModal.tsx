@@ -3,7 +3,7 @@ import {Image} from "@nextui-org/react";
 import {Input} from "@nextui-org/input";
 import {Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, useDisclosure} from "@nextui-org/react";
 
-export default function StageUploadModal() {
+export default function MotionUploadModal() {
     const {isOpen, onOpen, onOpenChange} = useDisclosure();
 
     const onSubmit = async (event)=>{

@@ -84,9 +84,8 @@ export async function POST(req:NextRequest){
 
 export async function GET(req:NextRequest){
     const session = await getServerSession(options)
-    if(!session) {
+    if(session?.user === null) {
         //認証がされていない場合
-
         return NextResponse.json({message: "Unauthorized"}, {status: 401})
     }
 
@@ -97,9 +96,11 @@ export async function GET(req:NextRequest){
         return NextResponse.json({message:"count is required"},{status:400})
     }
 
-    const result = await db.CountGet({pieces: Number(count)})
-
-    return NextResponse.json({data:result},{status:200})
-
+    try{
+        const result = await db.CountGet({pieces: Number(count)})
+        return NextResponse.json({data:result},{status:200})
+    }catch{
+        return NextResponse.json({message:"Database Error"},{status:500})
+    }
 }
 

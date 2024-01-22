@@ -1,8 +1,27 @@
 import {CharacterModel} from "@/types/vroidAPI.types";
 import {Avatar, Button, Image, Link} from "@nextui-org/react";
-import React from "react";
+import React, {useEffect, useState} from "react";
+import {getSession} from "next-auth/react";
+import UserContentUpdateModal from "@/components/userContentModel";
 
-export default function UserDetailsCard(){
+export type UserDetailsType = {
+    userId:number;
+    name:string;
+    content:string;
+    imageUrl:string;
+}
+
+export default function UserDetailsCard(data:UserDetailsType){
+    const [isAuthor,setisAuthor] = useState(false)
+
+    useEffect( () => {
+        (async()=>{
+            const session = await getSession()
+            if(Number(session.user.id) === data.userId){
+                setisAuthor(true)
+            }
+        })()
+    }, []);
     return(
         <>
             <div>
@@ -12,23 +31,23 @@ export default function UserDetailsCard(){
                     <div>
                         <div className="flex flex-1">
                             <div className=" inline-block -mt-16 w-32 ml-12">
-                                <Avatar src="https://s.pximg.net/common/images/no_profile.png"
+                                <Avatar src={data.imageUrl}
                                         className={"w-52 h-52"}></Avatar>
                             </div>
                         </div>
                         <div>
-                            <p className="ml-12 text-2xl font-bold p-1">菜園 もももやしの</p>
-                            <Link href={`https://pixiv.net/users/70762708`}
-                                  className={"ml-12"}>https://pixiv.net/users/70762708</Link>
+                            <p className="ml-12 text-2xl font-bold p-1">{data.name}</p>
+                            <Link href={`https://pixiv.net/users/${data.userId}`}
+                                  className={"ml-12"}>https://pixiv.net/users/{data.userId}</Link>
                         </div>
                     </div>
 
                     <div>
-                        <h1>あああああ</h1>
+                        <h1>{data.content}</h1>
                     </div>
 
                     <div>
-                        <Button　className="mt-10" color="primary">プロフィール文を変更する</Button>
+                        {isAuthor?(<UserContentUpdateModal id={data.userId}/>):(<></>)}
                     </div>
                 </div>
             </div>
