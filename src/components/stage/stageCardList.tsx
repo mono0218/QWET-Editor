@@ -1,7 +1,9 @@
+"use client"
 import StageUploadModal from "@/components/stage/stageUploadModal";
 import StageCard, {stageCardType} from "@/components/stage/stageCard";
+import {CharacterModel} from "@/types/vroidAPI.types";
 
-export default function StageCardList(data:Array<stageCardType>){
+export default function StageCardList({data}:{data:Array<stageCardType>}){
     return(
         <>
             <div className="flex justify-between">

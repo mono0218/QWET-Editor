@@ -19,7 +19,9 @@ export class motionDB{
             where:{
                 uuid: uuid
             },
-
+            include:{
+                user:true
+            }
         })
     }
 

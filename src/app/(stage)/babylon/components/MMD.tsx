@@ -73,13 +73,13 @@ export class VRMFileLoader extends GLTFFileLoader {
 async function vrm(engine:Engine,canvas: HTMLCanvasElement){
     const scene = new Scene(engine);
 
-    const camera = new FlyCamera("camera1", new Vector3(0, 0, -2), scene);
+    const camera = new FlyCamera("camera1", new Vector3(0, 2, -2), scene);
     camera.speed=1
     camera.attachControl(true,canvas);
 
     SceneLoader.RegisterPlugin(new VRMFileLoader());
-    const loaded = await  SceneLoader.ImportMeshAsync("","https://ec65-103-115-217-203.ngrok-free.app/","vrm-1.vrm",scene,)
-    await SceneLoader.ImportAnimationsAsync("https://ec65-103-115-217-203.ngrok-free.app/", "aipai.glb",scene,true,SceneLoaderAnimationGroupLoadingMode.NoSync,(oldTarget)=>{
+    const loaded = await  SceneLoader.ImportMeshAsync("","http:localhost:3000/","vrm-1.vrm",scene,)
+    await SceneLoader.ImportAnimationsAsync("http:localhost:3000/", "aipai.glb",scene,true,SceneLoaderAnimationGroupLoadingMode.NoSync,(oldTarget)=>{
         let target = oldTarget;
         for (let node of loaded.transformNodes) {
             const afterId = convertNameJson[node.id]
@@ -102,11 +102,11 @@ async function vrm(engine:Engine,canvas: HTMLCanvasElement){
         mesh.rotation = new Vector3(0,180,0)
     })
 
-    await SceneLoader.ImportMeshAsync("","https://ec65-103-115-217-203.ngrok-free.app/","CyberStage_AB.glb",scene)
+    await SceneLoader.ImportMeshAsync("","http:localhost:3000/","CyberStage_AB.glb",scene)
 
     await scene.createDefaultXRExperienceAsync();
 
-    const music = new Sound("Music", "https://ec65-103-115-217-203.ngrok-free.app/himehina.wav", scene, function(){
+    const music = new Sound("Music", "http:localhost:3000/himehina.wav", scene, function(){
         scene.getAnimationGroupByName("Take1").play()
     },{
         loop: true,
@@ -116,10 +116,6 @@ async function vrm(engine:Engine,canvas: HTMLCanvasElement){
     console.log(scene)
 
     const sessionManager = new WebXRSessionManager(scene);
-
-    scene.registerBeforeRender(function () {
-
-    });
 
     engine.runRenderLoop(() => {
         scene.render();

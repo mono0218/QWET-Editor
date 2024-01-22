@@ -29,5 +29,6 @@ export async function PUT(req:NextRequest,{params}: {params:{id:string}}){
             id:Number(session.user.id),
             content:formData.get("content") as string
         })
+        return  NextResponse.json({message: "success"}, {status: 200})
     }
 }
