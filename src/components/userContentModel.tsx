@@ -2,9 +2,11 @@
 import {Image} from "@nextui-org/react";
 import {Input, Textarea} from "@nextui-org/input";
 import {Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, useDisclosure} from "@nextui-org/react";
+import {useRouter} from "next/navigation";
 
 export default function UserContentUpdateModal({id}:{id:number}) {
     const {isOpen, onOpen, onOpenChange} = useDisclosure();
+    const {push} = useRouter()
 
     const onSubmit = async (event)=>{
         event.preventDefault()
@@ -14,6 +16,12 @@ export default function UserContentUpdateModal({id}:{id:number}) {
             method: 'PUT',
             body: formData,
         })
+
+        const result = await response.json()
+
+        if(result.status ===200){
+            push(`/users/${id}`)
+        }
     }
 
     return (
@@ -34,9 +42,9 @@ export default function UserContentUpdateModal({id}:{id:number}) {
                                             src="https://nextui-docs-v2.vercel.app/images/hero-card-complete.jpeg"
                                         />
                                         <Textarea
-                                            type="name"
-                                            label="作品名"
-                                            name="name"
+                                            type="content"
+                                            label="プロフィール文"
+                                            name="content"
                                         />
 
                                         <Button type="submit">更新する</Button>
