@@ -12,18 +12,23 @@ import {
 import {getServerSession} from "next-auth/next";
 import {options} from "../../auth.config";
 import {getSession} from "next-auth/react";
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import { useRouter } from "next/navigation";
 import {Session} from "next-auth";
 
 export function Nav(){
     const router = useRouter();
-    getSession().then((data)=>{
-        if(data != null){
-            setLogin(true)
-            setSession(data)
-        }
-    })
+    useEffect(() => {
+        (async ()=>{
+            getSession().then((data)=>{
+                if(data != null){
+                    setLogin(true)
+                    setSession(data)
+                }
+            })
+        })()
+    }, []);
+
 
     const [isLogin,setLogin] = useState(false)
     const [session, setSession] = useState<Session>()
