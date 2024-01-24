@@ -9,11 +9,12 @@ import "@babylonjs/loaders/glTF/2.0"
 import "@babylonjs/core/Rendering/prePassRendererSceneComponent";
 import "@babylonjs/core/Rendering/depthRendererSceneComponent";
 import {SceneLoader} from '@babylonjs/core/Loading/sceneLoader';
-import {FlyCamera, Scene, Vector3, WebXRSessionManager} from "@babylonjs/core";
+import {FlyCamera, FreeCamera, Scene, Vector3, Vector4, WebXRSessionManager} from "@babylonjs/core";
 import {GLTFFileLoader} from "@babylonjs/loaders";
 import '@babylonjs/inspector'
 import {ImportWithAnimation} from "@/lib/vrm";
 import Songle from "../../../../node_modules/songle-api/lib/api";
+import io from 'socket.io-client';
 
 export type liveProps ={
     uuid:string
@@ -28,6 +29,8 @@ export type liveProps ={
 
 let liveData:liveProps
 
+let scene:Scene
+
 export default function MMD(data:liveProps){
     const [scene,setScene] = useState<Scene>()
     liveData = data
@@ -38,11 +41,29 @@ export default function MMD(data:liveProps){
 
         vrm(engine,canvas).then(data => {
             SongleAPI(data).then(r => {
+                    const socket = new WebSocket('ws://localhost:5001');
+
+                    const wsavatar = new wsAvatar()
+
+                    socket.addEventListener('open', (event) => {
+                        console.log('WebSocket connection opened', event);
+                    });
+
+                    socket.addEventListener('message', (event) => {
+                        const message = event.data;
+                        const json = JSON.parse(message)
+                        wsavatar.create(message.uuid)
+
+                        console.log('Received message:', json);
+                    });
+
                     engine.runRenderLoop(() => {
                         data.render();
                     });
                 }
             )
+
+
         })
     },[])
 
@@ -73,11 +94,24 @@ export class VRMFileLoader extends GLTFFileLoader {
 }
 
 async function vrm(engine:Engine,canvas: HTMLCanvasElement){
-    const scene = new Scene(engine);
+    scene = new Scene(engine);
 
-    const camera = new FlyCamera("camera1", new Vector3(0, 2, -2), scene);
-    camera.attachControl(true,);
-    camera.speed=1
+    const camera = new FreeCamera("camera1", new Vector3(0, 2, -2), scene);
+
+    scene.onPointerDown = (evt) =>{
+        if(evt.button === 0) engine.enterPointerlock()
+        if(evt.button === 1) engine.enterPointerlock()
+    }
+
+    const framesPerSecond = 60;
+    const gravity = -9.81
+    scene.gravity= new Vector3(0, gravity/framesPerSecond, 0)
+    scene.collisionsEnabled = true
+
+    camera.attachControl()
+    camera.applyGravity= true
+    camera.checkCollisions = true
+    camera.ellipsoid = new Vector3(1,1,1,)
 
     SceneLoader.RegisterPlugin(new VRMFileLoader());
     const vrm = await fetch(liveData.modelUrl);
@@ -92,7 +126,10 @@ async function vrm(engine:Engine,canvas: HTMLCanvasElement){
     await SceneLoader.ImportMeshAsync("","",new File([await stage.arrayBuffer()],"stage.glb"),scene)
 
     await scene.createDefaultXRExperienceAsync();
+
+
     const sessionManager = new WebXRSessionManager(scene);
+
     return scene
 }
 
@@ -121,4 +158,39 @@ async function SongleAPI(scene:Scene){
             scene.getAnimationGroupByName("Take1").start(false)
         }
     )
+}
+
+class wsAvatar{
+    uuid:string
+    scene:Scene
+
+    constructor(){
+        this.uuid = ""
+        this.scene = scene
+    }
+
+    async catch(message:any){
+        if(message.status === "join"){
+
+        }else if(message.status === "move"){
+
+        }else if(message.status === "end"){
+
+        }
+    }
+
+    async create(uuid:string){
+        const userVrm = await fetch("/vrm-1.vrm");
+        const userFile = new File([await userVrm.arrayBuffer()],"vrm-1.vrm")
+
+        SceneLoader.ImportMesh("", "", userFile, scene, null, null, null,null,uuid)
+    }
+
+    async move(uuid:string){
+        scene.getMeshByName(uuid).position = new Vector3(1,1,1)
+    }
+
+    async end(uuid:string){
+        scene.getMeshByName(uuid)
+    }
 }
