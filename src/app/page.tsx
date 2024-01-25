@@ -1,7 +1,5 @@
-"use server"
-import {getServerSession} from "next-auth/next";
-import {options} from "../../auth.config";
-import {getHeartModel} from "@/lib/vroid/VroidInfo";
+"use client"
+
 import AvatarCardList from "@/components/avatar/avatarCardList";
 import StageCardList from "@/components/stage/stageCardList";
 import MotionCardList from "@/components/motion/motionCardList";
@@ -9,6 +7,9 @@ import {stageCardType} from "@/components/stage/stageCard";
 import {motionCardType} from "@/components/motion/motionCard";
 import {StageDBTypes} from "@/types/stageDB.types";
 import {MotionDBTypes} from "@/types/motionDB.types";
+import {useEffect, useState} from "react";
+import {getSession} from "next-auth/react";
+import {Session} from "next-auth";
 
 type ReturnStageData ={
     data:Array<StageDBTypes>
@@ -18,63 +19,73 @@ type ReturnMotionData ={
     data:Array<MotionDBTypes>
 }
 
-export default async function Page() {
-    const session = await getServerSession(options)
-    if(session === null){
-        return(
-            <>
-            </>
-        )
-    }
+export default function Page() {
 
-    const avatarData =  await getHeartModel(session.user.accessToken)
-    const stageData = await fetch("http://localhost:3000/api/stage?count=6")
-    const motionData = await fetch("http://localhost:3000/api/motion?count=6")
+    const [Data, setData] = useState(undefined)
 
-    const avatar = avatarData.data
-    const stage:ReturnStageData = await stageData.json()
-    const motion:ReturnMotionData = await motionData.json()
+    const [session,setSession] = useState<Session>()
 
-    let stageList:Array<stageCardType> = []
-    let motionList:Array<motionCardType> = []
-    stage.data.map((data)=>{
-        const _data:stageCardType = {
-            id:data.uuid,
-            name:data.name,
-            imageUrl:data.imageUrl,
+    useEffect(() => {
+        (async () => {
+            const _session:Session =await getSession()
+            setSession(session)
+            console.log(_session)
 
-        }
-        stageList.push(_data)
-    })
+            const avatarData = await fetch("/api/avatar?count=12")
+            const stageData = await fetch("/api/stage?count=6")
+            const motionData = await fetch("/api/motion?count=6")
 
-    motion.data.map((data)=>{
-        const _data:motionCardType = {
-            id:data.uuid,
-            name:data.name,
-            imageUrl:data.imageUrl,
+            const _avatar = await avatarData.json()
+            const stage: ReturnStageData = await stageData.json()
+            const motion: ReturnMotionData = await motionData.json()
 
-        }
-        motionList.push(_data)
-    })
+            const avatar = _avatar.data
+            let stageList: Array<stageCardType> = []
+            let motionList: Array<motionCardType> = []
+
+            stage.data.map((data) => {
+                const _data: stageCardType = {
+                    id: data.uuid,
+                    name: data.name,
+                    imageUrl: data.imageUrl,
+                }
+                stageList.push(_data)
+            })
+
+            motion.data.map((data) => {
+                const _data: motionCardType = {
+                    id: data.uuid,
+                    name: data.name,
+                    imageUrl: data.imageUrl,
+                }
+                motionList.push(_data)
+            })
+
+            setData({
+                avatar,
+                stageList,
+                motionList
+            })
+        })()
+    }, []);
+    console.log(Data)
+
     return(
-        session?(
-                <>
-                    <div className="ml-32 mr-32">
+        Data?(<>
+                <div className="ml-32 mr-32">
 
-                        <div className="mt-[450px]">
-                            <AvatarCardList data={avatar}/>
-                        </div>
-                        <div>
-                            <StageCardList data={stageList}/>
-                        </div>
-
-                        <div className="mt-10">
-                            <MotionCardList data={motionList}/>
-                        </div>
-
+                    <div className="mt-[450px]">
+                        <AvatarCardList data={Data.avatar}/>
                     </div>
-                </>
-            ):
-        (<></>)
+                    <div className="mt-24">
+                        <StageCardList data={Data.stageList}/>
+                    </div>
+
+                    <div className="mt-24">
+                        <MotionCardList data={Data.motionList}/>
+                    </div>
+
+                </div>
+            </>):(<>Now Loading</>)
     )
 }
