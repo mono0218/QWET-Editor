@@ -3,6 +3,7 @@ import {
     NextAuthOptions,
 } from "next-auth";
 import {JWT} from "next-auth/jwt";
+import {userDB} from "@/lib/user/userDB";
 
 declare module "next-auth" {
     interface Session extends DefaultSession {
@@ -34,6 +35,14 @@ export const options: NextAuthOptions = {
             },
 
             profile(profile) {
+                const userdb = new userDB()
+
+                userdb.upsert({
+                    id:　Number(profile.data.user_detail.user.id),
+                    name: profile.data.user_detail.user.name,
+                    url: profile.data.user_detail.user.icon.sq170.url,
+                })
+
                 return {
                     token:profile.accessToken,
                     id: profile.data.user_detail.user.id,
@@ -63,7 +72,6 @@ export const options: NextAuthOptions = {
                     session.user.id = token.sub;
                     session.user.accessToken = token.accessToken
                 }
-                token.accessToken
                 return {
                     ...session,
                     user: {
