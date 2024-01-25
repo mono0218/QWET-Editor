@@ -18,17 +18,15 @@ export async function GET(req:NextRequest,{ params }: { params: { id: string } }
 export async function PUT(req:NextRequest,{params}: {params:{id:string}}){
     const session = await getServerSession(options)
 
-    if(!session){
-        return NextResponse.json({message:"Unauthorized"},{status:401})
-    }else if (params.id != session.user.id){
-        return NextResponse.json({message:"Forbidden"},{status:403})
-    }else if(params.id === session.user.id){
+    if(params.id === session.user.id){
+
         const formData = await req.formData()
 
         const result = await userdb.Update({
             id:Number(session.user.id),
             content:formData.get("content") as string
         })
+
         return  NextResponse.json({message: "success"}, {status: 200})
     }
 }

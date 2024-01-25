@@ -26,24 +26,25 @@ export async function DELETE(req:NextRequest,{params}:{params:{id:string}}){
     const result = await db.Get({uuid: params.id})
     const session = await getServerSession(options)
 
-    if(result.userId === Number(session.user.id)){
-        try{
-            await fileStorage.remove({url:result.fileUrl})
-            await imageStorage.remove({url:result.imageUrl})
-        }catch {
-            return NextResponse.json({message:"R2 Storage Error"},{status:500})
-        }
+    if(result.userId != Number(session.user.id)) {
+        return NextResponse.json({message: "Forbidden"}, {status: 403})
+    }
 
-        try{
-            await db.Remove({
-                uuid: result.uuid,
-                userId: Number(session.user.id)
-            })
-            return NextResponse.json({message:"Success Removed"},{status:200})
-        }catch{
-            return NextResponse.json({message:"Database Error"},{status:500})
-        }
-    }else{
-        return NextResponse.json({message:"Forbidden"},{status:403})
+
+    try{
+        await fileStorage.remove({url:result.fileUrl})
+        await imageStorage.remove({url:result.imageUrl})
+    }catch {
+        return NextResponse.json({message:"R2 Storage Error"},{status:500})
+    }
+
+    try{
+        await db.Remove({
+            uuid: result.uuid,
+            userId: Number(session.user.id)
+        })
+        return NextResponse.json({message:"Success Removed"},{status:200})
+    }catch{
+        return NextResponse.json({message:"Database Error"},{status:500})
     }
 }
