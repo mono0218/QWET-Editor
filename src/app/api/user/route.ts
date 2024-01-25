@@ -8,11 +8,6 @@ export async function POST(req:NextRequest){
     const userdb = new userDB()
     const session = await getServerSession(options)
 
-    if(!session){
-        //認証がされていない場合
-        return NextResponse.json({message:"Unauthorized"},{status:401})
-    }
-
     const user = await userdb.Get({id:Number(session.user.id)})
 
     if(user != null){

@@ -23,71 +23,62 @@ export async function POST(req:NextRequest){
         userId:number;
     }
 
-    if(!session){
-        //認証がされていない場合
-        return NextResponse.json({message:"Unauthorized"},{status:401})
-    }else{
-        const uuid:string = uuidv4();
 
-        //formDataをPropsに変換
-        const data:Props={
-            name:formData.get("name") as string,
-            content :formData.get("content") as string,
-            image:formData.get("image") as File,
-            file:formData.get("file") as File,
-            license:formData.get("license") as string,
-            userId:Number(session.user.id as string)
-        }
+    const uuid:string = uuidv4();
 
-        //FileをBufferへ
-        const fileBuffer:Buffer = await getBuffer(data.file)
-        const imageBuffer:Buffer = await getBuffer(data.image)
-
-        //BufferをR2へ
-        try {
-            await fileStorage.create({
-                uuid:uuid,
-                buffer:fileBuffer
-            })
-
-            await imageStorage.create({
-                uuid:uuid,
-                buffer:imageBuffer
-            })
-        } catch(e) {
-            console.log(e)
-            return NextResponse.json({message:"R2 Storage Error"},{status:500})
-        }
-
-        //DataBaseへの挿入データを作成
-        const dbData:StageDB = {
-            uuid:uuid,
-            name:data.name,
-            content:data.content,
-            imageUrl:`image/${uuid}/${uuid}.png`,
-            fileUrl:`stage/${uuid}/${uuid}.glb`,
-            license:data.license,
-            userId:data.userId,
-        }
-
-        //DataBaseへ挿入
-        try {
-            await db.Create(dbData)
-            return NextResponse.json({message:"Success Created"},{status:200})
-        } catch(e) {
-            console.log(e)
-            return NextResponse.json({message:"Database Error"},{status:500})
-        }
+    //formDataをPropsに変換
+    const data:Props={
+        name:formData.get("name") as string,
+        content :formData.get("content") as string,
+        image:formData.get("image") as File,
+        file:formData.get("file") as File,
+        license:formData.get("license") as string,
+        userId:Number(session.user.id as string)
     }
+
+    //FileをBufferへ
+    const fileBuffer:Buffer = await getBuffer(data.file)
+    const imageBuffer:Buffer = await getBuffer(data.image)
+
+    //BufferをR2へ
+    try {
+        await fileStorage.create({
+            uuid:uuid,
+            buffer:fileBuffer
+        })
+
+        await imageStorage.create({
+            uuid:uuid,
+            buffer:imageBuffer
+        })
+    } catch(e) {
+        console.log(e)
+        return NextResponse.json({message:"R2 Storage Error"},{status:500})
+    }
+
+    //DataBaseへの挿入データを作成
+    const dbData:StageDB = {
+        uuid:uuid,
+        name:data.name,
+        content:data.content,
+        imageUrl:`image/${uuid}/${uuid}.png`,
+        fileUrl:`stage/${uuid}/${uuid}.glb`,
+        license:data.license,
+        userId:data.userId,
+    }
+
+    //DataBaseへ挿入
+    try {
+        await db.Create(dbData)
+        return NextResponse.json({message:"Success Created"},{status:200})
+    } catch(e) {
+        console.log(e)
+        return NextResponse.json({message:"Database Error"},{status:500})
+    }
+
 }
 
 export async function GET(req:NextRequest){
-    const session = await getServerSession(options)
-
-    if(session?.user === null) {
-        return NextResponse.json({message: "Unauthorized"}, {status: 401})
-    }
-
     const {searchParams} = new URL(req.url);
     const count = searchParams.get("count");
 
