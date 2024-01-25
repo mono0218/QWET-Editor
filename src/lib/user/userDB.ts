@@ -16,9 +16,17 @@ export class userDB{
         })
     }
 
-    async Create(data:UserDB){
-        return prisma.user.create({
-            data: {
+    async upsert(data:UserDB){
+        return prisma.user.upsert({
+            where: {
+                id: data.id
+            },
+            create: {
+                id: data.id,
+                name:data.name,
+                iconUrl:data.url,
+            },
+            update: {
                 id: data.id,
                 name:data.name,
                 iconUrl:data.url,
