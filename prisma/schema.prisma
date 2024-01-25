@@ -23,13 +23,13 @@ model User {
 }
 
 model Motion {
-  uuid      String @unique
-  name    String
-  content String?
+  uuid     String  @unique
+  name     String
+  content  String?
   imageUrl String
-  fileUrl     String
-  live    Live[]
-  license String?
+  fileUrl  String
+  live     Live[]
+  license  String?
 
   userId Int
   user   User @relation(fields: [userId], references: [id])
@@ -39,13 +39,13 @@ model Motion {
 }
 
 model Stage {
-  uuid      String    @unique
-  name    String
-  content String?
+  uuid     String  @unique
+  name     String
+  content  String?
   imageUrl String
-  fileUrl     String
-  live    Live[]
-  license String?
+  fileUrl  String
+  live     Live[]
+  license  String?
 
   userId Int
   user   User @relation(fields: [userId], references: [id])
@@ -55,7 +55,7 @@ model Stage {
 }
 
 model Room {
-  uuid        String    @unique
+  uuid      String @unique
   userId    Int
   apiUrl    String
   masterKey String
@@ -65,18 +65,19 @@ model Room {
 }
 
 model Live {
-  uuid       String     @unique
+  uuid     String  @unique
   name     String
   content  String?
-  lisence  String?
+  license  String?
   imageUrl String
-  fileUrl     String
+  fileUrl  String
 
-  avaterId Int
+  movieUrl   String
+  avatarId   String
   motionUUID String
   stageUUID  String
-  motion   Motion @relation(fields: [motionUUID], references: [uuid])
-  stage    Stage  @relation(fields: [stageUUID], references: [uuid])
+  motion     Motion @relation(fields: [motionUUID], references: [uuid])
+  stage      Stage  @relation(fields: [stageUUID], references: [uuid])
 
   authorId Int
   user     User @relation(fields: [authorId], references: [id])
