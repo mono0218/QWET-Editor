@@ -50,38 +50,44 @@ export function Nav(){
             <NavbarBrand>
                 <Link className="font-bold text-inherit" href="/">ACME</Link>
             </NavbarBrand>
-            <NavbarContent justify="end">
                 {isLogin?
-                    (<NavbarItem>
-                        <Dropdown placement="bottom-end">
-                            <DropdownTrigger>
-                                <Avatar
-                                    size="md"
-                                    src={session.user.image}
-                                />
-                            </DropdownTrigger>
+                    (<NavbarContent justify="end">
+                        <NavbarItem >
+                            <Button　as={Link} color="secondary" variant="ghost" href="/live"　className="pl-5">ライブを作る！</Button>
+                        </NavbarItem>
 
-                            <DropdownMenu aria-label="Profile Actions" variant="flat" onAction={(key) => onclick(key)}>
-                                <DropdownItem key="profile" className="h-14 gap-2">
-                                    <p className="font-semibold">{session.user.name}</p>
-                                    <p className="font-semibold">でログインしています</p>
-                                </DropdownItem>
-                                <DropdownItem key="mypage">マイページ</DropdownItem>
-                                <DropdownItem key="notification">通知</DropdownItem>
-                                <DropdownItem key="logout" color="danger">
-                                    LogOut
-                                </DropdownItem>
-                            </DropdownMenu>
-                        </Dropdown>
-                    </NavbarItem>) :
+                        <NavbarItem>
+                            <Dropdown placement="bottom-end">
+                                <DropdownTrigger>
+                                    <Avatar
+                                        size="md"
+                                        src={session.user.image}
+                                    />
+                                </DropdownTrigger>
 
-                    (<NavbarItem>
-                        <Button as={Link} color="primary" href="/api/auth/signin" variant="flat">
-                            Login
-                        </Button>
-                    </NavbarItem>)
+                                <DropdownMenu aria-label="Profile Actions" variant="flat" onAction={(key) => onclick(key)}>
+                                    <DropdownItem key="profile" className="h-14 gap-2">
+                                        <p className="font-semibold">{session.user.name}</p>
+                                        <p className="font-semibold">でログインしています</p>
+                                    </DropdownItem>
+                                    <DropdownItem key="mypage">マイページ</DropdownItem>
+                                    <DropdownItem key="notification">通知</DropdownItem>
+                                    <DropdownItem key="logout" color="danger">
+                                        LogOut
+                                    </DropdownItem>
+                                </DropdownMenu>
+                            </Dropdown>
+                        </NavbarItem>
+                    </NavbarContent>) :
+
+                    (<NavbarContent justify="end">
+                        <NavbarItem>
+                            <Button as={Link} color="primary" href="/api/auth/signin" variant="flat">
+                                Login
+                            </Button>
+                        </NavbarItem>
+                    </NavbarContent>)
                 }
-            </NavbarContent>
         </Navbar>
     );
 }

@@ -55,13 +55,16 @@ model Stage {
 }
 
 model Room {
-  uuid      String @unique
-  userId    Int
-  apiUrl    String
-  masterKey String
-  userKey   String
-  userLimit Int
-  liveId    Int
+  uuid       String @unique
+  userId     Int
+  apiUrl     String
+  masterKey  String
+  userKey    String
+
+  movieUrl   String
+  avatarUrl  String
+  motionUUID String
+  stageUUID  String
 }
 
 model Live {

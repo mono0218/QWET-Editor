@@ -42,7 +42,7 @@ export async function POST(req:NextRequest){
 
             avatarId: formData.get("avatarId") as string,
             motionUUID: formData.get("motionUUID") as string,
-            movieUrl: formData.get("moveUrl") as string,
+            movieUrl: formData.get("movieUrl") as string,
             stageUUID: formData.get("stageUUID") as string,
 
             license:formData.get("license") as string,
@@ -80,7 +80,7 @@ export async function POST(req:NextRequest){
 
         try {
             await db.Create(dbData)
-            return NextResponse.json({message:"Success Created"},{status:200})
+            return NextResponse.json({message:"Success Created",uuid:uuid},{status:200})
         } catch {
             return NextResponse.json({message:"Database Error"},{status:500})
         }

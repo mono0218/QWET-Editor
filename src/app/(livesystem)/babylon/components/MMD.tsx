@@ -13,7 +13,7 @@ import {FlyCamera, FreeCamera, Scene, Vector3, Vector4, WebXRSessionManager} fro
 import {GLTFFileLoader} from "@babylonjs/loaders";
 import '@babylonjs/inspector'
 import {ImportWithAnimation} from "@/lib/vrm";
-import Songle from "../../../../node_modules/songle-api/lib/api";
+import Songle from "songle-api/lib/api";
 import io from 'socket.io-client';
 
 export type liveProps ={
@@ -126,7 +126,6 @@ async function vrm(engine:Engine,canvas: HTMLCanvasElement){
     await SceneLoader.ImportMeshAsync("","",new File([await stage.arrayBuffer()],"stage.glb"),scene)
 
     await scene.createDefaultXRExperienceAsync();
-
 
     const sessionManager = new WebXRSessionManager(scene);
 
