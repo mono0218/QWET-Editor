@@ -17,12 +17,13 @@ export default function RootLayout({
 }) {
   return (
         <html lang="en" className={""}>
-        <body className={inter.className}>
-        <NextAuthProvider>
-            <Nav/>
-            {children}
-        </NextAuthProvider>
-        </body>
+            <body className={inter.className}>
+                <NextAuthProvider>
+                    <Nav/>
+                    {children}
+                    <div className="mt-44 h-64 bg-neutral-300" />
+                </NextAuthProvider>
+            </body>
         </html>
   )
 }

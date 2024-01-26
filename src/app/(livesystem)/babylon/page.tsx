@@ -1,4 +1,4 @@
-import MMD, {liveProps} from "@/app/babylon/components/MMD";
+import MMD, {liveProps} from "@/app/(livesystem)/babylon/components/MMD";
 
 export default function Home(): JSX.Element  {
     const liveData:liveProps ={
