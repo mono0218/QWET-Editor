@@ -1,6 +1,6 @@
 import {NextRequest, NextResponse} from "next/server";
 import {getServerSession} from "next-auth/next";
-import {options} from "../../../../auth.config";
+import {options} from "../../../../../auth.config";
 import {v4 as uuidv4} from "uuid";
 import {getBuffer} from "@/lib/common/getBuffer";
 import {ImageStorage} from "@/lib/common/imageStorage";

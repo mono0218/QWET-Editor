@@ -1,6 +1,6 @@
 import {NextRequest, NextResponse} from "next/server";
 import {getServerSession} from "next-auth/next";
-import {options} from "../../../../../auth.config";
+import {options} from "../../../../../../auth.config";
 import {StageStorage} from "@/lib/stage/stageStorage";
 import {stageDB} from "@/lib/stage/stageDB";
 import {ImageStorage} from "@/lib/common/imageStorage";

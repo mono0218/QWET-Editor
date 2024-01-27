@@ -1,7 +1,7 @@
 import {NextRequest, NextResponse} from "next/server";
 import {getHeartModel, getStaffRecommendModel} from "@/lib/vroid/VroidInfo";
 import {getServerSession} from "next-auth/next";
-import {options} from "../../../../auth.config";
+import {options} from "../../../../../auth.config";
 
 export async function GET(req:NextRequest){
 

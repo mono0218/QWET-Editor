@@ -1,6 +1,6 @@
 import {NextRequest, NextResponse} from "next/server";
 import {getServerSession} from "next-auth/next";
-import {options} from "../../../../../auth.config";
+import {options} from "../../../../../../auth.config";
 import {motionDB} from "@/lib/motion/motionDB";
 import {ImageStorage} from "@/lib/common/imageStorage";
 import {MotionStorage} from "@/lib/motion/motionStorage";
