@@ -3,7 +3,7 @@ import {Image} from "@nextui-org/react";
 import {useRouter} from "next/navigation";
 import Link from "next/link";
 
-type AvatarCardType = {
+export type AvatarCardType = {
     character_model:CharacterModel
 }
 

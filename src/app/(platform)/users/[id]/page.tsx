@@ -45,38 +45,6 @@ export default function Page({params}: {params:{id:string}}) {
                     {isData?(
                         <div className="ml-32 mr-32">
                             <UserDetailsCard {...Data}/>
-
-                            <div className="mt-5">
-                                <h2 className={"text-xl mt-10 mb-5 font-bold"}>ステージ</h2>
-
-                                <div className="flex justify-between gap-8 mb-5">
-                                    <StageCard></StageCard>
-                                    <StageCard></StageCard>
-                                    <StageCard></StageCard>
-                                </div>
-
-                                <div className="flex justify-between gap-8">
-                                    <StageCard></StageCard>
-                                    <StageCard></StageCard>
-                                    <StageCard></StageCard>
-                                </div>
-                            </div>
-
-                            <div>
-                                <h2 className={"text-xl mt-10 mb-5 font-bold"}>モーション</h2>
-
-                                <div className="flex justify-between gap-8 mb-5">
-                                    <StageCard></StageCard>
-                                    <StageCard></StageCard>
-                                    <StageCard></StageCard>
-                                </div>
-
-                                <div className="flex justify-between gap-8">
-                                    <StageCard></StageCard>
-                                    <StageCard></StageCard>
-                                    <StageCard></StageCard>
-                                </div>
-                            </div>
                         </div>
                     ):(
                         <p className="text-center text-xl">データーが存在しません</p>
