@@ -1,7 +1,7 @@
 import {NextRequest, NextResponse} from "next/server"
 import {useParams} from "next/navigation";
 import {getServerSession} from "next-auth/next";
-import {options} from "../../../../../auth.config";
+import {options} from "../../../../../../auth.config";
 import {userDB} from "@/lib/user/userDB";
 const userdb = new userDB()
 export async function GET(req:NextRequest,{ params }: { params: { id: string } }) {

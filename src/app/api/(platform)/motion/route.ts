@@ -1,14 +1,16 @@
 import {NextRequest, NextResponse} from "next/server";
 import {getServerSession} from "next-auth/next";
-import {options} from "../../../../auth.config";
+import {options} from "../../../../../auth.config";
 import {getBuffer} from "@/lib/common/getBuffer";
 import {ImageStorage} from "@/lib/common/imageStorage";
-import {LiveDB, liveDB} from "@/lib/live/liveDB";
-import {v4} from "uuid"
+import {motionDB} from "@/lib/motion/motionDB";
+import {StageDB} from "@/lib/stage/stageDB";
+import {v4 as uuidv4} from "uuid"
+import {MotionStorage} from "@/lib/motion/motionStorage";
 
+const db = new motionDB()
+const fileStorage = new MotionStorage()
 const imageStorage = new ImageStorage()
-
-const db = new liveDB()
 
 export async function POST(req:NextRequest){
     const session = await getServerSession(options)
@@ -18,12 +20,7 @@ export async function POST(req:NextRequest){
         name:string;
         content:string;
         image:File;
-
-        avatarId: string,
-        motionUUID: string,
-        movieUrl: string,
-        stageUUID: string,
-
+        file:File;
         license:string;
         userId:number;
     }
@@ -32,28 +29,29 @@ export async function POST(req:NextRequest){
         //認証がされていない場合
         return NextResponse.json({message:"Unauthorized"},{status:401})
     }else{
-        const uuid:string = v4();
+        const uuid:string = uuidv4();
 
         //formDataをPropsに変換
         const data:Props={
             name:formData.get("name") as string,
             content :formData.get("content") as string,
             image:formData.get("image") as File,
-
-            avatarId: formData.get("avatarId") as string,
-            motionUUID: formData.get("motionUUID") as string,
-            movieUrl: formData.get("movieUrl") as string,
-            stageUUID: formData.get("stageUUID") as string,
-
+            file:formData.get("file") as File,
             license:formData.get("license") as string,
             userId:Number(session.user.id as string)
         }
 
         //FileをBufferへ
+        const fileBuffer:Buffer = await getBuffer(data.file)
         const imageBuffer:Buffer = await getBuffer(data.image)
 
         //BufferをR2へ
         try {
+            await fileStorage.create({
+                uuid:uuid,
+                buffer:fileBuffer
+            })
+
             await imageStorage.create({
                 uuid:uuid,
                 buffer:imageBuffer
@@ -63,24 +61,20 @@ export async function POST(req:NextRequest){
         }
 
         //DataBaseへの挿入データを作成
-        const dbData:LiveDB = {
+        const dbData:StageDB = {
             uuid:uuid,
             name:data.name,
             content:data.content,
             imageUrl:`image/${uuid}/${uuid}.png`,
-            fileUrl:"",
-
-            avatarId: data.avatarId,
-            motionUUID: data.motionUUID,
-            movieUrl: data.movieUrl,
-            stageUUID: data.stageUUID,
+            fileUrl:`motion/${uuid}/${uuid}.glb`,
             license:data.license,
-            userId:data.userId
+            userId:data.userId,
         }
 
+        //DataBaseへ挿入
         try {
             await db.Create(dbData)
-            return NextResponse.json({message:"Success Created",uuid:uuid},{status:200})
+            return NextResponse.json({message:"Success Created"},{status:200})
         } catch {
             return NextResponse.json({message:"Database Error"},{status:500})
         }
@@ -103,3 +97,4 @@ export async function GET(req:NextRequest){
         return NextResponse.json({message:"Database Error"},{status:500})
     }
 }
+

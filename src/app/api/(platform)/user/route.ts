@@ -1,6 +1,6 @@
 import {NextRequest, NextResponse} from "next/server";
 import {getServerSession} from "next-auth/next";
-import {options} from "../../../../auth.config";
+import {options} from "../../../../../auth.config";
 import Next from "next-auth/src";
 import {userDB} from "@/lib/user/userDB";
 
