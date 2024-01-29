@@ -1,7 +1,6 @@
 import {NextRequest, NextResponse} from "next/server";
 import {getServerSession} from "next-auth/next";
 import {options} from "@/../auth.config";
-import {ImageStorage} from "@/lib/common/imageStorage";
 import {v4} from "uuid"
 import {RoomDB, roomDB} from "@/lib/room/roomDB";
 import {stageDB} from "@/lib/stage/stageDB";
@@ -53,17 +52,12 @@ export async function POST(req:NextRequest){
     const stagedb = new stageDB()
     const motiondb = new motionDB()
 
-    try{
-        Promise.all([
-            stagedb.Get({uuid:data.stageUUID}),
-            motiondb.Get({uuid:data.motionUUID}),
-        ]).then((values) => {
-            console.log(values);
-        });
-    }catch (e){
+    const stageResult = await stagedb.Get({uuid:data.stageUUID})
+    const motionResult = await motiondb.Get({uuid:data.motionUUID})
+
+    if(!stageResult || !motionResult){
         return NextResponse.json({message:"Stage or Motion Notfound"},{status:400})
     }
-
 
     //DataBaseへの挿入データを作成
     const dbData:RoomDB = {
