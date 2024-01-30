@@ -1,8 +1,8 @@
 "use client"
-import AvatarCard from "@/components/avatar/avatarCard";
-import {CharacterModel} from "@/types/vroidAPI.types";
+import AvatarCard, {AvatarCardType} from "@/components/avatar/avatarCard";
 
-export default function AvatarCardList({data}:{data:Array<CharacterModel>}){
+export default function AvatarCardList({data}:{data:Array<AvatarCardType>}){
+    console.log(data)
     return(
         <>
             <h2 className={"text-xl mb-10 font-bold"}>おすすめのアバター</h2>

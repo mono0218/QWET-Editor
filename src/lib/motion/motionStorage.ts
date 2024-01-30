@@ -1,6 +1,20 @@
 import S3 from "../r2"
-import {DeleteObjectCommand, PutObjectCommand} from "@aws-sdk/client-s3";
+import {DeleteObjectCommand, GetObjectCommand, PutObjectCommand} from "@aws-sdk/client-s3";
+import {getSignedUrl} from "@aws-sdk/s3-request-presigner";
 export class MotionStorage{
+
+    async get({uuid}:{uuid:string}){
+        const url = await getSignedUrl(
+            S3,
+            new GetObjectCommand({
+                Bucket: 'weblive-dev',
+                Key: `motion/${uuid}/${uuid}.glb`,
+            }),
+            { expiresIn: 60 * 60 }
+        );
+        return url
+    }
+
     async create({uuid,buffer}:{uuid:string,buffer:Buffer}){
         await S3.send(
             new PutObjectCommand({
