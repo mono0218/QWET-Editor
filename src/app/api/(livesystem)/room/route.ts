@@ -73,7 +73,7 @@ export async function POST(req:NextRequest){
     data.userKey = (await result.json()).data.attributes.access_token
     data.masterKey = (await result.json()).data.attributes.secret_token
     data.apiUrl = `https://api.songle.jp/api/v2/apps/2457/stages/${(await result.json()).data.id}`
-
+    
     //DataBaseへの挿入データを作成
     const dbData:RoomDB = {
         uuid:data.uuid,
