@@ -53,7 +53,7 @@ export function Nav(){
                 {isLogin?
                     (<NavbarContent justify="end">
                         <NavbarItem >
-                            <Button　as={Link} color="secondary" variant="ghost" href="/live"　className="pl-5">ライブを作る！</Button>
+                            <Button　as={Link} color="secondary" variant="ghost" href="/room"　className="pl-5">ライブを作る！</Button>
                         </NavbarItem>
 
                         <NavbarItem>

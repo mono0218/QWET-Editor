@@ -59,6 +59,21 @@ export async function POST(req:NextRequest){
         return NextResponse.json({message:"Stage or Motion Notfound"},{status:400})
     }
 
+    const result = await fetch ("https://api.songle.jp/api/v2/apps/2457/stages.json",{
+        method:"POST",
+        headers:{
+            "Content-Type":"application/json"
+        },
+        body:JSON.stringify({
+            token:process.env.SONGLEAPI_KEY
+        })
+
+    })
+
+    data.userKey = (await result.json()).data.attributes.access_token
+    data.masterKey = (await result.json()).data.attributes.secret_token
+    data.apiUrl = `https://api.songle.jp/api/v2/apps/2457/stages/${(await result.json()).data.id}`
+    
     //DataBaseへの挿入データを作成
     const dbData:RoomDB = {
         uuid:data.uuid,
