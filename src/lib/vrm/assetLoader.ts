@@ -2,8 +2,9 @@ import {getJson, ImportWithAnimation} from "@/lib/vrm/index";
 import {vrmJsonConvert} from "@/lib/vrm/vrmJsonConvert";
 import {SceneLoader} from "@babylonjs/core/Loading/sceneLoader";
 import {GLTFFileLoader} from "@babylonjs/loaders";
-import {liveProps} from "@/app/(livesystem)/babylon/components/MMD";
+import {liveProps} from "@/app/(livesystem)/room/[id]/liveComponent";
 import {Scene} from "@babylonjs/core";
+import {getSession} from "next-auth/react";
 
 class VRMFileLoader extends GLTFFileLoader {
     public name = 'vrm';
@@ -17,14 +18,16 @@ class VRMFileLoader extends GLTFFileLoader {
 }
 
 export async function assetLoader(liveData:liveProps, scene: Scene){
+    const session = await getSession()
     SceneLoader.RegisterPlugin(new VRMFileLoader());
 
-    const vrm = await fetch(liveData.modelUrl);
-    const animation = await fetch(liveData.motionUrl);
-    const stage = await fetch(liveData.stageUrl);
+    const vrmUrl = await fetch (`/api/model/${liveData.modelUrl}`)
+    const vrm = await fetch((await vrmUrl.json()).url)
+    const motion = await fetch(liveData.motionUrl);
+    const stage = await fetch(liveData.stageUrl)
 
-    const vrmArraybuffer = await vrm.arrayBuffer()
-    const animationFile = new File([await animation.arrayBuffer()], "animation.glb")
+    const vrmArraybuffer:ArrayBuffer = await vrm.arrayBuffer()
+    const animationFile = new File([await motion.arrayBuffer()], "animation.glb")
     await SceneLoader.ImportMeshAsync("", "", new File([await stage.arrayBuffer()], "stage.glb"), scene)
     const result = await getJson(vrmArraybuffer)
 
@@ -33,13 +36,11 @@ export async function assetLoader(liveData:liveProps, scene: Scene){
 
         const vrmFile = new File([vrmArraybuffer], "model.vrm")
         await ImportWithAnimation("01", vrmFile, animationFile, scene)
-
     } else if (result.json.extensions.VRM) {
         console.log("0.X")
+
         const converter = new vrmJsonConvert()
         const convertedFile = await converter.coordinateConvert(vrmArraybuffer)
-
         await ImportWithAnimation("01", convertedFile, animationFile, scene)
-
     }
 }

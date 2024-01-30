@@ -26,3 +26,32 @@ export async function getHeartModel(token:string,count:number):Promise<retrunTyp
 export async function getStaffRecommendModel(token:string,count:number):Promise<retrunType> {
     return await fetchAPI("https://hub.vroid.com/api/staff_picks",token,count)
 }
+
+export async function getModelUrl(token:string,modelId:string){
+    const downloadLicense = await fetch(`https://hub.vroid.com/api/download_licenses?character_model_id=${modelId}`,{
+        method:"POST",
+        headers:{
+            'X-Api-Version': '11',
+            Authorization: `Bearer ${token}`,
+        }
+    })
+
+    const downloadLicenseJson = await downloadLicense.json()
+
+    if(!downloadLicenseJson.data.id){
+        throw new Error("downloadLicenseJson.data.id is null")
+    }
+
+    const downloadUrl = await fetch(`https://hub.vroid.com/api/download_licenses/${downloadLicenseJson.data.id}/download`,{
+        headers:{
+            'X-Api-Version': '11',
+            'Accept-Encoding': 'gzip',
+            Authorization: `Bearer ${token}`,
+        },
+        redirect:"manual"
+    })
+
+    console.log(downloadUrl.headers.get('Location'))
+
+    return downloadUrl.headers.get('Location')
+}
