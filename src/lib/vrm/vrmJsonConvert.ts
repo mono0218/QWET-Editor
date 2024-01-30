@@ -1,6 +1,5 @@
 import {Document, WebIO} from '@gltf-transform/core';
 import {getJson} from "@/lib/vrm/index";
-import { dedup } from '@gltf-transform/functions';
 
 export class vrmJsonConvert {
     io: WebIO;
@@ -14,11 +13,9 @@ export class vrmJsonConvert {
 
         let document: Document;
         document = await this.io.readBinary(binary);
-        /*
         document.getRoot().listNodes().map(node => {
             node.setTranslation([node.getTranslation()[0] * -1, node.getTranslation()[1], node.getTranslation()[2] * -1])
         })
-         */
 
         const glb = await this.io.writeBinary(document);
         console.log(document.getRoot().listTextures())

@@ -68,7 +68,7 @@ async function vrm(engine: Engine, canvas: HTMLCanvasElement) {
     camera.speed = 0.1
 
     const light = new DirectionalLight("DirectionalLight", new Vector3(0, 3, 0), scene);
-    light.intensity = 5.0;
+    light.intensity = 10.0;
     camera.checkCollisions = true
     camera.ellipsoid = new Vector3(1, 1, 1,)
 
