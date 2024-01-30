@@ -1,8 +1,32 @@
 import {SceneLoader, SceneLoaderAnimationGroupLoadingMode} from "@babylonjs/core/Loading/sceneLoader";
-import {Scene, Vector3} from "@babylonjs/core";
+import {Scene, Vector3, TransformNode, Axis, Space} from "@babylonjs/core";
 
 export async function ImportVRM(name:string,vrm:File,scene:Scene){
     const loaded = await  SceneLoader.ImportMeshAsync(name,"",vrm,scene)
+}
+
+export async function getJson(file:ArrayBuffer){
+    const LE = true; // Binary GLTF is little endian.
+    const GLB_FILE_HEADER_SIZE = 12;
+    const GLB_CHUNK_LENGTH_SIZE = 4;
+    const GLB_CHUNK_TYPE_SIZE = 4;
+    const GLB_CHUNK_HEADER_SIZE = GLB_CHUNK_LENGTH_SIZE + GLB_CHUNK_TYPE_SIZE;
+    const GLB_CHUNK_TYPE_JSON = 0x4e4f534a;
+    const offset = GLB_FILE_HEADER_SIZE;
+
+    const dataView = new DataView(file)
+
+    let chunkLength = dataView.getUint32(offset, LE);
+    let chunkType = dataView.getUint32(offset + GLB_CHUNK_LENGTH_SIZE, LE);
+    const jsonChunk = new Uint8Array(dataView.buffer, offset + GLB_CHUNK_HEADER_SIZE, chunkLength);
+    const decoder = new TextDecoder("utf8");
+
+    const jsonText = decoder.decode(jsonChunk);
+    const json = JSON.parse(jsonText);
+
+    const result = {json: json, length: chunkLength,};
+
+    return result
 }
 
 export async function ImportWithAnimation(name:string,vrm:File,animation:File,scene:Scene){
@@ -13,7 +37,6 @@ export async function ImportWithAnimation(name:string,vrm:File,animation:File,sc
             const afterId = convertNameJson[node.id]
             if (afterId != undefined){
                 if (target.id === afterId) {
-                    console.log(afterId,node)
                     target = node;
                     break;
                 }
@@ -28,6 +51,7 @@ export async function ImportWithAnimation(name:string,vrm:File,animation:File,sc
         mesh.rotation = new Vector3(0,180,0)
     })
 }
+
 
 
 const convertNameJson = {

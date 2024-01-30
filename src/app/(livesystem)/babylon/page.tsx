@@ -3,7 +3,7 @@ import MMD, {liveProps} from "@/app/(livesystem)/babylon/components/MMD";
 export default function Home(): JSX.Element  {
     const liveData:liveProps ={
         uuid: "aa",
-        modelUrl: "/vrm-1.vrm",
+        modelUrl: "/0.0.vrm",
         motionUrl: "/aipai.glb",
         stageUrl: "/CyberStage_AB.glb",
         movieUrl: "https://www.youtube.com/watch?v=bnofYmfKLeo",
