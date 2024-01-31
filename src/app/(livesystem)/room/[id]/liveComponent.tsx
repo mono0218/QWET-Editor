@@ -8,7 +8,6 @@ import "@babylonjs/inspector";
 import "@babylonjs/loaders/glTF/2.0";
 import "@babylonjs/core/Rendering/prePassRendererSceneComponent";
 import "@babylonjs/core/Rendering/depthRendererSceneComponent";
-import { Inspector } from "@babylonjs/inspector";
 import { DirectionalLight, FlyCamera, Scene, Vector3 } from "@babylonjs/core";
 import "@babylonjs/inspector";
 import { songleController } from "@/lib/songle/songleController";
@@ -77,8 +76,6 @@ async function vrm(engine: Engine) {
 
   await assetLoader(liveData, scene);
   await scene.createDefaultXRExperienceAsync();
-
-  Inspector.Show(scene, {});
 
   return scene;
 }
