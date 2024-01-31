@@ -5,6 +5,7 @@ import {Image} from "@nextui-org/react"
 import {getSession} from "next-auth/react";
 import {router} from "next/client";
 import {useRouter} from "next/navigation";
+import resizeUrl from "@/lib/common/imageUrl";
 
 export type MotionDetailsType ={
     uuid:string;
@@ -38,11 +39,15 @@ export default function MotionDetailsCard(data:MotionDetailsType){
             push("/")
         }
     }
+    
+    const onCopy = async ()=>{
+        await navigator.clipboard.writeText(data.uuid)
+    }
 
     return(
         <>
             <div className="flex flex-col">
-                <Image src={`https://live-image.monodev.cloud/${data.imageUrl}`} className="w-max items items-center"></Image>
+                <img src={resizeUrl(`https://live-image.monodev.cloud/${data.imageUrl}`)} className="w-full items-center object-cover"></img>
 
                 <div className="flex justify-between">
                     <div>
@@ -55,7 +60,7 @@ export default function MotionDetailsCard(data:MotionDetailsType){
                         <Link href={`/users/${data.userId}`}>
                             <p className="pt-4 text-base font-bold">投稿者:<br/>{data.username}</p>
                         </Link>
-                        <Button color="primary">ステージのIDをコピーする</Button>
+                        <Button color="primary" onClick={onCopy}>ステージのIDをコピーする</Button>
                         {isAuthor?(<Button color="danger" onClick={onDelete}>このステージを削除する</Button>):(<></>)}
                     </div>
                 </div>
