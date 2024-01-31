@@ -2,13 +2,14 @@
 
 import {Button, Image, RadioGroup, ScrollShadow,Radio} from "@nextui-org/react";
 import {Input} from "@nextui-org/input";
-import {useRouter} from "next/navigation";
+import { redirect, useRouter } from 'next/navigation'
 import {useEffect, useState} from "react";
 import {CharacterModel} from "@/types/vroidAPI.types";
 
 export default function Page(){
-    const { push } = useRouter()
     const [Data, setData] = useState([])
+    const router = useRouter();
+
 
     useEffect(() => {
         (async () => {
@@ -25,19 +26,12 @@ export default function Page(){
     }
 
     const onSubmit = async (event)=>{
-        event.preventDefault()
-
         const formData = new FormData(event.currentTarget)
 
         const response = await fetch('/api/room', {
             method: 'POST',
             body: formData,
         })
-
-        const result = await response.json()
-        if(result.status === 200){
-            push(`/live/${result.data.uuid}`)
-        }
     }
 
     return (
@@ -85,7 +79,7 @@ export default function Page(){
                                 </div>
                             </RadioGroup>
                         </ScrollShadow>
-                    <Button type="submit">次へ</Button>
+                    <Button type="submit">作る</Button>
                 </form>
             </div>) : (<p>Now Loading...</p>)}
         </div>

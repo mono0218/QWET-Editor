@@ -5,6 +5,7 @@ import {Image} from "@nextui-org/react"
 import {getSession} from "next-auth/react";
 import {router} from "next/client";
 import {useRouter} from "next/navigation";
+import resizeUrl from "@/lib/common/imageUrl";
 
 export type StageDetailsType ={
     uuid:string;
@@ -42,7 +43,7 @@ export default function StageDetailsCard(data:StageDetailsType){
     return(
         <>
             <div className="flex flex-col">
-                <Image src={`https://live-image.monodev.cloud/${data.imageUrl}`} className="w-max items items-center"></Image>
+            <img src={resizeUrl(`https://live-image.monodev.cloud/${data.imageUrl}`)} className="w-full items-center object-cover"></img>
 
                 <div className="flex justify-between">
                     <div>

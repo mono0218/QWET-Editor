@@ -1,6 +1,6 @@
 "use client"
 import {Image} from "@nextui-org/react";
-import {Input} from "@nextui-org/input";
+import {Input, Textarea} from "@nextui-org/input";
 import {Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, useDisclosure} from "@nextui-org/react";
 
 export default function MotionUploadModal() {
@@ -33,8 +33,7 @@ export default function MotionUploadModal() {
                                             alt="NextUI hero Image"
                                             src="https://nextui-docs-v2.vercel.app/images/hero-card-complete.jpeg"
                                         />
-                                        <Input
-                                            isRequired
+                                        <input
                                             type="file"
                                             name="image"
                                         />
@@ -46,7 +45,7 @@ export default function MotionUploadModal() {
                                             name="name"
                                         />
 
-                                        <Input
+                                        <Textarea
                                             isRequired
                                             type="content"
                                             label="説明文"
@@ -60,8 +59,7 @@ export default function MotionUploadModal() {
                                             name="license"
                                         />
 
-                                        <Input
-                                            isRequired
+                                        <input
                                             type="file"
                                             name="file"
                                         />

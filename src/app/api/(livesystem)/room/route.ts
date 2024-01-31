@@ -69,10 +69,11 @@ export async function POST(req:NextRequest){
         })
 
     })
+    const json = await result.json()
 
-    data.userKey = (await result.json()).data.attributes.access_token
-    data.masterKey = (await result.json()).data.attributes.secret_token
-    data.apiUrl = `https://api.songle.jp/api/v2/apps/2457/stages/${(await result.json()).data.id}`
+    data.userKey = json.data.attributes.access_token
+    data.masterKey = json.data.attributes.secret_token
+    data.apiUrl = `https://api.songle.jp/api/v2/apps/2457/stages/${json.data.id}`
     
     //DataBaseへの挿入データを作成
     const dbData:RoomDB = {
@@ -87,10 +88,8 @@ export async function POST(req:NextRequest){
         motionUUID:data.motionUUID,
         stageUUID:data.stageUUID,
     }
-
     try {
         await db.Create(dbData)
-        return NextResponse.json({message:"Success Created",uuid:uuid},{status:200})
     } catch {
         return NextResponse.json({message:"Database Error"},{status:500})
     }
