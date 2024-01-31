@@ -74,7 +74,7 @@ export async function POST(req:NextRequest){
         //DataBaseへ挿入
         try {
             await db.Create(dbData)
-            return NextResponse.json({message:"Success Created"},{status:200})
+            return NextResponse.json({message:"Success Created",uuid:uuid},{status:200})
         } catch {
             return NextResponse.json({message:"Database Error"},{status:500})
         }

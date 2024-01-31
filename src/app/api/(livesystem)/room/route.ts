@@ -88,9 +88,12 @@ export async function POST(req:NextRequest){
         motionUUID:data.motionUUID,
         stageUUID:data.stageUUID,
     }
+
     try {
-        await db.Create(dbData)
-    } catch {
+        const result = await db.Create(dbData)
+        return NextResponse.json({message:"Success",uuid:uuid},{status:200})
+    } catch (e){
+        console.log(e)
         return NextResponse.json({message:"Database Error"},{status:500})
     }
 }

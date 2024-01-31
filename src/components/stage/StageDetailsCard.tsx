@@ -6,6 +6,7 @@ import {getSession} from "next-auth/react";
 import {router} from "next/client";
 import {useRouter} from "next/navigation";
 import resizeUrl from "@/lib/common/imageUrl";
+import { on } from "events";
 
 export type StageDetailsType ={
     uuid:string;
@@ -40,6 +41,10 @@ export default function StageDetailsCard(data:StageDetailsType){
         }
     }
 
+    const onCopy = async ()=>{
+        await navigator.clipboard.writeText(data.uuid)
+    }
+
     return(
         <>
             <div className="flex flex-col">
@@ -56,7 +61,7 @@ export default function StageDetailsCard(data:StageDetailsType){
                         <Link href={`/users/${data.userId}`}>
                             <p className="pt-4 text-base font-bold">投稿者:<br/>{data.username}</p>
                         </Link>
-                        <Button color="primary">ステージのIDをコピーする</Button>
+                        <Button color="primary" onClick={onCopy}>ステージのIDをコピーする</Button>
                         {isAuthor?(<Button color="danger" onClick={onDelete}>このステージを削除する</Button>):(<></>)}
                     </div>
                 </div>

@@ -1,12 +1,18 @@
 "use client"
-import {Image} from "@nextui-org/react";
+import {Image, Textarea} from "@nextui-org/react";
 import {Input} from "@nextui-org/input";
+import { useRouter } from "next/navigation";
 import {Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, useDisclosure} from "@nextui-org/react";
+import { useState } from "react";
 
 export default function StageUploadModal() {
     const {isOpen, onOpen, onOpenChange} = useDisclosure();
+    const [isSend, setIsSend] = useState(false)
+    const router = useRouter();
+
 
     const onSubmit = async (event)=>{
+        setIsSend(true)
         event.preventDefault()
 
         const formData = new FormData(event.currentTarget)
@@ -14,6 +20,15 @@ export default function StageUploadModal() {
             method: 'POST',
             body: formData,
         })
+
+        const result = await response.json()
+
+        if(response.status != 200){
+            alert(`エラーが発生しました\nError: ${result.message}`)
+            setIsSend(false)
+        }
+
+        await router.push(`/stage/${result.uuid}`)
     }
 
     return (
@@ -46,7 +61,7 @@ export default function StageUploadModal() {
                                             name="name"
                                         />
 
-                                        <Input
+                                        <Textarea
                                             isRequired
                                             type="content"
                                             label="説明文"
@@ -66,7 +81,7 @@ export default function StageUploadModal() {
                                             name="file"
                                         />
 
-                                        <Button type="submit">投稿する</Button>
+                                        {isSend?(<p className="text-center">送信中...</p>):(<Button type="submit">投稿する</Button>)}
 
                                     </form>
                                 </div>
