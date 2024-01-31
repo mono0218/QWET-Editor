@@ -1,29 +1,29 @@
-import {Scene} from "@babylonjs/core";
+import { Scene } from "@babylonjs/core";
 import Songle from "songle-api/lib/api";
 
-export async function songleController(scene: Scene,accessToken:string,secretToken:string,movieUrl:string){
+export async function songleController(
+  scene: Scene,
+  accessToken: string,
+  secretToken: string,
+  movieUrl: string,
+) {
+  const player = new Songle.Player({
+    mediaElement: document.querySelector("div.media"),
+    accessToken: accessToken,
+    secretToken: secretToken,
+  });
 
-    let player = new Songle.Player({
-        mediaElement: document.querySelector('div.media'),
-        accessToken: accessToken,
-        secretToken: secretToken
-    });
+  player.addPlugin(new Songle.Plugin.SongleSync());
+  player.useMedia(movieUrl);
 
-    player.addPlugin(new Songle.Plugin.SongleSync());
-    player.useMedia(movieUrl);
+  player.on("mediaReady", function () {
+    player.play();
+  });
 
-    player.on("mediaReady",
-        function (ev) {
-            player.play();
-        }
-    );
+  player.on("mediaPlay", function () {
+    const frame = (player.positionTime / 1000) * 60 + 35;
 
-    player.on("mediaPlay",
-        function (ev) {
-            let frame = player.positionTime / 1000 * 60 + 35
-
-            scene.getAnimationGroupByName("Take1").goToFrame(frame)
-            scene.getAnimationGroupByName("Take1").start(false)
-        }
-    )
+    scene.getAnimationGroupByName("Take1").goToFrame(frame);
+    scene.getAnimationGroupByName("Take1").start(false);
+  });
 }

@@ -1,93 +1,94 @@
-"use client"
-import {Image} from "@nextui-org/react";
-import {Input, Textarea} from "@nextui-org/input";
-import {Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, useDisclosure} from "@nextui-org/react";
+"use client";
+import { Image } from "@nextui-org/react";
+import { Input, Textarea } from "@nextui-org/input";
+import {
+  Modal,
+  ModalContent,
+  ModalBody,
+  Button,
+  useDisclosure,
+} from "@nextui-org/react";
 import { useState } from "react";
-import { redirect, useRouter } from 'next/navigation'
-
+import { useRouter } from "next/navigation";
 
 export default function MotionUploadModal() {
-    const {isOpen, onOpen, onOpenChange} = useDisclosure();
-    const [isSend, setIsSend] = useState(false)
-    const router = useRouter();
+  const { isOpen, onOpen, onOpenChange } = useDisclosure();
+  const [isSend, setIsSend] = useState(false);
+  const router = useRouter();
 
-    const onSubmit = async (event)=>{
-        setIsSend(true)
-        event.preventDefault()
+  const onSubmit = async (event) => {
+    setIsSend(true);
+    event.preventDefault();
 
-        const formData = new FormData(event.currentTarget)
-        const response = await fetch('/api/motion', {
-            method: 'POST',
-            body: formData,
-        })
+    const formData = new FormData(event.currentTarget);
+    const response = await fetch("/api/motion", {
+      method: "POST",
+      body: formData,
+    });
 
-        const result = await response.json()
+    const result = await response.json();
 
-        if(response.status != 200){
-            alert(`エラーが発生しました\nError: ${result.message}`)
-            setIsSend(false)
-        }
-
-        await router.push(`/motion/${result.uuid}`)
+    if (response.status != 200) {
+      alert(`エラーが発生しました\nError: ${result.message}`);
+      setIsSend(false);
     }
 
-    return (
-        <>
-            <Button onPress={onOpen} color="primary">新しく投稿する</Button>
-            <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
-                <ModalContent>
-                    {(onClose) => (
-                        <>
-                            <ModalBody className="p-10">
-                                <h1 className="text-4xl font-bold text-center pb-5">モーションを投稿する</h1>
+    await router.push(`/motion/${result.uuid}`);
+  };
 
-                                <div>
-                                    <form onSubmit={onSubmit}　className="grid gap-4 items-center">
-                                        <Image
-                                            className="w-full"
-                                            alt="NextUI hero Image"
-                                            src="https://nextui-docs-v2.vercel.app/images/hero-card-complete.jpeg"
-                                        />
-                                        <input
-                                            type="file"
-                                            name="image"
-                                        />
+  return (
+    <>
+      <Button onPress={onOpen} color="primary">
+        新しく投稿する
+      </Button>
+      <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
+        <ModalContent>
+          {() => (
+            <>
+              <ModalBody className="p-10">
+                <h1 className="text-4xl font-bold text-center pb-5">
+                  モーションを投稿する
+                </h1>
 
-                                        <Input
-                                            isRequired
-                                            type="name"
-                                            label="作品名"
-                                            name="name"
-                                        />
+                <div>
+                  <form onSubmit={onSubmit} className="grid gap-4 items-center">
+                    <Image
+                      className="w-full"
+                      alt="NextUI hero Image"
+                      src="https://nextui-docs-v2.vercel.app/images/hero-card-complete.jpeg"
+                    />
+                    <input type="file" name="image" />
 
-                                        <Textarea
-                                            isRequired
-                                            type="content"
-                                            label="説明文"
-                                            name="content"
-                                        />
+                    <Input isRequired type="name" label="作品名" name="name" />
 
-                                        <Input
-                                            isRequired
-                                            type="license"
-                                            label="ライセンス"
-                                            name="license"
-                                        />
+                    <Textarea
+                      isRequired
+                      type="content"
+                      label="説明文"
+                      name="content"
+                    />
 
-                                        <input
-                                            type="file"
-                                            name="file"
-                                        />
+                    <Input
+                      isRequired
+                      type="license"
+                      label="ライセンス"
+                      name="license"
+                    />
 
-                                        {isSend?(<p className="text-center">送信中...</p>):(<Button type="submit">投稿する</Button>)}
+                    <input type="file" name="file" />
 
-                                    </form>
-                                </div>
-                            </ModalBody>
-                        </>
+                    {isSend ? (
+                      <p className="text-center">送信中...</p>
+                    ) : (
+                      <Button type="submit">投稿する</Button>
                     )}
-                </ModalContent>
-            </Modal>
-        </>
-    );
+                  </form>
+                </div>
+              </ModalBody>
+            </>
+          )}
+        </ModalContent>
+      </Modal>
+    </>
+  );
 }
