@@ -90,10 +90,9 @@ export async function POST(req:NextRequest){
     }
 
     try {
-        const result = await db.Create(dbData)
+        await db.Create(dbData)
         return NextResponse.json({message:"Success",uuid:uuid},{status:200})
     } catch (e){
-        console.log(e)
         return NextResponse.json({message:"Database Error"},{status:500})
     }
 }

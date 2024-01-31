@@ -1,5 +1,4 @@
 import prisma from "@/lib/prisma";
-import {number} from "prop-types";
 
 export type UserDB = {
     id:number;

@@ -4,7 +4,6 @@ import {SceneLoader} from "@babylonjs/core/Loading/sceneLoader";
 import {GLTFFileLoader} from "@babylonjs/loaders";
 import {liveProps} from "@/app/(livesystem)/room/[id]/liveComponent";
 import {Scene} from "@babylonjs/core";
-import {getSession} from "next-auth/react";
 
 class VRMFileLoader extends GLTFFileLoader {
     public name = 'vrm';
@@ -18,7 +17,6 @@ class VRMFileLoader extends GLTFFileLoader {
 }
 
 export async function assetLoader(liveData:liveProps, scene: Scene){
-    const session = await getSession()
     SceneLoader.RegisterPlugin(new VRMFileLoader());
 
     const vrmUrl = await fetch (`/api/model/${liveData.modelUrl}`)
@@ -32,13 +30,9 @@ export async function assetLoader(liveData:liveProps, scene: Scene){
     const result = await getJson(vrmArraybuffer)
 
     if (result.json.extensions.VRMC_vrm) {
-        console.log("1.X")
-
         const vrmFile = new File([vrmArraybuffer], "model.vrm")
         await ImportWithAnimation("01", vrmFile, animationFile, scene)
     } else if (result.json.extensions.VRM) {
-        console.log("0.X")
-
         const converter = new vrmJsonConvert()
         const convertedFile = await converter.coordinateConvert(vrmArraybuffer)
         await ImportWithAnimation("01", convertedFile, animationFile, scene)

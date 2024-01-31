@@ -52,7 +52,6 @@ export async function POST(req:NextRequest){
             buffer:imageBuffer
         })
     } catch(e) {
-        console.log(e)
         return NextResponse.json({message:"R2 Storage Error"},{status:500})
     }
 
@@ -72,7 +71,6 @@ export async function POST(req:NextRequest){
         await db.Create(dbData)
         return NextResponse.json({message:"Success Created",uuid:uuid},{status:200})
     } catch(e) {
-        console.log(e)
         return NextResponse.json({message:"Database Error"},{status:500})
     }
 

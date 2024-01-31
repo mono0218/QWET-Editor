@@ -1,5 +1,5 @@
 "use client"
-import React, {useState} from 'react'
+import React from 'react'
 import {useEffect} from 'react'
 import {Engine} from "@babylonjs/core/Engines/engine";
 import "babylon-mmd/esm/Loader/pmxLoader";
@@ -29,15 +29,13 @@ let liveData: liveProps
 let scene: Scene
 
 export default function LiveComponent(data: liveProps) {
-    const [scene, setScene] = useState<Scene>()
     liveData = data
     useEffect(() => {
         const canvas: HTMLCanvasElement = document.getElementsByTagName("canvas")[0]
-        const edit = document.getElementById("edit")
         const engine = new Engine(canvas)
 
-        vrm(engine, canvas).then(scene => {
-            songleController(scene,liveData.accessToken,liveData.secretToken,liveData.movieUrl).then(r => {
+        vrm(engine).then(scene => {
+            songleController(scene,liveData.accessToken,liveData.secretToken,liveData.movieUrl).then(() => {
                     engine.runRenderLoop(() => {
                         scene.render();
                     });
@@ -61,7 +59,7 @@ export default function LiveComponent(data: liveProps) {
     )
 }
 
-async function vrm(engine: Engine, canvas: HTMLCanvasElement) {
+async function vrm(engine: Engine) {
     scene = new Scene(engine);
     const camera = new FlyCamera("camera1", new Vector3(0, 2, -2), scene);
     camera.attachControl(true)

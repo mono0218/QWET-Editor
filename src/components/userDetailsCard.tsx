@@ -1,5 +1,4 @@
-import {CharacterModel} from "@/types/vroidAPI.types";
-import {Avatar, Button, Image, Link} from "@nextui-org/react";
+import {Avatar, Link} from "@nextui-org/react";
 import React, {useEffect, useState} from "react";
 import {getSession} from "next-auth/react";
 import UserContentUpdateModal from "@/components/userContentModel";

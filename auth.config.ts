@@ -38,7 +38,7 @@ export const options: NextAuthOptions = {
                 const userdb = new userDB()
 
                 userdb.upsert({
-                    id:　Number(profile.data.user_detail.user.id),
+                    id: Number(profile.data.user_detail.user.id),
                     name: profile.data.user_detail.user.name,
                     url: profile.data.user_detail.user.icon.sq170.url,
                 })
@@ -70,7 +70,7 @@ export const options: NextAuthOptions = {
             session: ({session, token}) => {
                 if (session?.user) {
                     session.user.id = token.sub;
-                    session.user.accessToken = token.accessToken
+                    session.user.accessToken = token.accessToken as string;
                 }
                 return {
                     ...session,

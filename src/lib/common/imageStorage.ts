@@ -1,6 +1,5 @@
 import S3 from "../r2"
 import {DeleteObjectCommand, PutObjectCommand} from "@aws-sdk/client-s3";
-import Sharp from "sharp"
 
 export class ImageStorage{
     async create({uuid,buffer}:{uuid:string,buffer:Buffer}){

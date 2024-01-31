@@ -9,8 +9,6 @@ import {
     Dropdown,
     DropdownTrigger, Avatar, DropdownMenu, DropdownItem
 } from "@nextui-org/react";
-import {getServerSession} from "next-auth/next";
-import {options} from "../../auth.config";
 import {getSession} from "next-auth/react";
 import React, {useEffect, useState} from "react";
 import { useRouter } from "next/navigation";
@@ -53,7 +51,7 @@ export function Nav(){
                 {isLogin?
                     (<NavbarContent justify="end">
                         <NavbarItem >
-                            <Button　as={Link} color="secondary" variant="ghost" href="/room"　className="pl-5">ライブを作る！</Button>
+                            <Button as={Link} color="secondary" variant="ghost" href="/room" className="pl-5">ライブを作る！</Button>
                         </NavbarItem>
 
                         <NavbarItem>

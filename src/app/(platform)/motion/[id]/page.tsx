@@ -1,6 +1,5 @@
 "use client"
 import React, {useEffect, useState} from "react";
-import StageDetailsCard, {StageDetailsType} from "@/components/stage/StageDetailsCard";
 import MotionDetailsCard, {MotionDetailsType} from "@/components/motion/motionDetailsCard";
 
 
@@ -15,7 +14,6 @@ export default function Page({params}: {params:{id:string}}){
             const data = await response.json()
 
             if(response.status === 200){
-                console.log(data)
                 setisData(true)
 
                 const _data:MotionDetailsType = {

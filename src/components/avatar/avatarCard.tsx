@@ -1,6 +1,5 @@
 import {CharacterModel} from "@/types/vroidAPI.types";
 import {Image} from "@nextui-org/react";
-import {useRouter} from "next/navigation";
 import Link from "next/link";
 
 export type AvatarCardType = {
@@ -8,7 +7,6 @@ export type AvatarCardType = {
 }
 
 export default function AvatarCard(data:AvatarCardType){
-    const { push } = useRouter();
     return(
         <>
             <Link href={`https://hub.vroid.com/characters/${data.character_model.character.id}/models/${data.character_model.id}`} target={"_blank"}>

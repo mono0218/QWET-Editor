@@ -1,6 +1,5 @@
 "use client"
 import {Image, Link} from "@nextui-org/react";
-import { useRouter } from 'next/navigation';
 import resizeUrl from "@/lib/common/imageUrl";
 
 
@@ -12,7 +11,6 @@ export type stageCardType={
 
 
 export default function StageCard(data:stageCardType){
-    const { push } = useRouter();
 
     return(
         <>

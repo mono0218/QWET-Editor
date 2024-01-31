@@ -51,7 +51,5 @@ export async function getModelUrl(token:string,modelId:string){
         redirect:"manual"
     })
 
-    console.log(downloadUrl.headers.get('Location'))
-
     return downloadUrl.headers.get('Location')
 }

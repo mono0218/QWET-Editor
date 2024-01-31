@@ -14,7 +14,6 @@ export default function Page({params}: {params:{id:string}}){
             const data = await response.json()
 
             if(response.status === 200){
-                console.log(data)
                 setisData(true)
 
                 const _data:StageDetailsType = {

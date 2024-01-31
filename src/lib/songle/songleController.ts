@@ -3,7 +3,7 @@ import Songle from "songle-api/lib/api";
 
 export async function songleController(scene: Scene,accessToken:string,secretToken:string,movieUrl:string){
 
-    let player = new Songle.Player({
+    const player = new Songle.Player({
         mediaElement: document.querySelector('div.media'),
         accessToken: accessToken,
         secretToken: secretToken
@@ -13,14 +13,14 @@ export async function songleController(scene: Scene,accessToken:string,secretTok
     player.useMedia(movieUrl);
 
     player.on("mediaReady",
-        function (ev) {
+        function () {
             player.play();
         }
     );
 
     player.on("mediaPlay",
-        function (ev) {
-            let frame = player.positionTime / 1000 * 60 + 35
+        function () {
+            const frame = player.positionTime / 1000 * 60 + 35
 
             scene.getAnimationGroupByName("Take1").goToFrame(frame)
             scene.getAnimationGroupByName("Take1").start(false)

@@ -1,7 +1,6 @@
 "use client"
 import StageUploadModal from "@/components/stage/stageUploadModal";
 import StageCard, {stageCardType} from "@/components/stage/stageCard";
-import {CharacterModel} from "@/types/vroidAPI.types";
 
 export default function StageCardList({data}:{data:Array<stageCardType>}){
     return(
@@ -13,7 +12,7 @@ export default function StageCardList({data}:{data:Array<stageCardType>}){
 
             <div className="grid gap-x-8 gap-y-4 grid-cols-3">
                 {data.map((_data)=>
-                    <StageCard {..._data} />
+                    <StageCard {..._data} key={_data.id}/>
                 )}
             </div>
         </>

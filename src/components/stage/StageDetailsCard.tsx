@@ -1,12 +1,9 @@
 "use client"
 import {Button, Link} from "@nextui-org/react";
 import React, {useEffect, useState} from "react";
-import {Image} from "@nextui-org/react"
 import {getSession} from "next-auth/react";
-import {router} from "next/client";
 import {useRouter} from "next/navigation";
 import resizeUrl from "@/lib/common/imageUrl";
-import { on } from "events";
 
 export type StageDetailsType ={
     uuid:string;

@@ -1,10 +1,9 @@
-import {NextRequest, NextResponse} from "next/server";
+import {NextResponse} from "next/server";
 import {getServerSession} from "next-auth/next";
 import {options} from "../../../../../auth.config";
-import Next from "next-auth/src";
 import {userDB} from "@/lib/user/userDB";
 
-export async function POST(req:NextRequest){
+export async function POST(){
     const userdb = new userDB()
     const session = await getServerSession(options)
 
@@ -16,7 +15,7 @@ export async function POST(req:NextRequest){
 
     }else if(user === null){
 
-        const result = await userdb.Create({
+        await userdb.Create({
             id:Number(session.user.id),
             name:session.user.name,
             url:session.user.image,

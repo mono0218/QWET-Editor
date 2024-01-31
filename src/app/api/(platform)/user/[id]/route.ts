@@ -1,5 +1,4 @@
 import {NextRequest, NextResponse} from "next/server"
-import {useParams} from "next/navigation";
 import {getServerSession} from "next-auth/next";
 import {options} from "../../../../../../auth.config";
 import {userDB} from "@/lib/user/userDB";
@@ -22,7 +21,7 @@ export async function PUT(req:NextRequest,{params}: {params:{id:string}}){
 
         const formData = await req.formData()
 
-        const result = await userdb.Update({
+        await userdb.Update({
             id:Number(session.user.id),
             content:formData.get("content") as string
         })

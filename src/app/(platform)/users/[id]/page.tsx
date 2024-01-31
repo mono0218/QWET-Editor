@@ -1,13 +1,9 @@
 "use client"
-import {signIn} from "next-auth/react";
-import AvatarCard from "@/components/avatar/avatarCard";
-import {CharacterModel} from "@/types/vroidAPI.types";
-import StageCard from "@/components/stage/stageCard";
 import UserDetailsCard, {UserDetailsType} from "@/components/userDetailsCard";
 import React, {useEffect, useState} from "react";
 
 export default function Page({params}: {params:{id:string}}) {
-    const [Data,setData] = useState<UserDetailsType>({})
+    const [Data,setData] = useState<UserDetailsType>()
     const [isData,setisData] = useState(false)
     const [Loading, setLoading] = useState(true)
 
@@ -18,7 +14,6 @@ export default function Page({params}: {params:{id:string}}) {
 
             if(response.status === 200){
                 setisData(true)
-                console.log(data)
                 const _data:UserDetailsType = {
                     userId:data.data.id,
                     name:data.data.name,

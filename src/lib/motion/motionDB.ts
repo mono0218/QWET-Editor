@@ -1,5 +1,4 @@
 import prisma from "@/lib/prisma";
-import {Session} from "next-auth";
 
 export type MotionDB = {
     uuid:string;

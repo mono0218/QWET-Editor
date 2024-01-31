@@ -10,6 +10,7 @@ import {MotionDBTypes} from "@/types/motionDB.types";
 import {useEffect, useState} from "react";
 import {getSession} from "next-auth/react";
 import {Session} from "next-auth";
+import { useRouter } from "next/navigation";
 
 type ReturnStageData ={
     data:Array<StageDBTypes>
@@ -22,15 +23,18 @@ type ReturnMotionData ={
 export default function Page() {
 
     const [Data, setData] = useState(undefined)
-
     const [session,setSession] = useState<Session>()
+
+    const router = useRouter();
 
     useEffect(() => {
         (async () => {
             const _session:Session =await getSession()
-            setSession(session)
-            console.log(_session)
+            if(_session === null){
+                await  router.push(`/api/auth/signin`)
+            }
 
+            setSession(session)
             const avatarData = await fetch("/api/avatar?count=12")
             const stageData = await fetch("/api/stage?count=6")
             const motionData = await fetch("/api/motion?count=6")
@@ -40,8 +44,8 @@ export default function Page() {
             const motion: ReturnMotionData = await motionData.json()
 
             const avatar = _avatar.data
-            let stageList: Array<stageCardType> = []
-            let motionList: Array<motionCardType> = []
+            const stageList: Array<stageCardType> = []
+            const motionList: Array<motionCardType> = []
 
             stage.data.map((data) => {
                 const _data: stageCardType = {
@@ -68,24 +72,30 @@ export default function Page() {
             })
         })()
     }, []);
-    console.log(Data)
 
     return(
-        Data?(<>
-                <div className="ml-32 mr-32">
+        <div>
+            {session?.user?(
+                <></>
+            ):(
+                Data?(<>
+                    <div className="ml-32 mr-32">
 
-                    <div className="mt-[450px]">
-                        <AvatarCardList data={Data.avatar}/>
-                    </div>
-                    <div className="mt-24">
-                        <StageCardList data={Data.stageList}/>
-                    </div>
+                        <div className="mt-[450px]">
+                            <AvatarCardList data={Data.avatar}/>
+                        </div>
+                        <div className="mt-24">
+                            <StageCardList data={Data.stageList}/>
+                        </div>
 
-                    <div className="mt-24">
-                        <MotionCardList data={Data.motionList}/>
-                    </div>
+                        <div className="mt-24">
+                            <MotionCardList data={Data.motionList}/>
+                        </div>
 
-                </div>
-            </>):(<>Now Loading</>)
+                    </div>
+                </>):(<>Now Loading</>)
+            )}
+            
+        </div>
     )
 }
