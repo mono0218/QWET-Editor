@@ -32,43 +32,48 @@ export default function Page() {
       if (_session === null) {
         await router.push(`/api/auth/signin`);
       }
-
       setSession(session);
-      const avatarData = await fetch("/api/avatar?count=12");
-      const stageData = await fetch("/api/stage?count=6");
-      const motionData = await fetch("/api/motion?count=6");
 
-      const _avatar = await avatarData.json();
-      const stage: ReturnStageData = await stageData.json();
-      const motion: ReturnMotionData = await motionData.json();
+      try{
+        const avatarData = await fetch("/api/avatar?count=12");
+        const stageData = await fetch("/api/stage?count=6");
+        const motionData = await fetch("/api/motion?count=6");
 
-      const avatar = _avatar.data;
-      const stageList: Array<stageCardType> = [];
-      const motionList: Array<motionCardType> = [];
+        const _avatar = await avatarData.json();
+        const stage: ReturnStageData = await stageData.json();
+        const motion: ReturnMotionData = await motionData.json();
 
-      stage.data.map((data) => {
-        const _data: stageCardType = {
-          id: data.uuid,
-          name: data.name,
-          imageUrl: data.imageUrl,
-        };
-        stageList.push(_data);
-      });
+        const avatar = _avatar.data;
+        const stageList: Array<stageCardType> = [];
+        const motionList: Array<motionCardType> = [];
 
-      motion.data.map((data) => {
-        const _data: motionCardType = {
-          id: data.uuid,
-          name: data.name,
-          imageUrl: data.imageUrl,
-        };
-        motionList.push(_data);
-      });
+        stage.data.map((data) => {
+          const _data: stageCardType = {
+            id: data.uuid,
+            name: data.name,
+            imageUrl: data.imageUrl,
+          };
+          stageList.push(_data);
+        });
 
-      setData({
-        avatar,
-        stageList,
-        motionList,
-      });
+        motion.data.map((data) => {
+          const _data: motionCardType = {
+            id: data.uuid,
+            name: data.name,
+            imageUrl: data.imageUrl,
+          };
+          motionList.push(_data);
+        });
+
+        setData({
+          avatar,
+          stageList,
+          motionList,
+        });
+      }catch (e){
+        await router.push(`/api/auth/signin`);
+      }
+
     })();
   }, []);
 
