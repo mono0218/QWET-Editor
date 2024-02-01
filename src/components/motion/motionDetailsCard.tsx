@@ -70,11 +70,11 @@ export default function MotionDetailsCard(data: MotionDetailsType) {
               </p>
             </Link>
             <Button color="primary" onClick={onCopy}>
-              ステージのIDをコピーする
+              モーションのIDをコピーする
             </Button>
             {isAuthor ? (
               <Button color="danger" onClick={onDelete}>
-                このステージを削除する
+                このモーションを削除する
               </Button>
             ) : (
               <></>

@@ -12,6 +12,7 @@ import { DirectionalLight, FlyCamera, Scene, Vector3 } from "@babylonjs/core";
 import "@babylonjs/inspector";
 import { songleController } from "@/lib/songle/songleController";
 import { assetLoader } from "@/lib/vrm/assetLoader";
+import {Button} from "@nextui-org/react";
 
 export type liveProps = {
   uuid: string;
@@ -48,9 +49,17 @@ export default function LiveComponent(data: liveProps) {
     });
   }, []);
 
+  const onCopy = async () => {
+    await navigator.clipboard.writeText(`https://weblive.monodev.cloud/room/${data.uuid}`);
+  };
+
   return (
     <>
-      <div className="media"></div>
+      <div className="media">
+        <Button onClick={onCopy}>
+          ライブURLをコピー！！！
+        </Button>
+      </div>
 
       <canvas id="canvas" className="w-screen w-screen"></canvas>
 
