@@ -49,7 +49,7 @@ export function Nav() {
     <Navbar>
       <NavbarBrand>
         <Link className="font-bold text-inherit" href="/">
-          ACME
+          WebLive
         </Link>
       </NavbarBrand>
       {isLogin ? (
