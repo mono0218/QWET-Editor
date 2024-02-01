@@ -7,6 +7,8 @@ export async function songleController(
   secretToken: string,
   movieUrl: string,
 ) {
+  scene.getAnimationGroupByName("Take1").stop()
+
   const player = new Songle.Player({
     mediaElement: document.querySelector("div.media"),
     accessToken: accessToken,
@@ -26,4 +28,6 @@ export async function songleController(
     scene.getAnimationGroupByName("Take1").goToFrame(frame);
     scene.getAnimationGroupByName("Take1").start(false);
   });
+
+  player.on("")
 }
