@@ -17,6 +17,7 @@ export async function songleController(
 
   player.addPlugin(new Songle.Plugin.SongleSync());
   player.useMedia(movieUrl);
+  player.volume = 50;
 
   player.on("mediaReady", function () {
     player.play();
