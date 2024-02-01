@@ -1,4 +1,5 @@
 # WebLiveについて
+トラブルが発生した場合は、[こちらのMDをご覧ください！](https://github.com/mono0218/WebLive-Hub/blob/main/docs/HowtoUse.md)
 
 ## できること
 glb形式のステージおよびモーションデータの投稿
