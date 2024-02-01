@@ -11,12 +11,12 @@ const nextConfig = {
     return config;
   },
   reactStrictMode: false,
-  experimental: { esmExternals: true },
-  api: {
-    bodyParser: {
-      sizeLimit: '300mb',
+  experimental: { 
+    esmExternals: true,
+    serverActions: {
+      bodySizeLimit: '300mb',
     },
-  },
+   },
 };
 
 module.exports = nextConfig;
