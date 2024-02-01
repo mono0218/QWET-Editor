@@ -12,6 +12,9 @@ BabylonjsとSongleAPIを使用した全クライアント同時再生ライブ
 > 是非XR対応VRゴーグルでもお試しください！！！！！！
 > 詳しくは遊び方をご覧ください
 
+## 必要なもの
+VroidHUBのアカウント（Pixivアカウント）
+
 ## 遊び方
 [こちらのMDをご覧ください！](https://github.com/mono0218/WebLive-Hub/blob/main/docs/HowtoUse.md)
 
