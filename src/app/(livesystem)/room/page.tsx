@@ -16,8 +16,10 @@ export default function Page() {
   const [Data, setData] = useState([]);
 
   const [isSend, setIsSend] = useState(false);
+  const [motion, setMotion] = useState("");
+  const [stage, setStage] = useState("");
+
   const router = useRouter();
-  const [liveData, setLiveData] = useState({motion: "", stage: ""})
 
   useEffect(() => {
     (async () => {
@@ -25,14 +27,16 @@ export default function Page() {
       const _avatar = await avatarData.json();
       const avatar = _avatar.data;
       setData(avatar);
+
       console.log(localStorage.getItem("motion"))
       const motion = localStorage.getItem("motion")
       const stage = localStorage.getItem("stage")
+
       if(motion == null || stage == null) {
         alert("モーションとステージを選択してからアクセスしてください")
       }
-
-      setLiveData({motion: motion, stage: stage})
+      setMotion(motion)
+      setStage(stage)
     })();
   }, []);
 
@@ -55,9 +59,6 @@ export default function Page() {
 
     await router.push(`/room/${result.uuid}`);
   };
-
-  const motion = localStorage.getItem("motion")
-  const stage = localStorage.getItem("stage")
   return (
     <div className="ml-72 mr-72 mt-10">
       {Data ? (
@@ -69,7 +70,7 @@ export default function Page() {
             <Input
               isDisabled
               type="string"
-              defaultValue= {stage}
+              value= {stage}
               label="ステージUUID"
               name="stageUUID"
             />
@@ -77,7 +78,7 @@ export default function Page() {
             <Input
               isDisabled
               type="string"
-              defaultValue= {motion}
+              value= {motion}
               label="モーションUUID"
               name="motionUUID"
             />
@@ -86,7 +87,7 @@ export default function Page() {
 
             <h1 className="text-2xl font-bold text-center">アバター選択</h1>
             <ScrollShadow className="w-full h-[400px]">
-              <RadioGroup name="avatarUrl">
+              <RadioGroup name="avatarUrl" >
                 <div className="grid gap-x-8 gap-y-4 grid-cols-6">
                   {Data.map((_data: CharacterModel) => (
                     <div key={_data.id}>
