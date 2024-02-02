@@ -17,6 +17,7 @@ export default function Page() {
 
   const [isSend, setIsSend] = useState(false);
   const router = useRouter();
+  const [liveData, setLiveData] = useState({motion: "", stage: ""})
 
   useEffect(() => {
     (async () => {
@@ -24,6 +25,14 @@ export default function Page() {
       const _avatar = await avatarData.json();
       const avatar = _avatar.data;
       setData(avatar);
+      console.log(localStorage.getItem("motion"))
+      const motion = localStorage.getItem("motion")
+      const stage = localStorage.getItem("stage")
+      if(motion == null || stage == null) {
+        alert("モーションとステージを選択してからアクセスしてください")
+      }
+
+      setLiveData({motion: motion, stage: stage})
     })();
   }, []);
 
@@ -47,6 +56,8 @@ export default function Page() {
     await router.push(`/room/${result.uuid}`);
   };
 
+  const motion = localStorage.getItem("motion")
+  const stage = localStorage.getItem("stage")
   return (
     <div className="ml-72 mr-72 mt-10">
       {Data ? (
@@ -56,20 +67,22 @@ export default function Page() {
               ライブをつくる！！
             </h1>
             <Input
-              isRequired
+              isDisabled
               type="string"
+              defaultValue= {stage}
               label="ステージUUID"
               name="stageUUID"
             />
 
             <Input
-              isRequired
+              isDisabled
               type="string"
+              defaultValue= {motion}
               label="モーションUUID"
               name="motionUUID"
             />
 
-            <Input isRequired type="url" label="楽曲URL" name="movieUrl" />
+            <Input isRequired type="url" label="楽曲URL" name="movieUrl" defaultValue="http://www.youtube.com/watch?v=bnofYmfKLeo"/>
 
             <h1 className="text-2xl font-bold text-center">アバター選択</h1>
             <ScrollShadow className="w-full h-[400px]">

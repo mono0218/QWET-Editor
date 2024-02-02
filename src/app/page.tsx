@@ -20,6 +20,8 @@ type ReturnMotionData = {
   data: Array<MotionDBTypes>;
 };
 
+
+
 export default function Page() {
   const [Data, setData] = useState(undefined);
   const [session, setSession] = useState<Session>();
