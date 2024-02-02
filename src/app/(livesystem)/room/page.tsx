@@ -17,7 +17,6 @@ export default function Page() {
 
   const [isSend, setIsSend] = useState(false);
   const router = useRouter();
-  const [liveData, setLiveData] = useState({motion: "", stage: ""})
 
   useEffect(() => {
     (async () => {
@@ -31,8 +30,6 @@ export default function Page() {
       if(motion == null || stage == null) {
         alert("モーションとステージを選択してからアクセスしてください")
       }
-
-      setLiveData({motion: motion, stage: stage})
     })();
   }, []);
 
