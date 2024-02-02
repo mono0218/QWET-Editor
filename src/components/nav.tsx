@@ -37,8 +37,6 @@ export function Nav() {
     if (session) {
       if (key === "mypage") {
         router.push(`/users/${session.user.id}`);
-      } else if (key === "notification") {
-        router.push(`/users/${session.user.id}`);
       } else if (key === "logout") {
         router.push("/api/auth/signout");
       }

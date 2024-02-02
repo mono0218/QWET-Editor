@@ -39,7 +39,8 @@ export default function StageDetailsCard(data: StageDetailsType) {
   };
 
   const onCopy = async () => {
-    await navigator.clipboard.writeText(data.uuid);
+    localStorage.setItem("stage", data.uuid);
+    alert("ステージを選択しました");
   };
 
   return (
@@ -70,7 +71,7 @@ export default function StageDetailsCard(data: StageDetailsType) {
               </p>
             </Link>
             <Button color="primary" onClick={onCopy}>
-              ステージのIDをコピーする
+              ステージを選択する
             </Button>
             {isAuthor ? (
               <Button color="danger" onClick={onDelete}>

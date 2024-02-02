@@ -19,6 +19,7 @@ export default function MotionDetailsCard(data: MotionDetailsType) {
   const { push } = useRouter();
   const [isAuthor, setisAuthor] = useState(false);
 
+
   useEffect(() => {
     (async () => {
       const session = await getSession();
@@ -39,7 +40,8 @@ export default function MotionDetailsCard(data: MotionDetailsType) {
   };
 
   const onCopy = async () => {
-    await navigator.clipboard.writeText(data.uuid);
+    localStorage.setItem("motion", data.uuid);
+    alert("モーションを選択しました");
   };
 
   return (
@@ -70,7 +72,7 @@ export default function MotionDetailsCard(data: MotionDetailsType) {
               </p>
             </Link>
             <Button color="primary" onClick={onCopy}>
-              モーションのIDをコピーする
+              モーションを選択する
             </Button>
             {isAuthor ? (
               <Button color="danger" onClick={onDelete}>
