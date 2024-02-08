@@ -68,7 +68,6 @@ export default function Page() {
               ライブをつくる！！
             </h1>
             <Input
-              isDisabled
               type="string"
               value= {stage}
               label="ステージUUID"
@@ -76,7 +75,6 @@ export default function Page() {
             />
 
             <Input
-              isDisabled
               type="string"
               value= {motion}
               label="モーションUUID"
