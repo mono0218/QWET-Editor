@@ -31,6 +31,7 @@ export class ListenerLiveScene {
         this.createScene()
         this.enablePhysics()
         this.cameraController()
+
         this.xrInit().then(
             ()=>{
                 this.createObjects().then()
@@ -109,7 +110,7 @@ export class ListenerLiveScene {
 
         stage.meshes.map((mesh) => {
             mesh.checkCollisions = true;
-            this.xrEnv.teleportation.addFloorMesh(mesh);
+            //this.xrEnv.teleportation.addFloorMesh(mesh);
         })
 
         let models = {};

@@ -12,12 +12,6 @@ export default function ListenerPage() {
 
     const liverRecv = new liverRecvRtc(liveScene.scene);
     liverRecv.init();
-
-    useEffect(() => {
-        setInterval(() => {
-            console.log(liveScene.getfps());
-        })
-    }, []);
     return (
         <></>
     )

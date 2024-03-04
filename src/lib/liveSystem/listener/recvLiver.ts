@@ -155,6 +155,7 @@ export class liverRecvRtc{
 
     motionAvatar(scene:Scene,recvData){
         const data = JSON.parse(recvData);
+        console.log(data)
 
         data.map((d:any) => {
             const name = d.name
