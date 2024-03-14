@@ -73,7 +73,7 @@ export class SendRecvListener {
     }
 
     async createProduceTransport(params: any){
-        let transport = this.device.createSendTransport(params);
+        const transport = this.device.createSendTransport(params);
 
         transport.on("connect",  async ({ dtlsParameters }:any,callback:any) => {
             await this.sendRequest("getConnection", { id: transport.id, dtlsParameters: dtlsParameters })
@@ -89,7 +89,7 @@ export class SendRecvListener {
     }
 
     async createConsumeTransport(params: any){
-        let transport = this.device.createRecvTransport(params);
+        const transport = this.device.createRecvTransport(params);
 
         transport.on("connect",  async ({ dtlsParameters }:any,callback:any) => {
             await this.sendRequest("getConnection", { id: transport.id, dtlsParameters: dtlsParameters })
@@ -142,6 +142,11 @@ export class SendRecvListener {
             consumer.on('transportclose', () => {
                 this.listener.removeAvatar(consumer.id)
             })
+
+            consumer.on('close', () => {
+                console.log("close")
+                this.listener.removeAvatar(consumer.id)
+            })
         })
 
         return
@@ -151,7 +156,7 @@ export class SendRecvListener {
 
     async sendPosition(){
         setInterval(() => {
-            let position = this.scene.getCameraByName("camera1").position
+            const position = this.scene.getCameraByName("camera1")!.position
             this.sendMessage(`${position.x},${position.y},${position.z}`)
         },1)
     }
@@ -163,7 +168,7 @@ export class SendRecvListener {
 
     async sendRequest(type:string, data:any):Promise<any>{
         return new Promise((resolve) => {
-            this.socket.emit(type, data, (res:any) => resolve(res));
+            this.socket.emit(type, data, (res:string) => resolve(res));
         });
     }
 }

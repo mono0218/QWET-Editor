@@ -68,7 +68,7 @@ export class liverRecvRtc{
     }
 
     async connectConsumeTransport(params: any){
-        let transport = this.device.createRecvTransport(params);
+        const transport = this.device.createRecvTransport(params);
 
         transport.on('connect', async ({ dtlsParameters }, callback) => {
             await this.sendRequest('getConnection', {id: transport.id, dtlsParameters})

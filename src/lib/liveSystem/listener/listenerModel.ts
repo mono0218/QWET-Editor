@@ -2,15 +2,13 @@ import {Scene, SceneLoader, Vector3} from "@babylonjs/core";
 
 export class listenerModel {
     scene: Scene;
-    player: any;
 
-    constructor(scene:Scene,player:any){
+    constructor(scene:Scene){
         this.scene = scene;
-        this.player = player;
     }
 
     async  createAvatar(uuid:string){
-        SceneLoader.ImportMeshAsync("", "",new URL("/public/ghost.glb").href, this.scene,
+        SceneLoader.ImportMeshAsync("", "",new URL("/public/ghost.glb", import.meta.url).href, this.scene,
             null,null,uuid).then(r=>{
             r.meshes[0].name = uuid
             r.meshes[0].scaling = new Vector3(0.8,0.8,0.8)
@@ -27,6 +25,6 @@ export class listenerModel {
     }
 
     async removeAvatar(uuid:string){
-        this.scene.getMeshByName(uuid).dispose()
+        this.scene.getMeshByName(uuid)?.dispose()
     }
 }

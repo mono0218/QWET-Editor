@@ -1,23 +1,26 @@
 import {LiverAudio} from "../../lib/liveSystem/liver/liverAudio.ts";
 import {liverSendRtc} from "../../lib/liveSystem/liver/sendLiver.ts";
 import {LiveScene} from "../../lib/liveSystem/liver/liverLiveScene.ts";
+import {useEffect} from "react";
 
 export default function LiverPage(){
-    const liveraudio = new LiverAudio();
-    let SendRtc:liverSendRtc;
-    liveraudio.init().then(async (stream) => {
-            SendRtc = new liverSendRtc(stream);
+    useEffect(() => {
+        (async ()=>{
+            const liverAudio = new LiverAudio();
+            const stream = await liverAudio.init();
+            const SendRtc = new liverSendRtc(stream);
             await SendRtc.init()
 
             const live = new LiveScene(SendRtc);
-            document.getElementById("play").onclick = async () => {
+
+            document.getElementById("play")!.onclick = async () => {
                 const data = await fetch(new URL("/public/aipai.glb", import.meta.url).href);
-                await liveraudio.play();
+                await liverAudio.play();
                 await live.createObjects(new File([await data.arrayBuffer()], "aipai.glb"));
                 await live.loopSendPosition();
             };
-        }
-    )
+        })();
+    }, []);
 
     return (
         <>

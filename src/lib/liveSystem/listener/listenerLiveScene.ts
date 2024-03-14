@@ -2,7 +2,10 @@ import {
     AssetsManager,
     Engine,
     FreeCamera,
-    HavokPlugin, Mesh, MeshAssetTask,
+    HavokPlugin,
+    InstancedMesh,
+    Mesh,
+    MeshAssetTask,
     Scene,
     SceneLoader,
     Vector3,
@@ -14,7 +17,7 @@ import {GLTFFileLoader} from "@babylonjs/loaders";
 class VRMFileLoader extends GLTFFileLoader {
     public name = "vrm";
     public extensions = {
-        ".vrm": { isBinary: true },
+        ".vrm": {isBinary: true},
     };
 
     public createPlugin() {
@@ -27,19 +30,17 @@ export class ListenerLiveScene {
     engine: Engine | undefined;
     xrEnv: WebXRDefaultExperience | undefined;
 
-    constructor(){
+    async init() {
         this.createScene()
-        this.enablePhysics()
         this.cameraController()
-
-        this.xrInit().then(
-            ()=>{
-                this.createObjects().then()
-            }
-        )
+        await this.enablePhysics()
+        await this.xrInit()
+        await this.createObjects()
 
 
+        if (!this.engine) return
         this.engine.runRenderLoop(() => {
+            if (!this.scene) return
             this.scene.render();
         });
     }
@@ -47,7 +48,7 @@ export class ListenerLiveScene {
     createScene() {
         SceneLoader.RegisterPlugin(new VRMFileLoader());
 
-        let canvas = document.createElement("canvas");
+        const canvas = document.createElement("canvas");
         canvas.style.width = "100%";
         canvas.style.height = "100%";
         canvas.id = "gameCanvas";
@@ -59,18 +60,13 @@ export class ListenerLiveScene {
         this.scene = new Scene(this.engine);
     }
 
-    enablePhysics() {
-        HavokPhysics().then((havok) => {
-            const gravityVector = new Vector3(0, -9.81, 0);
-            const physicsPlugin = new HavokPlugin(true, havok);
-            this.scene.enablePhysics(gravityVector, physicsPlugin);
-        })
-    }
 
     cameraController() {
+        if (!this.scene) return;
+
         this.scene.gravity = new Vector3(0, -0.15, 0);
 
-        let camera = new FreeCamera("camera1", new Vector3(0, 5, -6), this.scene);
+        const camera = new FreeCamera("camera1", new Vector3(0, 5, -6), this.scene);
         camera.attachControl();
 
         camera.applyGravity = true;
@@ -90,30 +86,51 @@ export class ListenerLiveScene {
     }
 
     async createObjects() {
-        let avatar = await SceneLoader.ImportMeshAsync(
+        const avatar = await SceneLoader.ImportMeshAsync(
             "",
             "",
             new URL('/public/1.vrm', import.meta.url).href,
-            this.scene,undefined,undefined,"avatar"
+            this.scene, undefined, undefined, "avatar"
         );
 
         avatar.meshes.map((mesh) => {
             mesh.rotation.y = Math.PI;
+            mesh.checkCollisions = true;
+            mesh.name = "avatar";
         })
 
-        let stage = await SceneLoader.ImportMeshAsync(
+        const stage = await SceneLoader.ImportMeshAsync(
             "",
             "",
             new URL('/public/stage.glb', import.meta.url).href,
-            this.scene,undefined,undefined,"stage"
+            this.scene, undefined, undefined, "stage"
         )
 
         stage.meshes.map((mesh) => {
+            if (!this.xrEnv) return
             mesh.checkCollisions = true;
-            //this.xrEnv.teleportation.addFloorMesh(mesh);
+            mesh.name = "stage";
+            this.xrEnv.teleportation.addFloorMesh(mesh);
         })
+    }
 
-        let models = {};
+
+    async xrInit() {
+        if (!this.scene) return;
+
+        this.xrEnv = await this.scene.createDefaultXRExperienceAsync({
+            inputOptions: {
+                doNotLoadControllerMeshes: true
+            }
+        });
+        await this.loadPenlight()
+    }
+
+
+    async loadPenlight() {
+        if (!this.scene || !this.xrEnv) return;
+
+        let models: Array<Mesh>
 
         const assetsManager = new AssetsManager(this.scene);
         assetsManager.addMeshTask("load left hand", "", "", new URL('/public/penlight1.glb', import.meta.url).href,);
@@ -124,7 +141,7 @@ export class ListenerLiveScene {
                 mesh.setEnabled(false)
             })
 
-            models["penlight"] = task.loadedMeshes
+            models = task.loadedMeshes
         });
 
         await assetsManager.loadAsync();
@@ -132,8 +149,8 @@ export class ListenerLiveScene {
         this.xrEnv.pointerSelection.detach();
         this.xrEnv.input.onControllerAddedObservable.add((webXrInputSource) => {
             if (webXrInputSource.inputSource.handedness === "right") {
-                models["penlight"].map((mesh) => {
-                    let rightControllerMesh:Mesh = mesh.createInstance("r_penlight");
+                models.map((mesh:Mesh) => {
+                    const rightControllerMesh:InstancedMesh = mesh.createInstance("r_penlight");
                     rightControllerMesh.rotation.x = 90
                     rightControllerMesh.scaling = new Vector3(0.02,0.02,0.02)
                     rightControllerMesh.parent = webXrInputSource.grip || webXrInputSource.pointer;
@@ -141,8 +158,8 @@ export class ListenerLiveScene {
             }
 
             if (webXrInputSource.inputSource.handedness === "left") {
-                models["penlight"].map((mesh) => {
-                    let leftControllerMesh:Mesh = mesh.createInstance("leftController");
+                models.map((mesh:Mesh) => {
+                    const leftControllerMesh:InstancedMesh= mesh.createInstance("leftController");
                     leftControllerMesh.rotation.x = 90
                     leftControllerMesh.scaling = new Vector3(0.02,0.02,0.02)
                     leftControllerMesh.parent = webXrInputSource.grip || webXrInputSource.pointer;
@@ -151,16 +168,14 @@ export class ListenerLiveScene {
         });
     }
 
-    async xrInit(){
-        this.xrEnv = await this.scene.createDefaultXRExperienceAsync({
-            inputOptions: {
-                doNotLoadControllerMeshes: true
-            }
 
-        });
-    }
-
-    async getfps(){
-        return this.engine.getFps().toFixed()
+    async enablePhysics() {
+        if (!this.scene) return;
+        const havok = await HavokPhysics({
+            locateFile: () => new URL('/public/HavokPhysics.wasm', import.meta.url).href
+        })
+        const gravityVector = new Vector3(0, -9.81, 0);
+        const physicsPlugin = new HavokPlugin(true, havok);
+        this.scene.enablePhysics(gravityVector, physicsPlugin);
     }
 }
