@@ -5,9 +5,9 @@ import {
     HavokPlugin,
     InstancedMesh,
     Mesh,
-    MeshAssetTask,
+    MeshAssetTask, MeshBuilder,
     Scene,
-    SceneLoader,
+    SceneLoader, ShaderMaterial,
     Vector3,
     WebXRDefaultExperience,
 } from "@babylonjs/core";
@@ -35,7 +35,10 @@ export class ListenerLiveScene {
         this.cameraController()
         await this.enablePhysics()
         await this.xrInit()
+        await this.LoadLightShader()
         await this.createObjects()
+
+
 
 
         if (!this.engine) return
@@ -177,5 +180,33 @@ export class ListenerLiveScene {
         const gravityVector = new Vector3(0, -9.81, 0);
         const physicsPlugin = new HavokPlugin(true, havok);
         this.scene.enablePhysics(gravityVector, physicsPlugin);
+    }
+
+    async LoadLightShader() {
+        let beam1 = MeshBuilder.CreateCylinder("beam1", {height:5,diameterTop: 0.5,diameterBottom:0.3,subdivisions:0,updatable:true});
+        let beam2 = MeshBuilder.CreateCylinder("beam2", {height:5,diameterTop: 0.5,diameterBottom:0.3,subdivisions:0,updatable:true});
+        beam1.setPivotPoint(new Vector3(0, -2.5, 0));
+        beam2.setPivotPoint(new Vector3(0, -2.5, 0));
+        beam1.position = new Vector3(-2.6, 2, -2.2);
+        beam2.position = new Vector3(2.6, 2, -2.2);
+        beam1.rotation = new Vector3(0, -120, -Math.PI / 4);
+        beam2.rotation = new Vector3(0, 120, Math.PI / 4);
+
+
+        const myShaderMaterial = new ShaderMaterial("beamshader", this.scene, "/beam",
+            {
+                attributes: ["position", "normal", "uv"],
+                uniforms: ["worldViewProjection", "lightColor", "spotPosition", "attenuation", "anglePower" ],
+                needAlphaBlending: true,
+                needAlphaTesting: true
+            });
+
+        myShaderMaterial.setVector3("lightColor", new Vector3(225 / 225 , 225 / 225, 225 / 225))
+        myShaderMaterial.setVector3("spotPosition", new Vector3(0, 0, 0))
+        myShaderMaterial.setFloat("attenuation", 2)
+        myShaderMaterial.setFloat("anglePower", 0)
+
+        beam1.material = myShaderMaterial
+        beam2.material = myShaderMaterial
     }
 }
