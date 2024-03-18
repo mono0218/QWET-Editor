@@ -26,11 +26,11 @@ export default function ObjectSettingMenu() {
                             </div>
                         </div>
                         <div className="mb-4">
-                            <label class="mb-2 block font-bold">Scale</label>
-                            <div class="flex">
-                                <input type="text" class="mr-2 w-16 border border-gray-600 bg-gray-700 px-2 py-1" placeholder="X" />
-                                <input type="text" class="mr-2 w-16 border border-gray-600 bg-gray-700 px-2 py-1" placeholder="Y" />
-                                <input type="text" class="w-16 border border-gray-600 bg-gray-700 px-2 py-1" placeholder="Z" />
+                            <label className="mb-2 block font-bold">Scale</label>
+                            <div className="flex">
+                                <input type="text" className="mr-2 w-16 border border-gray-600 bg-gray-700 px-2 py-1" placeholder="X" />
+                                <input type="text" className="mr-2 w-16 border border-gray-600 bg-gray-700 px-2 py-1" placeholder="Y" />
+                                <input type="text" className="w-16 border border-gray-600 bg-gray-700 px-2 py-1" placeholder="Z" />
                             </div>
                         </div>
                     </div>
