@@ -1,18 +1,25 @@
-import {Engine, FlyCamera, HemisphericLight, MeshBuilder, Scene, Vector3} from "@babylonjs/core";
+import {
+    Engine,
+    FlyCamera,
+    HemisphericLight,
+    MeshBuilder,
+    Scene,
+    Vector3,
+} from '@babylonjs/core'
 
 export default function LiveEngine() {
-    const canvas = document.querySelector("canvas")
-    const engine = new Engine(canvas, true);
-    const scene = new Scene(engine);
+    const canvas = document.querySelector('canvas')
+    const engine = new Engine(canvas, true)
+    const scene = new Scene(engine)
 
-    const camera = new FlyCamera("camera", new Vector3(0, 0, 0), scene);
-    camera.attachControl(true);
+    const camera = new FlyCamera('camera', new Vector3(0, 0, 0), scene)
+    camera.attachControl(true)
 
-    new HemisphericLight("light", new Vector3(0, 1, 0), scene);
+    new HemisphericLight('light', new Vector3(0, 1, 0), scene)
 
-    MeshBuilder.CreateBox("box", {}, scene);
+    MeshBuilder.CreateBox('box', {}, scene)
 
     engine.runRenderLoop(() => {
-        scene.render();
-    });
+        scene.render()
+    })
 }
