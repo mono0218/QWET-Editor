@@ -1,4 +1,3 @@
-
 import { Scene } from '@babylonjs/core'
 
 export default function ObjectSettingMenu({
