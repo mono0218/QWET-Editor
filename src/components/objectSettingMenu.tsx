@@ -1,4 +1,7 @@
-export default function ObjectSettingMenu() {
+import {Scene} from "@babylonjs/core";
+
+export default function ObjectSettingMenu({scene,meshId}:{scene:Scene,meshId:string}){
+    const mesh = scene.getMeshById(meshId)
     return (
         <>
             <div className="w-72 bg-gray-800 p-4 text-white">
@@ -22,16 +25,19 @@ export default function ObjectSettingMenu() {
                                 <input
                                     type="text"
                                     className="mr-2 w-16 border border-gray-600 bg-gray-700 px-2 py-1"
+                                    defaultValue={mesh?.position.x}
                                     placeholder="X"
                                 />
                                 <input
                                     type="text"
                                     className="mr-2 w-16 border border-gray-600 bg-gray-700 px-2 py-1"
+                                    defaultValue={mesh?.position.y}
                                     placeholder="Y"
                                 />
                                 <input
                                     type="text"
                                     className="w-16 border border-gray-600 bg-gray-700 px-2 py-1"
+                                    defaultValue={mesh?.position.z}
                                     placeholder="Z"
                                 />
                             </div>
@@ -44,16 +50,19 @@ export default function ObjectSettingMenu() {
                                 <input
                                     type="text"
                                     className="mr-2 w-16 border border-gray-600 bg-gray-700 px-2 py-1"
+                                    defaultValue={mesh?.rotation.x}
                                     placeholder="X"
                                 />
                                 <input
                                     type="text"
                                     className="mr-2 w-16 border border-gray-600 bg-gray-700 px-2 py-1"
+                                    defaultValue={mesh?.rotation.y}
                                     placeholder="Y"
                                 />
                                 <input
                                     type="text"
                                     className="w-16 border border-gray-600 bg-gray-700 px-2 py-1"
+                                    defaultValue={mesh?.rotation.z}
                                     placeholder="Z"
                                 />
                             </div>
@@ -66,16 +75,19 @@ export default function ObjectSettingMenu() {
                                 <input
                                     type="text"
                                     className="mr-2 w-16 border border-gray-600 bg-gray-700 px-2 py-1"
+                                    defaultValue={mesh?.scaling.x}
                                     placeholder="X"
                                 />
                                 <input
                                     type="text"
                                     className="mr-2 w-16 border border-gray-600 bg-gray-700 px-2 py-1"
+                                    defaultValue={mesh?.scaling.y}
                                     placeholder="Y"
                                 />
                                 <input
                                     type="text"
                                     className="w-16 border border-gray-600 bg-gray-700 px-2 py-1"
+                                    defaultValue={mesh?.scaling.z}
                                     placeholder="Z"
                                 />
                             </div>
