@@ -1,1 +1,1 @@
-export default function EngineScene(): void;
+export default function EngineScene(): void
