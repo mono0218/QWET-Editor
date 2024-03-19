@@ -8,7 +8,7 @@ export default function ObjectSettingMenu({
     meshId: string
 }) {
     const mesh = scene.getMeshById(meshId)
-    if(mesh === null) {
+    if (mesh === null) {
         return <></>
     }
 
