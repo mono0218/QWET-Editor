@@ -1,6 +1,12 @@
-import {Scene} from "@babylonjs/core";
+import { Scene } from '@babylonjs/core'
 
-export default function ObjectSettingMenu({scene,meshId}:{scene:Scene,meshId:string}){
+export default function ObjectSettingMenu({
+    scene,
+    meshId,
+}: {
+    scene: Scene
+    meshId: string
+}) {
     const mesh = scene.getMeshById(meshId)
     if(mesh === null) {
         return <></>
