@@ -2,6 +2,10 @@ import {Scene} from "@babylonjs/core";
 
 export default function ObjectSettingMenu({scene,meshId}:{scene:Scene,meshId:string}){
     const mesh = scene.getMeshById(meshId)
+    if(mesh === null) {
+        return <></>
+    }
+
     return (
         <>
             <div className="w-72 bg-gray-800 p-4 text-white">
@@ -25,19 +29,19 @@ export default function ObjectSettingMenu({scene,meshId}:{scene:Scene,meshId:str
                                 <input
                                     type="text"
                                     className="mr-2 w-16 border border-gray-600 bg-gray-700 px-2 py-1"
-                                    defaultValue={mesh?.position.x}
+                                    defaultValue={mesh.position.x}
                                     placeholder="X"
                                 />
                                 <input
                                     type="text"
                                     className="mr-2 w-16 border border-gray-600 bg-gray-700 px-2 py-1"
-                                    defaultValue={mesh?.position.y}
+                                    defaultValue={mesh.position.y}
                                     placeholder="Y"
                                 />
                                 <input
                                     type="text"
                                     className="w-16 border border-gray-600 bg-gray-700 px-2 py-1"
-                                    defaultValue={mesh?.position.z}
+                                    defaultValue={mesh.position.z}
                                     placeholder="Z"
                                 />
                             </div>
@@ -50,19 +54,19 @@ export default function ObjectSettingMenu({scene,meshId}:{scene:Scene,meshId:str
                                 <input
                                     type="text"
                                     className="mr-2 w-16 border border-gray-600 bg-gray-700 px-2 py-1"
-                                    defaultValue={mesh?.rotation.x}
+                                    defaultValue={mesh.rotation.x}
                                     placeholder="X"
                                 />
                                 <input
                                     type="text"
                                     className="mr-2 w-16 border border-gray-600 bg-gray-700 px-2 py-1"
-                                    defaultValue={mesh?.rotation.y}
+                                    defaultValue={mesh.rotation.y}
                                     placeholder="Y"
                                 />
                                 <input
                                     type="text"
                                     className="w-16 border border-gray-600 bg-gray-700 px-2 py-1"
-                                    defaultValue={mesh?.rotation.z}
+                                    defaultValue={mesh.rotation.z}
                                     placeholder="Z"
                                 />
                             </div>
@@ -75,19 +79,19 @@ export default function ObjectSettingMenu({scene,meshId}:{scene:Scene,meshId:str
                                 <input
                                     type="text"
                                     className="mr-2 w-16 border border-gray-600 bg-gray-700 px-2 py-1"
-                                    defaultValue={mesh?.scaling.x}
+                                    defaultValue={mesh.scaling.x}
                                     placeholder="X"
                                 />
                                 <input
                                     type="text"
                                     className="mr-2 w-16 border border-gray-600 bg-gray-700 px-2 py-1"
-                                    defaultValue={mesh?.scaling.y}
+                                    defaultValue={mesh.scaling.y}
                                     placeholder="Y"
                                 />
                                 <input
                                     type="text"
                                     className="w-16 border border-gray-600 bg-gray-700 px-2 py-1"
-                                    defaultValue={mesh?.scaling.z}
+                                    defaultValue={mesh.scaling.z}
                                     placeholder="Z"
                                 />
                             </div>
