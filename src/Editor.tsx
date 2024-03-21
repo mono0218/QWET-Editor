@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import ObjectSelector from './components/objectSelector'
 import ObjectSettingMenu from './components/objectSettingMenu'
-import Engine from './lib/LiveEngine'
 import './global.css'
 import LiveEngine from './lib/LiveEngine'
 import { Scene } from '@babylonjs/core'

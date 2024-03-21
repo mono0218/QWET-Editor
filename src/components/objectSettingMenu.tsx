@@ -1,4 +1,7 @@
 import { Scene } from '@babylonjs/core'
+import {useForm} from "react-hook-form";
+import changeTransport, {ITransport} from "../lib/object/Transports";
+import {useEffect} from "react";
 
 export default function ObjectSettingMenu({
     scene,
@@ -8,9 +11,31 @@ export default function ObjectSettingMenu({
     meshId: string
 }) {
     const mesh = scene.getMeshById(meshId)
-    if (mesh === null) {
-        return <></>
-    }
+    if (mesh === null) { return <></>}
+
+    const {
+        register,
+        watch,
+    } = useForm();
+
+    useEffect(() => {
+        const subscription = watch((watchTransport) =>{
+            const transport:ITransport = {
+                px: watchTransport.px,
+                py: watchTransport.py,
+                pz: watchTransport.pz,
+                rx: watchTransport.rx,
+                ry: watchTransport.ry,
+                rz: watchTransport.rz,
+                sx: watchTransport.sx,
+                sy: watchTransport.sy,
+                sz: watchTransport.sz,
+            }
+            changeTransport(transport, mesh)
+        })
+
+        return () => subscription.unsubscribe()
+    }, [watch])
 
     return (
         <>
@@ -33,21 +58,24 @@ export default function ObjectSettingMenu({
                             </label>
                             <div className="flex">
                                 <input
-                                    type="text"
+                                    type="number"
                                     className="mr-2 w-16 border border-gray-600 bg-gray-700 px-2 py-1"
                                     defaultValue={mesh.position.x}
+                                    {...register('px', { required: true })}
                                     placeholder="X"
                                 />
                                 <input
-                                    type="text"
+                                    type="number"
                                     className="mr-2 w-16 border border-gray-600 bg-gray-700 px-2 py-1"
                                     defaultValue={mesh.position.y}
+                                    {...register('py', { required: true })}
                                     placeholder="Y"
                                 />
                                 <input
-                                    type="text"
+                                    type="number"
                                     className="w-16 border border-gray-600 bg-gray-700 px-2 py-1"
                                     defaultValue={mesh.position.z}
+                                    {...register('pz', { required: true })}
                                     placeholder="Z"
                                 />
                             </div>
@@ -58,21 +86,25 @@ export default function ObjectSettingMenu({
                             </label>
                             <div className="flex">
                                 <input
-                                    type="text"
+                                    type="number"
                                     className="mr-2 w-16 border border-gray-600 bg-gray-700 px-2 py-1"
                                     defaultValue={mesh.rotation.x}
+                                    {...register('rx', { required: true })}
+
                                     placeholder="X"
                                 />
                                 <input
-                                    type="text"
+                                    type="number"
                                     className="mr-2 w-16 border border-gray-600 bg-gray-700 px-2 py-1"
                                     defaultValue={mesh.rotation.y}
+                                    {...register('ry', { required: true })}
                                     placeholder="Y"
                                 />
                                 <input
-                                    type="text"
+                                    type="number"
                                     className="w-16 border border-gray-600 bg-gray-700 px-2 py-1"
                                     defaultValue={mesh.rotation.z}
+                                    {...register('rz', { required: true })}
                                     placeholder="Z"
                                 />
                             </div>
@@ -83,21 +115,24 @@ export default function ObjectSettingMenu({
                             </label>
                             <div className="flex">
                                 <input
-                                    type="text"
+                                    type="number"
                                     className="mr-2 w-16 border border-gray-600 bg-gray-700 px-2 py-1"
                                     defaultValue={mesh.scaling.x}
+                                    {...register('sx', { required: true })}
                                     placeholder="X"
                                 />
                                 <input
-                                    type="text"
+                                    type="number"
                                     className="mr-2 w-16 border border-gray-600 bg-gray-700 px-2 py-1"
                                     defaultValue={mesh.scaling.y}
+                                    {...register('sy', { required: true })}
                                     placeholder="Y"
                                 />
                                 <input
-                                    type="text"
+                                    type="number"
                                     className="w-16 border border-gray-600 bg-gray-700 px-2 py-1"
                                     defaultValue={mesh.scaling.z}
+                                    {...register('sz', { required: true })}
                                     placeholder="Z"
                                 />
                             </div>

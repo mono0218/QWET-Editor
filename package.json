@@ -20,6 +20,7 @@
     "@rollup/plugin-typescript": "^11.1.6",
     "postcss": "^8.4.35",
     "react-dom": "^18.2.0",
+    "react-hook-form": "^7.51.1",
     "rollup-plugin-peer-deps-external": "^2.2.4",
     "rollup-plugin-postcss": "^4.0.2",
     "serve": "^14.2.1",
