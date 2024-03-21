@@ -1,7 +1,7 @@
 import { Scene } from '@babylonjs/core'
-import {useForm} from "react-hook-form";
-import changeTransport, {ITransport} from "../lib/object/Transports";
-import {useEffect} from "react";
+import { useForm } from 'react-hook-form'
+import changeTransport, { ITransport } from '../lib/object/Transports'
+import { useEffect } from 'react'
 
 export default function ObjectSettingMenu({
     scene,
@@ -11,16 +11,15 @@ export default function ObjectSettingMenu({
     meshId: string
 }) {
     const mesh = scene.getMeshById(meshId)
-    if (mesh === null) { return <></>}
+    if (mesh === null) {
+        return <></>
+    }
 
-    const {
-        register,
-        watch,
-    } = useForm();
+    const { register, watch } = useForm()
 
     useEffect(() => {
-        const subscription = watch((watchTransport) =>{
-            const transport:ITransport = {
+        const subscription = watch((watchTransport) => {
+            const transport: ITransport = {
                 px: watchTransport.px,
                 py: watchTransport.py,
                 pz: watchTransport.pz,
@@ -90,7 +89,6 @@ export default function ObjectSettingMenu({
                                     className="mr-2 w-16 border border-gray-600 bg-gray-700 px-2 py-1"
                                     defaultValue={mesh.rotation.x}
                                     {...register('rx', { required: true })}
-
                                     placeholder="X"
                                 />
                                 <input
