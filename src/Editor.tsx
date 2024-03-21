@@ -4,7 +4,7 @@ import ObjectSettingMenu from './components/objectSettingMenu'
 import './global.css'
 import LiveEngine from './lib/LiveEngine'
 import { Scene } from '@babylonjs/core'
-import Header from "./components/header";
+import Header from './components/header'
 
 export default function Editor() {
     const [loading, setLoading] = useState(true)
@@ -12,7 +12,7 @@ export default function Editor() {
     const [selectedObj, setSelectedObj] = useState('')
 
     useEffect(() => {
-        const scene:Scene = LiveEngine()
+        const scene: Scene = LiveEngine()
         setScene(scene)
         setLoading(false)
     }, [])
@@ -27,26 +27,25 @@ export default function Editor() {
 
     return (
         <>
-            {loading ? (<></>) : (
-                <Header scene={scene!}/>
-            )}
+            {loading ? <></> : <Header scene={scene!} />}
             <div className="flex">
-                {loading ? (<div className="w-72">Loading...</div>) : (
+                {loading ? (
+                    <div className="w-72">Loading...</div>
+                ) : (
                     <ObjectSelector
                         scene={scene!}
                         onObjectSelect={handleObjectSelect}
                     />
                 )}
 
-                <canvas className="w-full"/>
+                <canvas className="w-full" />
 
                 {loading ? (
                     <div className="w-72">Loading...</div>
                 ) : (
-                    <ObjectSettingMenu scene={scene!} meshId={selectedObj}/>
+                    <ObjectSettingMenu scene={scene!} meshId={selectedObj} />
                 )}
             </div>
         </>
-
     )
 }

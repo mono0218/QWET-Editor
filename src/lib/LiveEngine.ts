@@ -7,7 +7,7 @@ import {
     Vector3,
 } from '@babylonjs/core'
 
-export default function LiveEngine():Scene {
+export default function LiveEngine(): Scene {
     const canvas = document.querySelector('canvas')
     const engine: Engine = new Engine(canvas, true)
     const scene: Scene = new Scene(engine)
