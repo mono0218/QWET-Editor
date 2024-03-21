@@ -4,9 +4,8 @@
     "version": "0.0.0",
     "type": "module",
     "scripts": {
-        "dev": "serve ./public",
-        "build": "rollup -c -w",
-        "preview": "vite preview",
+        "dev": "NODE_OPTIONS=\"--max-old-space-size=3072\" rollup -c -w",
+        "build": "rollup -c",
         "lint": "eslint --ext .ts,.tsx ./src",
         "lint:fix": "eslint --fix --ext .ts,.tsx ./src",
         "format": "prettier --check ./src",
