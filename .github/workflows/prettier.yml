@@ -4,8 +4,15 @@ jobs:
   prettier:
     runs-on: ubuntu-latest
     steps:
+      - name: Generate github token
+        id: generate_token
+        uses: tibdex/github-app-token@v1
+        with:
+          app_id: ${{ secrets.GITHUB_APP_ID }}
+          private_key: ${{ secrets.GITHUB_PRIVATE_KEY }}
       - uses: actions/checkout@v3
         with:
+          token: ${{ steps.generate_token.outputs.token }}
           ref: ${{ github.head_ref }}
       - uses: technote-space/get-diff-action@v6
         with:
