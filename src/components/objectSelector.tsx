@@ -1,4 +1,5 @@
-import { Scene } from '@babylonjs/core'
+import {Node, Scene} from "@babylonjs/core";
+import {useState} from "react";
 
 export default function ObjectSelector({
     scene,
@@ -7,11 +8,21 @@ export default function ObjectSelector({
     scene: Scene
     onObjectSelect: (meshId: string) => void
 }) {
-    const handleObjectClick = (meshId: string) => {
-        onObjectSelect(meshId)
+
+    if (!scene) return <></>
+    const [nodeList, setNodeList] = useState<Node[]>(scene.rootNodes)
+
+    scene.onNewMeshAddedObservable.add(() => {
+        setTimeout(() => {
+            setNodeList(scene.rootNodes)
+        },1000)
+    })
+
+    const handleObjectClick = (nodeId: string) => {
+        onObjectSelect(nodeId)
     }
 
-    const meshList = scene.meshes
+    if(nodeList.length === 0) return <></>
 
     return (
         <>
@@ -23,21 +34,23 @@ export default function ObjectSelector({
                 </div>
                 <div className="p-4">
                     <ul className="m-0 list-none p-0">
-                        <li className="mb-2">
-                            <div
-                                className="flex cursor-pointer items-center justify-between rounded-md bg-gray-700 px-4 py-2 hover:bg-gray-600"
-                                onClick={() => {
-                                    handleObjectClick(meshList[0].id)
-                                }}
-                            >
-                                <span className="font-bold">
-                                    {meshList[0].name}
-                                </span>
-                                <button className="focus:outline-none">
-                                    &#9660;
-                                </button>
-                            </div>
-                        </li>
+                        {nodeList.map((node:Node) => (
+                            <li className="mb-2" key={node.id}>
+                                <div
+                                    className="flex cursor-pointer items-center justify-between rounded-md bg-gray-700 px-4 py-2 hover:bg-gray-600"
+                                    onClick={() => {
+                                        handleObjectClick(node.id)
+                                    }}
+                                >
+                                    <span className="font-bold">
+                                        {node.name}
+                                    </span>
+                                    <button className="focus:outline-none">
+                                        &#9660;
+                                    </button>
+                                </div>
+                            </li>
+                        ))}
                     </ul>
                 </div>
             </div>

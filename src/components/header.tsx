@@ -1,5 +1,6 @@
 import { Scene } from '@babylonjs/core'
 import { importObject } from '../lib/object/importObject'
+import React from "react";
 
 export default function Header({ scene }: { scene: Scene }) {
     const onChangeFile = (event: React.ChangeEvent<HTMLInputElement>) => {
