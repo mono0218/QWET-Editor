@@ -5,45 +5,50 @@ import './global.css'
 import LiveEngine from './lib/LiveEngine'
 import { Scene } from '@babylonjs/core'
 import Header from './components/header'
+import { tfNodeManager } from './lib/manager/tfNodeManager'
 
 export default function Editor() {
-    const [loading, setLoading] = useState(true)
     const [scene, setScene] = useState<Scene>()
-    const [selectedObj, setSelectedObj] = useState('')
+    const [selectedObj, setSelectedObj] = useState<number>(0)
+    const [nodeManager, setNodeManager] = useState<tfNodeManager>()
 
     useEffect(() => {
         const scene: Scene = LiveEngine()
+        setNodeManager(new tfNodeManager())
         setScene(scene)
-        setLoading(false)
     }, [])
 
-    useEffect(() => {
-        console.log(scene?.meshes)
-    }, [scene?.meshes])
-
-    const handleObjectSelect = (meshId: string) => {
-        setSelectedObj(meshId)
+    const handleObjectSelect = (uniqueId: number) => {
+        setSelectedObj(uniqueId)
     }
 
     return (
         <>
-            {loading ? <></> : <Header scene={scene!} />}
+            {scene ? (
+                <Header scene={scene} nodeManager={nodeManager!} />
+            ) : (
+                <> </>
+            )}
             <div className="flex">
-                {loading ? (
-                    <div className="w-72">Loading...</div>
-                ) : (
+                {scene ? (
                     <ObjectSelector
-                        scene={scene!}
+                        scene={scene}
+                        nodeManager={nodeManager!}
                         onObjectSelect={handleObjectSelect}
                     />
+                ) : (
+                    <div className="w-72">Loading...</div>
                 )}
 
                 <canvas className="w-full" />
 
-                {loading ? (
-                    <div className="w-72">Loading...</div>
+                {scene ? (
+                    <ObjectSettingMenu
+                        nodeManager={nodeManager!}
+                        uniqueId={selectedObj}
+                    />
                 ) : (
-                    <ObjectSettingMenu scene={scene!} meshId={selectedObj} />
+                    <div className="w-72">Loading...</div>
                 )}
             </div>
         </>

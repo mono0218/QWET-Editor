@@ -1,40 +1,33 @@
-import { Scene } from '@babylonjs/core'
 import { useForm } from 'react-hook-form'
 import changeTransport, { ITransport } from '../lib/object/Transports'
-import { useEffect } from 'react'
+import { tfNodeManager } from '../lib/manager/tfNodeManager'
 
 export default function ObjectSettingMenu({
-    scene,
-    meshId,
+    nodeManager,
+    uniqueId,
 }: {
-    scene: Scene
-    meshId: string
+    nodeManager: tfNodeManager
+    uniqueId: number
 }) {
-    const mesh = scene.getMeshById(meshId)
-    if (mesh === null) {
-        return <></>
-    }
+    const node = nodeManager.getNode(uniqueId)
+    if (!node) return <></>
 
     const { register, watch } = useForm()
 
-    useEffect(() => {
-        const subscription = watch((watchTransport) => {
-            const transport: ITransport = {
-                px: watchTransport.px,
-                py: watchTransport.py,
-                pz: watchTransport.pz,
-                rx: watchTransport.rx,
-                ry: watchTransport.ry,
-                rz: watchTransport.rz,
-                sx: watchTransport.sx,
-                sy: watchTransport.sy,
-                sz: watchTransport.sz,
-            }
-            changeTransport(transport, mesh)
-        })
-
-        return () => subscription.unsubscribe()
-    }, [watch])
+    watch((watchTransport) => {
+        const transport: ITransport = {
+            px: watchTransport.px,
+            py: watchTransport.py,
+            pz: watchTransport.pz,
+            rx: watchTransport.rx,
+            ry: watchTransport.ry,
+            rz: watchTransport.rz,
+            sx: watchTransport.sx,
+            sy: watchTransport.sy,
+            sz: watchTransport.sz,
+        }
+        changeTransport(transport, node)
+    })
 
     return (
         <>
@@ -59,21 +52,21 @@ export default function ObjectSettingMenu({
                                 <input
                                     type="number"
                                     className="mr-2 w-16 border border-gray-600 bg-gray-700 px-2 py-1"
-                                    defaultValue={mesh.position.x}
+                                    defaultValue={node.position.x}
                                     {...register('px', { required: true })}
                                     placeholder="X"
                                 />
                                 <input
                                     type="number"
                                     className="mr-2 w-16 border border-gray-600 bg-gray-700 px-2 py-1"
-                                    defaultValue={mesh.position.y}
+                                    defaultValue={node.position.y}
                                     {...register('py', { required: true })}
                                     placeholder="Y"
                                 />
                                 <input
                                     type="number"
                                     className="w-16 border border-gray-600 bg-gray-700 px-2 py-1"
-                                    defaultValue={mesh.position.z}
+                                    defaultValue={node.position.z}
                                     {...register('pz', { required: true })}
                                     placeholder="Z"
                                 />
@@ -87,21 +80,21 @@ export default function ObjectSettingMenu({
                                 <input
                                     type="number"
                                     className="mr-2 w-16 border border-gray-600 bg-gray-700 px-2 py-1"
-                                    defaultValue={mesh.rotation.x}
+                                    defaultValue={node.rotation.x}
                                     {...register('rx', { required: true })}
                                     placeholder="X"
                                 />
                                 <input
                                     type="number"
                                     className="mr-2 w-16 border border-gray-600 bg-gray-700 px-2 py-1"
-                                    defaultValue={mesh.rotation.y}
+                                    defaultValue={node.rotation.y}
                                     {...register('ry', { required: true })}
                                     placeholder="Y"
                                 />
                                 <input
                                     type="number"
                                     className="w-16 border border-gray-600 bg-gray-700 px-2 py-1"
-                                    defaultValue={mesh.rotation.z}
+                                    defaultValue={node.rotation.z}
                                     {...register('rz', { required: true })}
                                     placeholder="Z"
                                 />
@@ -115,21 +108,21 @@ export default function ObjectSettingMenu({
                                 <input
                                     type="number"
                                     className="mr-2 w-16 border border-gray-600 bg-gray-700 px-2 py-1"
-                                    defaultValue={mesh.scaling.x}
+                                    defaultValue={node.scaling.x}
                                     {...register('sx', { required: true })}
                                     placeholder="X"
                                 />
                                 <input
                                     type="number"
                                     className="mr-2 w-16 border border-gray-600 bg-gray-700 px-2 py-1"
-                                    defaultValue={mesh.scaling.y}
+                                    defaultValue={node.scaling.y}
                                     {...register('sy', { required: true })}
                                     placeholder="Y"
                                 />
                                 <input
                                     type="number"
                                     className="w-16 border border-gray-600 bg-gray-700 px-2 py-1"
-                                    defaultValue={mesh.scaling.z}
+                                    defaultValue={node.scaling.z}
                                     {...register('sz', { required: true })}
                                     placeholder="Z"
                                 />

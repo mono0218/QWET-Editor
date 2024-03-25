@@ -1,7 +1,15 @@
 import { Scene } from '@babylonjs/core'
 import { importObject } from '../lib/object/importObject'
+import React from 'react'
+import { tfNodeManager } from '../lib/manager/tfNodeManager'
 
-export default function Header({ scene }: { scene: Scene }) {
+export default function Header({
+    scene,
+    nodeManager,
+}: {
+    scene: Scene
+    nodeManager: tfNodeManager
+}) {
     const onChangeFile = (event: React.ChangeEvent<HTMLInputElement>) => {
         const files = event.currentTarget.files
         if (!files || files?.length === 0) return
@@ -12,6 +20,7 @@ export default function Header({ scene }: { scene: Scene }) {
             scene: scene,
             name: file.name,
             file: file,
+            manager: nodeManager,
         })
     }
 

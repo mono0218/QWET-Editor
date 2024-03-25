@@ -1,17 +1,30 @@
-import { Scene } from '@babylonjs/core'
+import { Scene, TransformNode } from '@babylonjs/core'
+import { useState } from 'react'
+import { tfNodeManager } from '../lib/manager/tfNodeManager'
 
 export default function ObjectSelector({
     scene,
+    nodeManager,
     onObjectSelect,
 }: {
     scene: Scene
-    onObjectSelect: (meshId: string) => void
+    nodeManager: tfNodeManager
+    onObjectSelect: (meshId: number) => void
 }) {
-    const handleObjectClick = (meshId: string) => {
-        onObjectSelect(meshId)
-    }
+    if (!scene) return <></>
+    const [nodeList, setNodeList] = useState<TransformNode[]>(
+        nodeManager.getNodeList()
+    )
 
-    const meshList = scene.meshes
+    scene.onNewTransformNodeAddedObservable.add(() => {
+        setTimeout(() => {
+            setNodeList([...nodeManager.getNodeList()])
+        }, 1000)
+    })
+
+    const handleObjectClick = (uniqueId: number) => {
+        onObjectSelect(uniqueId)
+    }
 
     return (
         <>
@@ -23,21 +36,23 @@ export default function ObjectSelector({
                 </div>
                 <div className="p-4">
                     <ul className="m-0 list-none p-0">
-                        <li className="mb-2">
-                            <div
-                                className="flex cursor-pointer items-center justify-between rounded-md bg-gray-700 px-4 py-2 hover:bg-gray-600"
-                                onClick={() => {
-                                    handleObjectClick(meshList[0].id)
-                                }}
-                            >
-                                <span className="font-bold">
-                                    {meshList[0].name}
-                                </span>
-                                <button className="focus:outline-none">
-                                    &#9660;
-                                </button>
-                            </div>
-                        </li>
+                        {nodeList.map((node: TransformNode) => (
+                            <li className="mb-2" key={node.uniqueId}>
+                                <div
+                                    className="flex cursor-pointer items-center justify-between rounded-md bg-gray-700 px-4 py-2 hover:bg-gray-600"
+                                    onClick={() => {
+                                        handleObjectClick(node.uniqueId)
+                                    }}
+                                >
+                                    <span className="font-bold">
+                                        {node.name}
+                                    </span>
+                                    <button className="focus:outline-none">
+                                        &#9660;
+                                    </button>
+                                </div>
+                            </li>
+                        ))}
                     </ul>
                 </div>
             </div>

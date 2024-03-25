@@ -1,4 +1,4 @@
-import { AbstractMesh } from '@babylonjs/core'
+import { TransformNode, Vector3 } from '@babylonjs/core'
 
 export interface ITransport {
     px: number
@@ -14,16 +14,9 @@ export interface ITransport {
 
 export default function changeTransport(
     watch: ITransport,
-    mesh: AbstractMesh
+    nodes: TransformNode
 ): void {
-    console.log(watch)
-    mesh.position.x = watch.px
-    mesh.position.y = watch.py
-    mesh.position.z = watch.pz
-    mesh.rotation.x = watch.rx
-    mesh.rotation.y = watch.ry
-    mesh.rotation.z = watch.rz
-    mesh.scaling.x = watch.sx
-    mesh.scaling.y = watch.sy
-    mesh.scaling.z = watch.sz
+    nodes.position = new Vector3(watch.px, watch.py, watch.pz)
+    nodes.rotation = new Vector3(watch.rx, watch.ry, watch.rz)
+    nodes.scaling = new Vector3(watch.sx, watch.sy, watch.sz)
 }
