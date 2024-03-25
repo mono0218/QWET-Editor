@@ -1,28 +1,30 @@
-import {Node, Scene} from "@babylonjs/core";
-import {useState} from "react";
+import { Scene, TransformNode } from '@babylonjs/core'
+import { useState } from 'react'
+import { tfNodeManager } from '../lib/manager/tfNodeManager'
 
 export default function ObjectSelector({
     scene,
+    nodeManager,
     onObjectSelect,
 }: {
     scene: Scene
-    onObjectSelect: (meshId: string) => void
+    nodeManager: tfNodeManager
+    onObjectSelect: (meshId: number) => void
 }) {
-
     if (!scene) return <></>
-    const [nodeList, setNodeList] = useState<Node[]>(scene.rootNodes)
+    const [nodeList, setNodeList] = useState<TransformNode[]>(
+        nodeManager.getNodeList()
+    )
 
-    scene.onNewMeshAddedObservable.add(() => {
+    scene.onNewTransformNodeAddedObservable.add(() => {
         setTimeout(() => {
-            setNodeList(scene.rootNodes)
-        },1000)
+            setNodeList([...nodeManager.getNodeList()])
+        }, 1000)
     })
 
-    const handleObjectClick = (nodeId: string) => {
-        onObjectSelect(nodeId)
+    const handleObjectClick = (uniqueId: number) => {
+        onObjectSelect(uniqueId)
     }
-
-    if(nodeList.length === 0) return <></>
 
     return (
         <>
@@ -34,12 +36,12 @@ export default function ObjectSelector({
                 </div>
                 <div className="p-4">
                     <ul className="m-0 list-none p-0">
-                        {nodeList.map((node:Node) => (
-                            <li className="mb-2" key={node.id}>
+                        {nodeList.map((node: TransformNode) => (
+                            <li className="mb-2" key={node.uniqueId}>
                                 <div
                                     className="flex cursor-pointer items-center justify-between rounded-md bg-gray-700 px-4 py-2 hover:bg-gray-600"
                                     onClick={() => {
-                                        handleObjectClick(node.id)
+                                        handleObjectClick(node.uniqueId)
                                     }}
                                 >
                                     <span className="font-bold">

@@ -2,7 +2,6 @@ import {
     Engine,
     FlyCamera,
     HemisphericLight,
-    MeshBuilder,
     Scene,
     Vector3,
 } from '@babylonjs/core'
@@ -16,7 +15,6 @@ export default function LiveEngine(): Scene {
     camera.attachControl(true)
 
     new HemisphericLight('light', new Vector3(0, 1, 0), scene)
-    MeshBuilder.CreateBox('box', {}, scene)
 
     engine.runRenderLoop(() => {
         scene.render()
