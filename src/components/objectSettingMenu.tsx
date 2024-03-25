@@ -1,6 +1,7 @@
 import { useForm } from 'react-hook-form'
 import changeTransport, { ITransport } from '../lib/object/Transports'
 import { tfNodeManager } from '../lib/manager/tfNodeManager'
+import {useEffect} from "react";
 
 export default function ObjectSettingMenu({
     nodeManager,
@@ -12,26 +13,42 @@ export default function ObjectSettingMenu({
     const node = nodeManager.getNode(uniqueId)
     if (!node) return <></>
 
-    const { register, watch } = useForm()
+    const { register, watch, setValue} = useForm()
 
-    watch((watchTransport) => {
-        const transport: ITransport = {
-            px: watchTransport.px,
-            py: watchTransport.py,
-            pz: watchTransport.pz,
-            rx: watchTransport.rx,
-            ry: watchTransport.ry,
-            rz: watchTransport.rz,
-            sx: watchTransport.sx,
-            sy: watchTransport.sy,
-            sz: watchTransport.sz,
-        }
-        changeTransport(transport, node)
-    })
+    useEffect(() => {
+        const subscription = watch((watchTransport) => {
+            const transport: ITransport = {
+                px: watchTransport.px,
+                py: watchTransport.py,
+                pz: watchTransport.pz,
+                rx: watchTransport.rx,
+                ry: watchTransport.ry,
+                rz: watchTransport.rz,
+                sx: watchTransport.sx,
+                sy: watchTransport.sy,
+                sz: watchTransport.sz,
+            }
+            changeTransport(transport, node)
+        })
+        return () => subscription.unsubscribe()
+    }, [watch,node])
+
+    useEffect(() => {
+        setValue('px', node.position.x)
+        setValue('py', node.position.y)
+        setValue('pz', node.position.z)
+        setValue('rx', node.rotation.x)
+        setValue('ry', node.rotation.y)
+        setValue('rz', node.rotation.z)
+        setValue('sx', node.scaling.x)
+        setValue('sy', node.scaling.y)
+        setValue('sz', node.scaling.z)
+    }, [node])
 
     return (
         <>
             <div className="w-72 bg-gray-800 p-4 text-white">
+
                 <div className="mb-4 bg-gray-700 px-4 py-2 font-bold">
                     Inspector
                 </div>
