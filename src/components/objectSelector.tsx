@@ -30,7 +30,12 @@ export default function ObjectSelector({
         <>
             <div className="w-72 bg-gray-800 p-4 text-white">
                 <div className="mb-4 flex">
-                    <button className="flex-1 rounded-md bg-transparent px-4 py-2 hover:bg-gray-700 focus:outline-none">
+                    <button
+                        className="flex-1 rounded-md bg-transparent px-4 py-2 hover:bg-gray-700 focus:outline-none"
+                        onClick={() => {
+                            handleObjectClick(0)
+                        }}
+                    >
                         Scene
                     </button>
                 </div>

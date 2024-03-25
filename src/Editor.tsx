@@ -2,10 +2,11 @@ import React, { useEffect, useState } from 'react'
 import ObjectSelector from './components/objectSelector'
 import ObjectSettingMenu from './components/objectSettingMenu'
 import './global.css'
-import LiveEngine from './lib/LiveEngine'
+import LiveEngine from './lib/engine/LiveEngine'
 import { Scene } from '@babylonjs/core'
 import Header from './components/header'
 import { tfNodeManager } from './lib/manager/tfNodeManager'
+import initSceneConfig from './lib/engine/initSceneConfig'
 
 export default function Editor() {
     const [scene, setScene] = useState<Scene>()
@@ -15,6 +16,7 @@ export default function Editor() {
     useEffect(() => {
         const scene: Scene = LiveEngine()
         setNodeManager(new tfNodeManager())
+        initSceneConfig(scene)
         setScene(scene)
     }, [])
 
@@ -44,6 +46,7 @@ export default function Editor() {
 
                 {scene ? (
                     <ObjectSettingMenu
+                        scene={scene}
                         nodeManager={nodeManager!}
                         uniqueId={selectedObj}
                     />
