@@ -1,7 +1,7 @@
 import { useForm } from 'react-hook-form'
 import changeTransport, { ITransport } from '../lib/object/Transports'
 import { tfNodeManager } from '../lib/manager/tfNodeManager'
-import {useEffect} from "react";
+import { useEffect } from 'react'
 
 export default function ObjectSettingMenu({
     nodeManager,
@@ -13,7 +13,7 @@ export default function ObjectSettingMenu({
     const node = nodeManager.getNode(uniqueId)
     if (!node) return <></>
 
-    const { register, watch, setValue} = useForm()
+    const { register, watch, setValue } = useForm()
 
     useEffect(() => {
         const subscription = watch((watchTransport) => {
@@ -31,7 +31,7 @@ export default function ObjectSettingMenu({
             changeTransport(transport, node)
         })
         return () => subscription.unsubscribe()
-    }, [watch,node])
+    }, [watch, node])
 
     useEffect(() => {
         setValue('px', node.position.x)
@@ -48,7 +48,6 @@ export default function ObjectSettingMenu({
     return (
         <>
             <div className="w-72 bg-gray-800 p-4 text-white">
-
                 <div className="mb-4 bg-gray-700 px-4 py-2 font-bold">
                     Inspector
                 </div>
