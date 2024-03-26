@@ -1,6 +1,8 @@
 import { useForm } from 'react-hook-form'
 import React, { useEffect } from 'react'
-import { AssetsManager, Scene, Vector3 } from '@babylonjs/core'
+import { Scene, SceneLoader, TransformNode, Vector3 } from '@babylonjs/core'
+import { getParent } from '../../lib/object/getParent'
+import { VRMFileLoader } from '../../lib/object/vrmLoader'
 
 export default function SceneSetting({ scene }: { scene: Scene }) {
     const PlayerStart = scene.getTransformNodeByName('PlayerStartPosition')
@@ -9,6 +11,11 @@ export default function SceneSetting({ scene }: { scene: Scene }) {
         alert('PlayerStartPosition or LiverStartPosition not found')
         return <> </>
     }
+
+    useEffect(() => {
+        SceneLoader.RegisterPlugin(new VRMFileLoader())
+    }, [])
+
     const { register, watch } = useForm()
 
     useEffect(() => {
@@ -34,12 +41,18 @@ export default function SceneSetting({ scene }: { scene: Scene }) {
 
         const file = files[0]
 
-        const assetsManager = new AssetsManager(scene)
-
         if (event.currentTarget.id === 'ListenerAvatarInput') {
-            assetsManager.addMeshTask('ListenerAvatar', '', '', file.name)
+            const listenerAvatar = new TransformNode('ListenerAvatar', scene)
+            SceneLoader.ImportMeshAsync('', '', file, scene).then((result) => {
+                getParent(result.meshes[0]).parent = listenerAvatar
+                listenerAvatar.position = new Vector3(10000, 10000, 10000)
+            })
         } else if (event.currentTarget.id === 'LiverAvatarInput') {
-            assetsManager.addMeshTask('LiverAvatar', '', '', file.name)
+            const liverAvatar = new TransformNode('LiverAvatar', scene)
+            SceneLoader.ImportMeshAsync('', '', file, scene).then((result) => {
+                getParent(result.meshes[0]).parent = liverAvatar
+                liverAvatar.position = new Vector3(10000, 10000, 10000)
+            })
         }
     }
 
