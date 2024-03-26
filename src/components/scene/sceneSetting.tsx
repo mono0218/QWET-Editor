@@ -1,6 +1,6 @@
 import { useForm } from 'react-hook-form'
-import { useEffect } from 'react'
-import { Scene, Vector3 } from '@babylonjs/core'
+import React, { useEffect } from 'react'
+import { AssetsManager, Scene, Vector3 } from '@babylonjs/core'
 
 export default function SceneSetting({ scene }: { scene: Scene }) {
     const PlayerStart = scene.getTransformNodeByName('PlayerStartPosition')
@@ -27,6 +27,22 @@ export default function SceneSetting({ scene }: { scene: Scene }) {
         return () => subscription.unsubscribe()
     }, [watch])
 
+    const onFile = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const files = event.currentTarget.files
+        console.log(event.currentTarget.id)
+        if (!files || files?.length === 0) return
+
+        const file = files[0]
+
+        const assetsManager = new AssetsManager(scene)
+
+        if (event.currentTarget.id === 'ListenerAvatarInput') {
+            assetsManager.addMeshTask('ListenerAvatar', '', '', file.name)
+        } else if (event.currentTarget.id === 'LiverAvatarInput') {
+            assetsManager.addMeshTask('LiverAvatar', '', '', file.name)
+        }
+    }
+
     return (
         <>
             <div className="w-72 bg-gray-800 p-4 text-white">
@@ -37,7 +53,7 @@ export default function SceneSetting({ scene }: { scene: Scene }) {
                     <div className="flex cursor-pointer items-center justify-between bg-gray-600 px-4 py-2">
                         <span className="flex-1 px-2 py-1 font-bold">
                             {' '}
-                            PlayerStartPosition{' '}
+                            ListenerStartPosition{' '}
                         </span>
                         <button className="focus:outline-none">&#9660;</button>
                     </div>
@@ -70,6 +86,30 @@ export default function SceneSetting({ scene }: { scene: Scene }) {
                                 />
                             </div>
                         </div>
+                        <input
+                            type="file"
+                            id="ListenerAvatarInput"
+                            style={{ display: 'none' }}
+                            onChange={onFile}
+                        />
+                        <label
+                            htmlFor="ListenerAvatarInput"
+                            className="flex items-center px-4 py-2 bg-gray-600 rounded-md cursor-pointer hover:bg-gray-600"
+                        >
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                className="h-5 w-5 mr-2"
+                                viewBox="0 0 20 20"
+                                fill="currentColor"
+                            >
+                                <path
+                                    fillRule="evenodd"
+                                    d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM6.293 6.707a1 1 0 010-1.414l3-3a1 1 0 011.414 0l3 3a1 1 0 01-1.414 1.414L11 5.414V13a1 1 0 11-2 0V5.414L7.707 6.707a1 1 0 01-1.414 0z"
+                                    clipRule="evenodd"
+                                />
+                            </svg>
+                            SetListenerAvatar
+                        </label>
                     </div>
                 </div>
 
@@ -110,6 +150,30 @@ export default function SceneSetting({ scene }: { scene: Scene }) {
                                 />
                             </div>
                         </div>
+                        <input
+                            type="file"
+                            id="LiverAvatarInput"
+                            style={{ display: 'none' }}
+                            onChange={onFile}
+                        />
+                        <label
+                            htmlFor="LiverAvatarInput"
+                            className="flex items-center px-4 py-2 bg-gray-600 rounded-md cursor-pointer hover:bg-gray-600"
+                        >
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                className="h-5 w-5 mr-2"
+                                viewBox="0 0 20 20"
+                                fill="currentColor"
+                            >
+                                <path
+                                    fillRule="evenodd"
+                                    d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM6.293 6.707a1 1 0 010-1.414l3-3a1 1 0 011.414 0l3 3a1 1 0 01-1.414 1.414L11 5.414V13a1 1 0 11-2 0V5.414L7.707 6.707a1 1 0 01-1.414 0z"
+                                    clipRule="evenodd"
+                                />
+                            </svg>
+                            SetLiverAvatar
+                        </label>
                     </div>
                 </div>
             </div>
