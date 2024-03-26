@@ -45,11 +45,7 @@ export default function Editor() {
                 <canvas className="w-full" />
 
                 {scene ? (
-                    <ObjectSettingMenu
-                        scene={scene}
-                        nodeManager={nodeManager!}
-                        uniqueId={selectedObj}
-                    />
+                    <ObjectSettingMenu scene={scene} uniqueId={selectedObj} />
                 ) : (
                     <div className="w-72">Loading...</div>
                 )}
