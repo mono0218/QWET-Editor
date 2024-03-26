@@ -42,20 +42,51 @@ export default function ObjectSelector({
                 <div className="p-4">
                     <ul className="m-0 list-none p-0">
                         {nodeList.map((node: TransformNode) => (
-                            <li className="mb-2" key={node.uniqueId}>
-                                <div
-                                    className="flex cursor-pointer items-center justify-between rounded-md bg-gray-700 px-4 py-2 hover:bg-gray-600"
-                                    onClick={() => {
-                                        handleObjectClick(node.uniqueId)
-                                    }}
-                                >
-                                    <span className="font-bold">
-                                        {node.name}
-                                    </span>
-                                    <button className="focus:outline-none">
-                                        &#9660;
-                                    </button>
-                                </div>
+                            <li className="mb-2">
+                                <details>
+                                    <summary>
+                                        <div
+                                            className="flex cursor-pointer items-center justify-between rounded-md bg-gray-700 px-4 py-2 hover:bg-gray-600"
+                                            onClick={(e) => {
+                                                e.preventDefault()
+                                                handleObjectClick(node.uniqueId)
+                                            }}
+                                        >
+                                            <span className="font-bold">
+                                                {node.name}
+                                            </span>
+                                            <button className="focus:outline-none">
+                                                &#9660;
+                                            </button>
+                                        </div>
+                                    </summary>
+                                    <div>
+                                        {node
+                                            .getChildTransformNodes()
+                                            .map((child) => (
+                                                <div
+                                                    key={child.uniqueId}
+                                                    className="ml-4"
+                                                >
+                                                    <div
+                                                        className="flex cursor-pointer items-center justify-between rounded-md bg-gray-700 px-4 py-2 hover:bg-gray-600"
+                                                        onClick={() => {
+                                                            handleObjectClick(
+                                                                child.uniqueId
+                                                            )
+                                                        }}
+                                                    >
+                                                        <span className="font-bold">
+                                                            {child.name}
+                                                        </span>
+                                                        <button className="focus:outline-none">
+                                                            &#9660;
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                    </div>
+                                </details>
                             </li>
                         ))}
                     </ul>
