@@ -1,6 +1,6 @@
 import { TransformNode, Vector3 } from '@babylonjs/core'
 
-export interface ITransport {
+export interface INodeTransport {
     px: number
     py: number
     pz: number
@@ -12,8 +12,8 @@ export interface ITransport {
     sz: number
 }
 
-export default function changeTransport(
-    watch: ITransport,
+export default function changeNodeTransport(
+    watch: INodeTransport,
     nodes: TransformNode
 ): void {
     nodes.position = new Vector3(watch.px, watch.py, watch.pz)

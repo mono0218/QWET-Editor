@@ -1,18 +1,18 @@
 import { useForm } from 'react-hook-form'
 import { useEffect } from 'react'
-import changeNodeTransport, {
-    INodeTransport,
-} from '../../lib/object/nodeTransports'
-import { TransformNode } from '@babylonjs/core'
+import { AbstractMesh } from '@babylonjs/core'
+import changeMeshTransport, {
+    IMeshTransport,
+} from '../../lib/object/meshTransports'
 
-export default function NodeSetting({ node }: { node: TransformNode }) {
-    if (!node) return <></>
+export default function MeshSetting({ mesh }: { mesh: AbstractMesh }) {
+    if (!mesh) return <></>
 
     const { register, watch, setValue } = useForm()
 
     useEffect(() => {
         const subscription = watch((watchTransport) => {
-            const transport: INodeTransport = {
+            const transport: IMeshTransport = {
                 px: watchTransport.px,
                 py: watchTransport.py,
                 pz: watchTransport.pz,
@@ -23,22 +23,22 @@ export default function NodeSetting({ node }: { node: TransformNode }) {
                 sy: watchTransport.sy,
                 sz: watchTransport.sz,
             }
-            changeNodeTransport(transport, node)
+            changeMeshTransport(transport, mesh)
         })
         return () => subscription.unsubscribe()
-    }, [watch, node])
+    }, [watch, mesh])
 
     useEffect(() => {
-        setValue('px', node.position.x)
-        setValue('py', node.position.y)
-        setValue('pz', node.position.z)
-        setValue('rx', node.rotation.x)
-        setValue('ry', node.rotation.y)
-        setValue('rz', node.rotation.z)
-        setValue('sx', node.scaling.x)
-        setValue('sy', node.scaling.y)
-        setValue('sz', node.scaling.z)
-    }, [node])
+        setValue('px', mesh.position.x)
+        setValue('py', mesh.position.y)
+        setValue('pz', mesh.position.z)
+        setValue('rx', mesh.rotation.x)
+        setValue('ry', mesh.rotation.y)
+        setValue('rz', mesh.rotation.z)
+        setValue('sx', mesh.scaling.x)
+        setValue('sy', mesh.scaling.y)
+        setValue('sz', mesh.scaling.z)
+    }, [mesh])
 
     return (
         <>
@@ -63,21 +63,21 @@ export default function NodeSetting({ node }: { node: TransformNode }) {
                                 <input
                                     type="number"
                                     className="mr-2 w-16 border border-gray-600 bg-gray-700 px-2 py-1"
-                                    defaultValue={node.position.x}
+                                    defaultValue={mesh.position.x}
                                     {...register('px', { required: true })}
                                     placeholder="X"
                                 />
                                 <input
                                     type="number"
                                     className="mr-2 w-16 border border-gray-600 bg-gray-700 px-2 py-1"
-                                    defaultValue={node.position.y}
+                                    defaultValue={mesh.position.y}
                                     {...register('py', { required: true })}
                                     placeholder="Y"
                                 />
                                 <input
                                     type="number"
                                     className="w-16 border border-gray-600 bg-gray-700 px-2 py-1"
-                                    defaultValue={node.position.z}
+                                    defaultValue={mesh.position.z}
                                     {...register('pz', { required: true })}
                                     placeholder="Z"
                                 />
@@ -91,21 +91,21 @@ export default function NodeSetting({ node }: { node: TransformNode }) {
                                 <input
                                     type="number"
                                     className="mr-2 w-16 border border-gray-600 bg-gray-700 px-2 py-1"
-                                    defaultValue={node.rotation.x}
+                                    defaultValue={mesh.rotation.x}
                                     {...register('rx', { required: true })}
                                     placeholder="X"
                                 />
                                 <input
                                     type="number"
                                     className="mr-2 w-16 border border-gray-600 bg-gray-700 px-2 py-1"
-                                    defaultValue={node.rotation.y}
+                                    defaultValue={mesh.rotation.y}
                                     {...register('ry', { required: true })}
                                     placeholder="Y"
                                 />
                                 <input
                                     type="number"
                                     className="w-16 border border-gray-600 bg-gray-700 px-2 py-1"
-                                    defaultValue={node.rotation.z}
+                                    defaultValue={mesh.rotation.z}
                                     {...register('rz', { required: true })}
                                     placeholder="Z"
                                 />
@@ -119,21 +119,21 @@ export default function NodeSetting({ node }: { node: TransformNode }) {
                                 <input
                                     type="number"
                                     className="mr-2 w-16 border border-gray-600 bg-gray-700 px-2 py-1"
-                                    defaultValue={node.scaling.x}
+                                    defaultValue={mesh.scaling.x}
                                     {...register('sx', { required: true })}
                                     placeholder="X"
                                 />
                                 <input
                                     type="number"
                                     className="mr-2 w-16 border border-gray-600 bg-gray-700 px-2 py-1"
-                                    defaultValue={node.scaling.y}
+                                    defaultValue={mesh.scaling.y}
                                     {...register('sy', { required: true })}
                                     placeholder="Y"
                                 />
                                 <input
                                     type="number"
                                     className="w-16 border border-gray-600 bg-gray-700 px-2 py-1"
-                                    defaultValue={node.scaling.z}
+                                    defaultValue={mesh.scaling.z}
                                     {...register('sz', { required: true })}
                                     placeholder="Z"
                                 />

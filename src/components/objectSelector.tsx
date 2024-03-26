@@ -42,23 +42,17 @@ export default function ObjectSelector({
                 <div className="p-4">
                     <ul className="m-0 list-none p-0">
                         {nodeList.map((node: TransformNode) => (
-                            <li className="mb-2">
+                            <li className="mb-2" key={node.uniqueId}>
                                 <details>
                                     <summary>
-                                        <div
-                                            className="flex cursor-pointer items-center justify-between rounded-md bg-gray-700 px-4 py-2 hover:bg-gray-600"
+                                        <p
                                             onClick={(e) => {
                                                 e.preventDefault()
                                                 handleObjectClick(node.uniqueId)
                                             }}
                                         >
-                                            <span className="font-bold">
-                                                {node.name}
-                                            </span>
-                                            <button className="focus:outline-none">
-                                                &#9660;
-                                            </button>
-                                        </div>
+                                            {node.name}
+                                        </p>
                                     </summary>
                                     <div>
                                         {node
@@ -66,7 +60,7 @@ export default function ObjectSelector({
                                             .map((child) => (
                                                 <div
                                                     key={child.uniqueId}
-                                                    className="ml-4"
+                                                    className="ml-4　mb-2"
                                                 >
                                                     <div
                                                         className="flex cursor-pointer items-center justify-between rounded-md bg-gray-700 px-4 py-2 hover:bg-gray-600"
