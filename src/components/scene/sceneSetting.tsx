@@ -52,21 +52,21 @@ export default function SceneSetting({ scene }: { scene: Scene }) {
                                     type="number"
                                     className="mr-2 w-16 border border-gray-600 bg-gray-700 px-2 py-1"
                                     defaultValue={ListenerStart.position.x}
-                                    {...register('px', {required: true})}
+                                    {...register('px', { required: true })}
                                     placeholder="X"
                                 />
                                 <input
                                     type="number"
                                     className="mr-2 w-16 border border-gray-600 bg-gray-700 px-2 py-1"
                                     defaultValue={ListenerStart.position.y}
-                                    {...register('py', {required: true})}
+                                    {...register('py', { required: true })}
                                     placeholder="Y"
                                 />
                                 <input
                                     type="number"
                                     className="w-16 border border-gray-600 bg-gray-700 px-2 py-1"
                                     defaultValue={ListenerStart.position.z}
-                                    {...register('pz', {required: true})}
+                                    {...register('pz', { required: true })}
                                     placeholder="Z"
                                 />
                             </div>
@@ -92,21 +92,21 @@ export default function SceneSetting({ scene }: { scene: Scene }) {
                                     type="number"
                                     className="mr-2 w-16 border border-gray-600 bg-gray-700 px-2 py-1"
                                     defaultValue={LiverStart.position.x}
-                                    {...register('lx', {required: true})}
+                                    {...register('lx', { required: true })}
                                     placeholder="X"
                                 />
                                 <input
                                     type="number"
                                     className="mr-2 w-16 border border-gray-600 bg-gray-700 px-2 py-1"
                                     defaultValue={LiverStart.position.y}
-                                    {...register('ly', {required: true})}
+                                    {...register('ly', { required: true })}
                                     placeholder="Y"
                                 />
                                 <input
                                     type="number"
                                     className="w-16 border border-gray-600 bg-gray-700 px-2 py-1"
                                     defaultValue={LiverStart.position.z}
-                                    {...register('lz', {required: true})}
+                                    {...register('lz', { required: true })}
                                     placeholder="Z"
                                 />
                             </div>
@@ -117,8 +117,6 @@ export default function SceneSetting({ scene }: { scene: Scene }) {
                 <div className="mb-4 bg-gray-700 px-4 py-2 font-bold">
                     PostProcessing
                 </div>
-
-
             </div>
         </>
     )

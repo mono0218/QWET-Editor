@@ -2,36 +2,37 @@ import {
     DefaultRenderingPipeline,
     Engine,
     FlyCamera,
-    GizmoManager, LightGizmo,
+    GizmoManager,
+    LightGizmo,
     Scene,
     TransformNode,
-    Vector3
-} from "@babylonjs/core";
-import {MmdManager} from "./manager/mmdManager";
-import {LightManager} from "@/lib/manager/lightManager";
-import {MeshManager} from "@/lib/manager/meshManager";
+    Vector3,
+} from '@babylonjs/core'
+import { MmdManager } from './manager/mmdManager'
+import { LightManager } from '@/lib/manager/lightManager'
+import { MeshManager } from '@/lib/manager/meshManager'
 
-export class QwetEditer{
-    engine:Engine
-    scene:Scene
-    mmdManager:MmdManager
-    lightManager:LightManager
-    gizmo:GizmoManager
-    lightGizmo:LightGizmo
-    postProcession:DefaultRenderingPipeline
-    meshManager:MeshManager
+export class QwetEditer {
+    engine: Engine
+    scene: Scene
+    mmdManager: MmdManager
+    lightManager: LightManager
+    gizmo: GizmoManager
+    lightGizmo: LightGizmo
+    postProcession: DefaultRenderingPipeline
+    meshManager: MeshManager
 
     constructor() {
-        const {engine,scene} = this.initEngine()
+        const { engine, scene } = this.initEngine()
         this.engine = engine
         this.scene = scene
         this.createSpawnPoint()
 
-        this.gizmo = new GizmoManager(this.scene);
+        this.gizmo = new GizmoManager(this.scene)
         this.lightGizmo = new LightGizmo(this.gizmo.utilityLayer)
         this.lightManager = new LightManager(this.scene)
         this.postProcession = new DefaultRenderingPipeline(
-            "defaultPipeline", // The name of the pipeline
+            'defaultPipeline', // The name of the pipeline
             false, // Do you want the pipeline to use HDR texture?
             scene, // The scene instance
             this.scene.cameras // The list of cameras to be attached to
@@ -40,7 +41,7 @@ export class QwetEditer{
         this.meshManager = new MeshManager(scene)
     }
 
-    initEngine(){
+    initEngine() {
         const canvas = document.querySelector('canvas')
         const engine: Engine = new Engine(canvas, true)
         const scene: Scene = new Scene(engine)
@@ -51,10 +52,10 @@ export class QwetEditer{
         engine.runRenderLoop(() => {
             scene.render()
         })
-        return {engine,scene}
+        return { engine, scene }
     }
 
-    createSpawnPoint(){
+    createSpawnPoint() {
         const ListenerStartPosition = new TransformNode(
             'ListenerStartPosition',
             this.scene

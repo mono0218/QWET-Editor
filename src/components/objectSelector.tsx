@@ -1,27 +1,35 @@
-import {QwetEditer} from "../lib/Editer";
-import {MmdModel} from "babylon-mmd";
-import {useState} from "react";
+import { QwetEditer } from '../lib/Editer'
+import { MmdModel } from 'babylon-mmd'
+import { useState } from 'react'
 
 export default function ObjectSelector({
     editer,
-   handleObjectSelect
+    handleObjectSelect,
 }: {
     editer: QwetEditer
     handleObjectSelect: (uniqueId: number) => void
 }) {
-    const [ojbList, setObjList] = useState<MmdModel[]>(editer.mmdManager.allList)
+    const [ojbList, setObjList] = useState<MmdModel[]>(
+        editer.mmdManager.allList
+    )
     const [lightList, setLightList] = useState(editer.lightManager.allLight)
     const [meshList, setMeshList] = useState(editer.meshManager.allMeshs)
     setInterval(() => {
-        const array = editer.mmdManager.allList.filter(i => ojbList.indexOf(i) == -1)
-        setObjList([...ojbList,...array])
+        const array = editer.mmdManager.allList.filter(
+            (i) => ojbList.indexOf(i) == -1
+        )
+        setObjList([...ojbList, ...array])
 
-        const lightArray = editer.lightManager.allLight.filter(i => lightList.indexOf(i) == -1)
-        setLightList([...lightList,...lightArray])
+        const lightArray = editer.lightManager.allLight.filter(
+            (i) => lightList.indexOf(i) == -1
+        )
+        setLightList([...lightList, ...lightArray])
 
-        const meshArray = editer.meshManager.allMeshs.filter(i => meshList.indexOf(i) == -1)
-        setMeshList([...meshList,...meshArray])
-    },1000)
+        const meshArray = editer.meshManager.allMeshs.filter(
+            (i) => meshList.indexOf(i) == -1
+        )
+        setMeshList([...meshList, ...meshArray])
+    }, 1000)
     return (
         <>
             <div className="w-72 bg-gray-800 p-4 text-white">
@@ -38,12 +46,14 @@ export default function ObjectSelector({
                 <div className="p-4">
                     <ul className="m-0 list-none p-0">
                         {ojbList.map((mmd: MmdModel) => {
-                            return(
+                            return (
                                 <li className="mb-2" key={mmd.mesh.uniqueId}>
                                     <button
                                         onClick={(e) => {
                                             e.preventDefault()
-                                            handleObjectSelect(mmd.mesh.uniqueId)
+                                            handleObjectSelect(
+                                                mmd.mesh.uniqueId
+                                            )
                                         }}
                                     >
                                         {mmd.mesh.name}
@@ -51,8 +61,8 @@ export default function ObjectSelector({
                                 </li>
                             )
                         })}
-                        {lightList.map((light ) => {
-                            return(
+                        {lightList.map((light) => {
+                            return (
                                 <li className="mb-2" key={light.uniqueId}>
                                     <button
                                         onClick={(e) => {
@@ -65,13 +75,15 @@ export default function ObjectSelector({
                                 </li>
                             )
                         })}
-                        {meshList.map((object ) => {
-                            return(
+                        {meshList.map((object) => {
+                            return (
                                 <li className="mb-2" key={object.mesh.uniqueId}>
                                     <button
                                         onClick={(e) => {
                                             e.preventDefault()
-                                            handleObjectSelect(object.mesh.uniqueId)
+                                            handleObjectSelect(
+                                                object.mesh.uniqueId
+                                            )
                                         }}
                                     >
                                         {object.mesh.name}

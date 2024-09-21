@@ -1,12 +1,8 @@
-import {SceneSerializer} from '@babylonjs/core'
+import { SceneSerializer } from '@babylonjs/core'
 import React from 'react'
-import {QwetEditer} from "@/lib/Editer";
+import { QwetEditer } from '@/lib/Editer'
 
-export default function Header({
-    editer,
-}: {
-    editer: QwetEditer
-}) {
+export default function Header({ editer }: { editer: QwetEditer }) {
     const onAvatarFile = (event: React.ChangeEvent<HTMLInputElement>) => {
         const files = event.currentTarget.files
         if (!files || files?.length === 0) return
@@ -48,18 +44,18 @@ export default function Header({
         editer.meshManager.addMeshFile(file)
     }
 
-    const onCreateLight = (text:string,select:string) => {
+    const onCreateLight = (text: string, select: string) => {
         switch (select) {
-            case "DirectionalLight":
+            case 'DirectionalLight':
                 editer.lightManager.addDirectionalLight(text)
                 break
-            case "HemisphericLight":
+            case 'HemisphericLight':
                 editer.lightManager.addHemisphericLight(text)
                 break
-            case "SpotLight":
+            case 'SpotLight':
                 editer.lightManager.addSpotLight(text)
                 break
-            case "PointLight":
+            case 'PointLight':
                 editer.lightManager.addPointLight(text)
                 break
         }
@@ -70,32 +66,68 @@ export default function Header({
             <h1 className="text-xl font-bold">My Project</h1>
             <div className="flex mr-2">
                 <div className="dropdown dropdown-end">
-                    <div tabIndex={0} role="button" className="btn m-1">Add OBJ</div>
-                    <ul tabIndex={0} className="dropdown-content menu bg-gray-800 rounded-box z-[1] w-52 p-2 shadow">
+                    <div tabIndex={0} role="button" className="btn m-1">
+                        Add OBJ
+                    </div>
+                    <ul
+                        tabIndex={0}
+                        className="dropdown-content menu bg-gray-800 rounded-box z-[1] w-52 p-2 shadow"
+                    >
                         <li>
-                            <a className="btn"
-                               onClick={() => document.getElementById('my_modal_1').showModal()}>Light</a>
+                            <a
+                                className="btn"
+                                onClick={() =>
+                                    document
+                                        .getElementById('my_modal_1')
+                                        .showModal()
+                                }
+                            >
+                                Light
+                            </a>
                             <dialog id="my_modal_1" className="modal">
                                 <div className="modal-box">
-                                    <input type="text" id="text" placeholder="Type here"
-                                           className="input w-full max-w-xs"/>
+                                    <input
+                                        type="text"
+                                        id="text"
+                                        placeholder="Type here"
+                                        className="input w-full max-w-xs"
+                                    />
 
-                                    <select id="select" className="select select-bordered w-full max-w-xs">
-                                        <option> ライトの種類を選択してください</option>
+                                    <select
+                                        id="select"
+                                        className="select select-bordered w-full max-w-xs"
+                                    >
+                                        <option>
+                                            {' '}
+                                            ライトの種類を選択してください
+                                        </option>
                                         <option>DirectionalLight</option>
                                         <option>HemisphericLight</option>
                                         <option>SpotLight</option>
                                         <option>PointLight</option>
                                     </select>
 
-                                    <button className="btn"
-                                            onClick={() => {
-                                                const text = document.getElementById('text') as HTMLInputElement
-                                                const select = document.getElementById('select') as HTMLSelectElement
-                                                onCreateLight(text.value, select.value)
+                                    <button
+                                        className="btn"
+                                        onClick={() => {
+                                            const text =
+                                                document.getElementById(
+                                                    'text'
+                                                ) as HTMLInputElement
+                                            const select =
+                                                document.getElementById(
+                                                    'select'
+                                                ) as HTMLSelectElement
+                                            onCreateLight(
+                                                text.value,
+                                                select.value
+                                            )
 
-                                                document.getElementById('my_modal_1').close()
-                                            }}>
+                                            document
+                                                .getElementById('my_modal_1')
+                                                .close()
+                                        }}
+                                    >
                                         Create
                                     </button>
                                 </div>
@@ -105,57 +137,40 @@ export default function Header({
                             <input
                                 type="file"
                                 id="fileInput"
-                                style={{display: 'none'}}
+                                style={{ display: 'none' }}
                                 onChange={onAvatarFile}
                             />
-                            <label
-                                htmlFor="fileInput"
-                            >
-                                Avatar
-                            </label>
+                            <label htmlFor="fileInput">Avatar</label>
                         </li>
 
                         <li>
                             <input
                                 type="file"
                                 id="fileInput"
-                                style={{display: 'none'}}
+                                style={{ display: 'none' }}
                                 onChange={onStageFile}
                             />
-                            <label
-                                htmlFor="fileInput"
-                            >
-                                Stage
-                            </label>
+                            <label htmlFor="fileInput">Stage</label>
                         </li>
 
                         <li>
                             <input
                                 type="file"
                                 id="fileInput"
-                                style={{display: 'none'}}
+                                style={{ display: 'none' }}
                                 onChange={onMotionFile}
                             />
-                            <label
-                                htmlFor="fileInput"
-                            >
-                                Motion
-                            </label>
+                            <label htmlFor="fileInput">Motion</label>
                         </li>
-
 
                         <li>
                             <input
                                 type="file"
                                 id="input"
-                                style={{display: 'none'}}
+                                style={{ display: 'none' }}
                                 onChange={onMeshFile}
                             />
-                            <label
-                                htmlFor="input"
-                            >
-                                Mesh
-                            </label>
+                            <label htmlFor="input">Mesh</label>
                         </li>
                     </ul>
                 </div>
@@ -163,21 +178,23 @@ export default function Header({
                 <label
                     className="flex items-center px-4 py-2 bg-gray-700 rounded-md cursor-pointer hover:bg-gray-600"
                     onClick={() => {
-                        const serializedScene = SceneSerializer.Serialize(editer.scene)
+                        const serializedScene = SceneSerializer.Serialize(
+                            editer.scene
+                        )
                         const strScene = JSON.stringify(serializedScene)
                         const blob = new Blob([strScene], {
                             type: 'octet/stream',
                         })
 
                         const objectUrl = (
-                        window.webkitURL || window.URL
-                    ).createObjectURL(blob)
-                    const download = document.createElement('a')
-                    document.body.appendChild(download)
-                    download.href = objectUrl
-                    download.name = 'scene.babylon'
-                    download.download = 'scene.babylon'
-                    download.click()
+                            window.webkitURL || window.URL
+                        ).createObjectURL(blob)
+                        const download = document.createElement('a')
+                        document.body.appendChild(download)
+                        download.href = objectUrl
+                        download.name = 'scene.babylon'
+                        download.download = 'scene.babylon'
+                        download.click()
                     }}
                 >
                     QWET
