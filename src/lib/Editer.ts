@@ -3,14 +3,13 @@ import {
     Engine,
     FlyCamera,
     GizmoManager, LightGizmo,
-    PositionGizmo,
     Scene,
     TransformNode,
-    UtilityLayerRenderer,
     Vector3
 } from "@babylonjs/core";
 import {MmdManager} from "./manager/mmdManager";
 import {LightManager} from "@/lib/manager/lightManager";
+import {MeshManager} from "@/lib/manager/meshManager";
 
 export class QwetEditer{
     engine:Engine
@@ -20,6 +19,7 @@ export class QwetEditer{
     gizmo:GizmoManager
     lightGizmo:LightGizmo
     postProcession:DefaultRenderingPipeline
+    meshManager:MeshManager
 
     constructor() {
         const {engine,scene} = this.initEngine()
@@ -32,12 +32,12 @@ export class QwetEditer{
         this.lightManager = new LightManager(this.scene)
         this.postProcession = new DefaultRenderingPipeline(
             "defaultPipeline", // The name of the pipeline
-            true, // Do you want the pipeline to use HDR texture?
+            false, // Do you want the pipeline to use HDR texture?
             scene, // The scene instance
             this.scene.cameras // The list of cameras to be attached to
         )
-
         this.mmdManager = new MmdManager(scene)
+        this.meshManager = new MeshManager(scene)
     }
 
     initEngine(){

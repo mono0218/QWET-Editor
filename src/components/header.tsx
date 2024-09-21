@@ -1,6 +1,6 @@
-import {DirectionalLight, HemisphericLight, PointLight, SceneSerializer, SpotLight} from '@babylonjs/core'
+import {SceneSerializer} from '@babylonjs/core'
 import React from 'react'
-import {QwetEditer} from "../lib/Editer";
+import {QwetEditer} from "@/lib/Editer";
 
 export default function Header({
     editer,
@@ -25,7 +25,7 @@ export default function Header({
         const file = files[0]
 
         if (file.name.endsWith('.pmx')) {
-            editer.mmdManager.loadAvatar(file).then()
+            editer.mmdManager.loadStage(file).then()
         }
     }
 
@@ -38,6 +38,14 @@ export default function Header({
         if (file.name.endsWith('.vmd')) {
             editer.mmdManager.loadMotion(file).then()
         }
+    }
+
+    const onMeshFile = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const files = event.currentTarget.files
+        if (!files || files?.length === 0) return
+
+        const file = files[0]
+        editer.meshManager.addMeshFile(file)
     }
 
     const onCreateLight = (text:string,select:string) => {
@@ -65,10 +73,12 @@ export default function Header({
                     <div tabIndex={0} role="button" className="btn m-1">Add OBJ</div>
                     <ul tabIndex={0} className="dropdown-content menu bg-gray-800 rounded-box z-[1] w-52 p-2 shadow">
                         <li>
-                            <a className="btn" onClick={()=>document.getElementById('my_modal_1').showModal()}>Light</a>
+                            <a className="btn"
+                               onClick={() => document.getElementById('my_modal_1').showModal()}>Light</a>
                             <dialog id="my_modal_1" className="modal">
                                 <div className="modal-box">
-                                    <input type="text" id="text" placeholder="Type here" className="input w-full max-w-xs"/>
+                                    <input type="text" id="text" placeholder="Type here"
+                                           className="input w-full max-w-xs"/>
 
                                     <select id="select" className="select select-bordered w-full max-w-xs">
                                         <option> ライトの種類を選択してください</option>
@@ -82,7 +92,7 @@ export default function Header({
                                             onClick={() => {
                                                 const text = document.getElementById('text') as HTMLInputElement
                                                 const select = document.getElementById('select') as HTMLSelectElement
-                                                onCreateLight(text.value,select.value)
+                                                onCreateLight(text.value, select.value)
 
                                                 document.getElementById('my_modal_1').close()
                                             }}>
@@ -130,6 +140,21 @@ export default function Header({
                                 htmlFor="fileInput"
                             >
                                 Motion
+                            </label>
+                        </li>
+
+
+                        <li>
+                            <input
+                                type="file"
+                                id="input"
+                                style={{display: 'none'}}
+                                onChange={onMeshFile}
+                            />
+                            <label
+                                htmlFor="input"
+                            >
+                                Mesh
                             </label>
                         </li>
                     </ul>

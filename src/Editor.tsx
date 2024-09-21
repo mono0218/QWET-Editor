@@ -14,7 +14,6 @@ export default function Editor() {
     },[])
 
     const handleObjectSelect = (uniqueId: number) => {
-        console.log(uniqueId);
         setSelectedObj(uniqueId)
     }
 

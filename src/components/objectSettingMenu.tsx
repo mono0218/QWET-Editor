@@ -2,6 +2,7 @@ import NodeSetting from './node/nodeSetting'
 import SceneSetting from './scene/sceneSetting'
 import MeshSetting from './mesh/meshSetting'
 import {QwetEditer} from "../lib/Editer";
+import {TransformNode} from "@babylonjs/core";
 
 export default function ObjectSettingMenu({
     editer,
@@ -23,11 +24,10 @@ export default function ObjectSettingMenu({
         editer.gizmo.positionGizmoEnabled = true;
         editer.gizmo.usePointerToAttachGizmos = false;
         editer.gizmo.attachToMesh(mesh);
-        return <MeshSetting mesh={mesh} />
+        return <MeshSetting mesh={mesh} editer={editer}/>
     } else if (light) {
         editer.gizmo.positionGizmoEnabled = true;
-        editer.gizmo.attachToNode(light)
-        return <>a</>
+        editer.gizmo.attachToNode(light);
     } else if (camera) {
         return <>a</>
     } else if (node) {

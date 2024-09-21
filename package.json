@@ -24,6 +24,7 @@
         "class-variance-authority": "^0.7.0",
         "clsx": "^2.1.1",
         "lucide-react": "^0.445.0",
+        "monaco-editor": "^0.52.0",
         "postcss": "^8.4.35",
         "react-dom": "^18.2.0",
         "react-hook-form": "^7.51.1",

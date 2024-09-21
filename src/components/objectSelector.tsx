@@ -11,12 +11,16 @@ export default function ObjectSelector({
 }) {
     const [ojbList, setObjList] = useState<MmdModel[]>(editer.mmdManager.allList)
     const [lightList, setLightList] = useState(editer.lightManager.allLight)
+    const [meshList, setMeshList] = useState(editer.meshManager.allMeshs)
     setInterval(() => {
         const array = editer.mmdManager.allList.filter(i => ojbList.indexOf(i) == -1)
         setObjList([...ojbList,...array])
 
         const lightArray = editer.lightManager.allLight.filter(i => lightList.indexOf(i) == -1)
         setLightList([...lightList,...lightArray])
+
+        const meshArray = editer.meshManager.allMeshs.filter(i => meshList.indexOf(i) == -1)
+        setMeshList([...meshList,...meshArray])
     },1000)
     return (
         <>
@@ -57,6 +61,20 @@ export default function ObjectSelector({
                                         }}
                                     >
                                         {light.name}
+                                    </button>
+                                </li>
+                            )
+                        })}
+                        {meshList.map((object ) => {
+                            return(
+                                <li className="mb-2" key={object.mesh.uniqueId}>
+                                    <button
+                                        onClick={(e) => {
+                                            e.preventDefault()
+                                            handleObjectSelect(object.mesh.uniqueId)
+                                        }}
+                                    >
+                                        {object.mesh.name}
                                     </button>
                                 </li>
                             )
