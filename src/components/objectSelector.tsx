@@ -1,31 +1,23 @@
-import { Scene, TransformNode } from '@babylonjs/core'
-import { useState } from 'react'
-import { tfNodeManager } from '../lib/manager/tfNodeManager'
+import {QwetEditer} from "../lib/Editer";
+import {MmdModel} from "babylon-mmd";
+import {useState} from "react";
 
 export default function ObjectSelector({
-    scene,
-    nodeManager,
-    onObjectSelect,
+    editer,
+   handleObjectSelect
 }: {
-    scene: Scene
-    nodeManager: tfNodeManager
-    onObjectSelect: (meshId: number) => void
+    editer: QwetEditer
+    handleObjectSelect: (uniqueId: number) => void
 }) {
-    if (!scene) return <></>
-    const [nodeList, setNodeList] = useState<TransformNode[]>(
-        nodeManager.getNodeList()
-    )
+    const [ojbList, setObjList] = useState<MmdModel[]>(editer.mmdManager.allList)
+    const [lightList, setLightList] = useState(editer.lightManager.allLight)
+    setInterval(() => {
+        const array = editer.mmdManager.allList.filter(i => ojbList.indexOf(i) == -1)
+        setObjList([...ojbList,...array])
 
-    scene.onNewTransformNodeAddedObservable.add(() => {
-        setTimeout(() => {
-            setNodeList([...nodeManager.getNodeList()])
-        }, 1000)
-    })
-
-    const handleObjectClick = (uniqueId: number) => {
-        onObjectSelect(uniqueId)
-    }
-
+        const lightArray = editer.lightManager.allLight.filter(i => lightList.indexOf(i) == -1)
+        setLightList([...lightList,...lightArray])
+    },1000)
     return (
         <>
             <div className="w-72 bg-gray-800 p-4 text-white">
@@ -33,7 +25,7 @@ export default function ObjectSelector({
                     <button
                         className="flex-1 rounded-md bg-transparent px-4 py-2 hover:bg-gray-700 focus:outline-none"
                         onClick={() => {
-                            handleObjectClick(0)
+                            handleObjectSelect(0)
                         }}
                     >
                         Scene
@@ -41,48 +33,34 @@ export default function ObjectSelector({
                 </div>
                 <div className="p-4">
                     <ul className="m-0 list-none p-0">
-                        {nodeList.map((node: TransformNode) => (
-                            <li className="mb-2" key={node.uniqueId}>
-                                <details>
-                                    <summary>
-                                        <p
-                                            onClick={(e) => {
-                                                e.preventDefault()
-                                                handleObjectClick(node.uniqueId)
-                                            }}
-                                        >
-                                            {node.name}
-                                        </p>
-                                    </summary>
-                                    <div>
-                                        {node
-                                            .getChildTransformNodes()
-                                            .map((child) => (
-                                                <div
-                                                    key={child.uniqueId}
-                                                    className="ml-4　mb-2"
-                                                >
-                                                    <div
-                                                        className="flex cursor-pointer items-center justify-between rounded-md bg-gray-700 px-4 py-2 hover:bg-gray-600"
-                                                        onClick={() => {
-                                                            handleObjectClick(
-                                                                child.uniqueId
-                                                            )
-                                                        }}
-                                                    >
-                                                        <span className="font-bold">
-                                                            {child.name}
-                                                        </span>
-                                                        <button className="focus:outline-none">
-                                                            &#9660;
-                                                        </button>
-                                                    </div>
-                                                </div>
-                                            ))}
-                                    </div>
-                                </details>
-                            </li>
-                        ))}
+                        {ojbList.map((mmd: MmdModel) => {
+                            return(
+                                <li className="mb-2" key={mmd.mesh.uniqueId}>
+                                    <button
+                                        onClick={(e) => {
+                                            e.preventDefault()
+                                            handleObjectSelect(mmd.mesh.uniqueId)
+                                        }}
+                                    >
+                                        {mmd.mesh.name}
+                                    </button>
+                                </li>
+                            )
+                        })}
+                        {lightList.map((light ) => {
+                            return(
+                                <li className="mb-2" key={light.uniqueId}>
+                                    <button
+                                        onClick={(e) => {
+                                            e.preventDefault()
+                                            handleObjectSelect(light.uniqueId)
+                                        }}
+                                    >
+                                        {light.name}
+                                    </button>
+                                </li>
+                            )
+                        })}
                     </ul>
                 </div>
             </div>

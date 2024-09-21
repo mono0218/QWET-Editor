@@ -1,53 +1,46 @@
-import React, { useEffect, useState } from 'react'
+import React, {useEffect, useState} from 'react'
 import ObjectSelector from './components/objectSelector'
 import ObjectSettingMenu from './components/objectSettingMenu'
-import './global.css'
-import LiveEngine from './lib/engine/LiveEngine'
-import { Scene } from '@babylonjs/core'
 import Header from './components/header'
-import { tfNodeManager } from './lib/manager/tfNodeManager'
-import initSceneConfig from './lib/engine/initSceneConfig'
+import {QwetEditer} from "./lib/Editer";
+import './global.css'
 
 export default function Editor() {
-    const [scene, setScene] = useState<Scene>()
+    const [editer,setEditer] = useState<QwetEditer>()
     const [selectedObj, setSelectedObj] = useState<number>(0)
-    const [nodeManager, setNodeManager] = useState<tfNodeManager>()
 
     useEffect(() => {
-        const scene: Scene = LiveEngine()
-        setNodeManager(new tfNodeManager())
-        initSceneConfig(scene)
-        setScene(scene)
-    }, [])
+        setEditer(new QwetEditer())
+    },[])
 
     const handleObjectSelect = (uniqueId: number) => {
+        console.log(uniqueId);
         setSelectedObj(uniqueId)
     }
 
     return (
         <>
-            {scene ? (
-                <Header scene={scene} nodeManager={nodeManager!} />
-            ) : (
-                <> </>
+            {editer ? (
+                <Header editer={editer} />
+            ):(
+                <div>Loading...</div>
             )}
+
             <div className="flex">
-                {scene ? (
+                {editer ? (
                     <ObjectSelector
-                        scene={scene}
-                        nodeManager={nodeManager!}
-                        onObjectSelect={handleObjectSelect}
+                        editer={editer}
+                        handleObjectSelect={handleObjectSelect}
                     />
-                ) : (
-                    <div className="w-72">Loading...</div>
+                ):(
+                    <div>Loading...</div>
                 )}
 
                 <canvas className="w-full" />
-
-                {scene ? (
-                    <ObjectSettingMenu scene={scene} uniqueId={selectedObj} />
-                ) : (
-                    <div className="w-72">Loading...</div>
+                {editer ? (
+                    <ObjectSettingMenu editer={editer} uniqueId={selectedObj} />
+                ):(
+                    <div>Loading...</div>
                 )}
             </div>
         </>

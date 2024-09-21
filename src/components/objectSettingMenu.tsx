@@ -1,29 +1,40 @@
 import NodeSetting from './node/nodeSetting'
 import SceneSetting from './scene/sceneSetting'
-import { Scene } from '@babylonjs/core'
 import MeshSetting from './mesh/meshSetting'
+import {QwetEditer} from "../lib/Editer";
 
 export default function ObjectSettingMenu({
-    scene,
+    editer,
     uniqueId,
 }: {
-    scene: Scene
+    editer: QwetEditer
     uniqueId: number
 }) {
-    const mesh = scene.getMeshByUniqueId(uniqueId)
-    const light = scene.getLightByUniqueId(uniqueId)
-    const camera = scene.getCameraByUniqueId(uniqueId)
-    const node = scene.getTransformNodeByUniqueId(uniqueId)
-
+    const mesh = editer.scene.getMeshByUniqueId(uniqueId)
+    const light = editer.scene.getLightByUniqueId(uniqueId)
+    const camera = editer.scene.getCameraByUniqueId(uniqueId)
+    const node = editer.scene.getTransformNodeByUniqueId(uniqueId)
+    editer.gizmo.positionGizmoEnabled = false;
+    editer.gizmo.scaleGizmoEnabled = false;
+    editer.gizmo.rotationGizmoEnabled = false;
     if (uniqueId === 0) {
-        return <SceneSetting scene={scene} />
+        return <SceneSetting scene={editer.scene} />
     } else if (mesh) {
+        editer.gizmo.positionGizmoEnabled = true;
+        editer.gizmo.usePointerToAttachGizmos = false;
+        editer.gizmo.attachToMesh(mesh);
         return <MeshSetting mesh={mesh} />
     } else if (light) {
+        editer.gizmo.positionGizmoEnabled = true;
+        editer.gizmo.attachToNode(light)
         return <>a</>
     } else if (camera) {
         return <>a</>
     } else if (node) {
+        editer.gizmo.positionGizmoEnabled = true;
+
+        editer.gizmo.usePointerToAttachGizmos = false;
+        editer.gizmo.attachToNode(node);
         return <NodeSetting node={node} />
     }
 }
