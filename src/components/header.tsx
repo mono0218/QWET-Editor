@@ -5,23 +5,20 @@ import { QwetEditer } from '@/lib/Editer'
 export default function Header({ editer }: { editer: QwetEditer }) {
     const onAvatarFile = (event: React.ChangeEvent<HTMLInputElement>) => {
         const files = event.currentTarget.files
-        if (!files || files?.length === 0) return
 
-        const file = files[0]
-
-        if (file.name.endsWith('.pmx')) {
-            editer.mmdManager.loadAvatar(file).then()
+        for (const file of files) {
+            if (file.name.endsWith('.bpmx')) {
+                editer.mmdManager.loadAvatar(file).then()
+            }
         }
     }
 
     const onStageFile = (event: React.ChangeEvent<HTMLInputElement>) => {
         const files = event.currentTarget.files
-        if (!files || files?.length === 0) return
-
-        const file = files[0]
-
-        if (file.name.endsWith('.pmx')) {
-            editer.mmdManager.loadStage(file).then()
+        for (const file of files) {
+            if (file.name.endsWith('.bpmx')) {
+                editer.mmdManager.loadStage(file).then()
+            }
         }
     }
 

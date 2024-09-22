@@ -21,7 +21,7 @@ export class MmdManager {
     async loadAvatar(file: File) {
         const mmdMesh = await SceneLoader.ImportMeshAsync(
             undefined,
-            '',
+            "",
             file,
             this.scene
         )
@@ -29,7 +29,7 @@ export class MmdManager {
         this.allList.push(this.avatar)
     }
 
-    async loadStage(file: File) {
+    async loadStage(file: File,) {
         const mmdMesh = await SceneLoader.ImportMeshAsync(
             undefined,
             '',
