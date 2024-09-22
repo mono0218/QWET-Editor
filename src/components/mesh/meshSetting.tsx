@@ -1,11 +1,19 @@
 import { useForm } from 'react-hook-form'
-import { useEffect } from 'react'
+import React, { useEffect } from 'react'
 import { AbstractMesh } from '@babylonjs/core'
 import changeMeshTransport, {
     IMeshTransport,
 } from '../../lib/object/meshTransports'
+import { QwetEditer } from '@/lib/Editer'
+import openTextEditor from '@/components/monaco/TextEditor'
 
-export default function MeshSetting({ mesh }: { mesh: AbstractMesh }) {
+export default function MeshSetting({
+    mesh,
+    editer,
+}: {
+    mesh: AbstractMesh
+    editer: QwetEditer
+}) {
     if (!mesh) return <></>
 
     const { register, watch, setValue } = useForm()
@@ -141,6 +149,33 @@ export default function MeshSetting({ mesh }: { mesh: AbstractMesh }) {
                         </div>
                     </div>
                 </div>
+                {editer.meshManager.getMeshByUniqueID(mesh.uniqueId) ? (
+                    <div className="mb-4">
+                        <div className="flex cursor-pointer items-center justify-between bg-gray-600 px-4 py-2">
+                            <span className="flex-1 px-2 py-1 font-bold">
+                                {' '}
+                                Shader Editor{' '}
+                            </span>
+                            <button className="focus:outline-none">
+                                &#9660;
+                            </button>
+                        </div>
+                        <label
+                            className="flex items-center px-4 py-2 bg-gray-700 rounded-md cursor-pointer hover:bg-gray-600"
+                            onClick={() =>
+                                openTextEditor(
+                                    editer.meshManager.getMeshByUniqueID(
+                                        mesh.uniqueId
+                                    )!
+                                )
+                            }
+                        >
+                            Open Editor
+                        </label>
+                    </div>
+                ) : (
+                    <></>
+                )}
             </div>
         </>
     )

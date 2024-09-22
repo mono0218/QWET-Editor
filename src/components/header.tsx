@@ -1,64 +1,183 @@
-import { Scene, SceneSerializer } from '@babylonjs/core'
-import { importObject } from '../lib/object/importObject'
+import { SceneSerializer } from '@babylonjs/core'
 import React from 'react'
-import { tfNodeManager } from '../lib/manager/tfNodeManager'
+import { QwetEditer } from '@/lib/Editer'
 
-export default function Header({
-    scene,
-    nodeManager,
-}: {
-    scene: Scene
-    nodeManager: tfNodeManager
-}) {
-    const onChangeFile = (event: React.ChangeEvent<HTMLInputElement>) => {
+export default function Header({ editer }: { editer: QwetEditer }) {
+    const onAvatarFile = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const files = event.currentTarget.files
+
+        for (const file of files) {
+            if (file.name.endsWith('.bpmx')) {
+                editer.mmdManager.loadAvatar(file).then()
+            }
+        }
+    }
+
+    const onStageFile = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const files = event.currentTarget.files
+        for (const file of files) {
+            if (file.name.endsWith('.bpmx')) {
+                editer.mmdManager.loadStage(file).then()
+            }
+        }
+    }
+
+    const onMotionFile = (event: React.ChangeEvent<HTMLInputElement>) => {
         const files = event.currentTarget.files
         if (!files || files?.length === 0) return
 
         const file = files[0]
 
-        importObject({
-            scene: scene,
-            name: file.name,
-            file: file,
-            manager: nodeManager,
-        })
+        if (file.name.endsWith('.vmd')) {
+            editer.mmdManager.loadMotion(file).then()
+        }
+    }
+
+    const onMeshFile = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const files = event.currentTarget.files
+        if (!files || files?.length === 0) return
+
+        const file = files[0]
+        editer.meshManager.addMeshFile(file)
+    }
+
+    const onCreateLight = (text: string, select: string) => {
+        switch (select) {
+            case 'DirectionalLight':
+                editer.lightManager.addDirectionalLight(text)
+                break
+            case 'HemisphericLight':
+                editer.lightManager.addHemisphericLight(text)
+                break
+            case 'SpotLight':
+                editer.lightManager.addSpotLight(text)
+                break
+            case 'PointLight':
+                editer.lightManager.addPointLight(text)
+                break
+        }
     }
 
     return (
         <div className="flex items-center justify-between px-4 py-2 bg-gray-800 text-white">
             <h1 className="text-xl font-bold">My Project</h1>
             <div className="flex mr-2">
-                <div className="relative">
-                    <input
-                        type="file"
-                        id="fileInput"
-                        style={{ display: 'none' }}
-                        onChange={onChangeFile}
-                    />
-                    <label
-                        htmlFor="fileInput"
-                        className="flex items-center px-4 py-2 bg-gray-700 rounded-md cursor-pointer hover:bg-gray-600"
+                <div className="dropdown dropdown-end">
+                    <div tabIndex={0} role="button" className="btn m-1">
+                        Add OBJ
+                    </div>
+                    <ul
+                        tabIndex={0}
+                        className="dropdown-content menu bg-gray-800 rounded-box z-[1] w-52 p-2 shadow"
                     >
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            className="h-5 w-5 mr-2"
-                            viewBox="0 0 20 20"
-                            fill="currentColor"
-                        >
-                            <path
-                                fillRule="evenodd"
-                                d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM6.293 6.707a1 1 0 010-1.414l3-3a1 1 0 011.414 0l3 3a1 1 0 01-1.414 1.414L11 5.414V13a1 1 0 11-2 0V5.414L7.707 6.707a1 1 0 01-1.414 0z"
-                                clipRule="evenodd"
+                        <li>
+                            <a
+                                className="btn"
+                                onClick={() =>
+                                    document
+                                        .getElementById('my_modal_1')
+                                        .showModal()
+                                }
+                            >
+                                Light
+                            </a>
+                            <dialog id="my_modal_1" className="modal">
+                                <div className="modal-box">
+                                    <input
+                                        type="text"
+                                        id="text"
+                                        placeholder="Type here"
+                                        className="input w-full max-w-xs"
+                                    />
+
+                                    <select
+                                        id="select"
+                                        className="select select-bordered w-full max-w-xs"
+                                    >
+                                        <option>
+                                            {' '}
+                                            ライトの種類を選択してください
+                                        </option>
+                                        <option>DirectionalLight</option>
+                                        <option>HemisphericLight</option>
+                                        <option>SpotLight</option>
+                                        <option>PointLight</option>
+                                    </select>
+
+                                    <button
+                                        className="btn"
+                                        onClick={() => {
+                                            const text =
+                                                document.getElementById(
+                                                    'text'
+                                                ) as HTMLInputElement
+                                            const select =
+                                                document.getElementById(
+                                                    'select'
+                                                ) as HTMLSelectElement
+                                            onCreateLight(
+                                                text.value,
+                                                select.value
+                                            )
+
+                                            document
+                                                .getElementById('my_modal_1')
+                                                .close()
+                                        }}
+                                    >
+                                        Create
+                                    </button>
+                                </div>
+                            </dialog>
+                        </li>
+                        <li>
+                            <input
+                                type="file"
+                                id="fileInput"
+                                style={{ display: 'none' }}
+                                onChange={onAvatarFile}
                             />
-                        </svg>
-                        Import File
-                    </label>
+                            <label htmlFor="fileInput">Avatar</label>
+                        </li>
+
+                        <li>
+                            <input
+                                type="file"
+                                id="fileInput"
+                                style={{ display: 'none' }}
+                                onChange={onStageFile}
+                            />
+                            <label htmlFor="fileInput">Stage</label>
+                        </li>
+
+                        <li>
+                            <input
+                                type="file"
+                                id="fileInput"
+                                style={{ display: 'none' }}
+                                onChange={onMotionFile}
+                            />
+                            <label htmlFor="fileInput">Motion</label>
+                        </li>
+
+                        <li>
+                            <input
+                                type="file"
+                                id="input"
+                                style={{ display: 'none' }}
+                                onChange={onMeshFile}
+                            />
+                            <label htmlFor="input">Mesh</label>
+                        </li>
+                    </ul>
                 </div>
 
                 <label
                     className="flex items-center px-4 py-2 bg-gray-700 rounded-md cursor-pointer hover:bg-gray-600"
                     onClick={() => {
-                        const serializedScene = SceneSerializer.Serialize(scene)
+                        const serializedScene = SceneSerializer.Serialize(
+                            editer.scene
+                        )
                         const strScene = JSON.stringify(serializedScene)
                         const blob = new Blob([strScene], {
                             type: 'octet/stream',
