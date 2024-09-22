@@ -1,11 +1,13 @@
 import { useForm } from 'react-hook-form'
-import { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { AbstractMesh } from '@babylonjs/core'
 import changeMeshTransport, {
     IMeshTransport,
 } from '../../lib/object/meshTransports'
 import { QwetEditer } from '@/lib/Editer'
+import OpenTextEditor from '@/components/monaco/TextEditor'
 import openTextEditor from '@/components/monaco/TextEditor'
+import MonacoEditor from 'react-monaco-editor'
 
 export default function MeshSetting({
     mesh,
@@ -166,10 +168,7 @@ export default function MeshSetting({
                                 openTextEditor(
                                     editer.meshManager.getMeshByUniqueID(
                                         mesh.uniqueId
-                                    )!.vertexShader,
-                                    editer.meshManager.getMeshByUniqueID(
-                                        mesh.uniqueId
-                                    )!.fragmentShader
+                                    )!
                                 )
                             }
                         >

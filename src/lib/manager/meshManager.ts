@@ -44,7 +44,7 @@ export class MeshManager {
     }
 }
 
-class qwetObject {
+export class qwetObject {
     mesh: Mesh
     vertexShader: string
     fragmentShader: string
@@ -97,13 +97,19 @@ class qwetObject {
             fragmentShader: this.fragmentShader,
         }
     }
-
-    editShader(vertexShader: string, fragmentShader: string) {
+    editVertexShader(vertexShader: string) {
         this.vertexShader = vertexShader
-        this.fragmentShader = fragmentShader
         this.mesh.material = new ShaderMaterial('shader', this.mesh._scene, {
             vertex: this.vertexShader,
             fragment: this.fragmentShader,
+        })
+    }
+
+    editFragmentShader(fragmentShader: string) {
+        this.fragmentShader = fragmentShader
+        this.mesh.material = new ShaderMaterial('shader', this.mesh._scene, {
+            vertex: this.vertexShader,
+            fragment: this.fragmentShader
         })
     }
 }
