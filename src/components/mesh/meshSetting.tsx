@@ -1,13 +1,11 @@
 import { useForm } from 'react-hook-form'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect } from 'react'
 import { AbstractMesh } from '@babylonjs/core'
 import changeMeshTransport, {
     IMeshTransport,
 } from '../../lib/object/meshTransports'
 import { QwetEditer } from '@/lib/Editer'
-import OpenTextEditor from '@/components/monaco/TextEditor'
 import openTextEditor from '@/components/monaco/TextEditor'
-import MonacoEditor from 'react-monaco-editor'
 
 export default function MeshSetting({
     mesh,

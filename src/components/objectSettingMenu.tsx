@@ -1,8 +1,7 @@
 import NodeSetting from './node/nodeSetting'
 import SceneSetting from './scene/sceneSetting'
 import MeshSetting from './mesh/meshSetting'
-import { QwetEditer } from '../lib/Editer'
-import { TransformNode } from '@babylonjs/core'
+import { QwetEditer } from '@/lib/Editer'
 
 export default function ObjectSettingMenu({
     editer,
