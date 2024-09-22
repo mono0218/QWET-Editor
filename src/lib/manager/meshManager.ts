@@ -109,7 +109,7 @@ export class qwetObject {
         this.fragmentShader = fragmentShader
         this.mesh.material = new ShaderMaterial('shader', this.mesh._scene, {
             vertex: this.vertexShader,
-            fragment: this.fragmentShader
+            fragment: this.fragmentShader,
         })
     }
 }

@@ -1,8 +1,6 @@
-import {qwetObject} from "@/lib/manager/meshManager";
+import { qwetObject } from '@/lib/manager/meshManager'
 
-export default function openTextEditor(
-    object: qwetObject
-) {
+export default function openTextEditor(object: qwetObject) {
     const popup = window.open('', 'popupWindow', 'width=800,height=600')
 
     if (!popup) {
@@ -13,21 +11,21 @@ export default function openTextEditor(
     }
 
     popup.document.write(html)
-    const vertexJSON = {type: 'vertex', value: object.vertexShader}
-    const fragmentJSON = {type: 'fragment', value: object.fragmentShader}
+    const vertexJSON = { type: 'vertex', value: object.vertexShader }
+    const fragmentJSON = { type: 'fragment', value: object.fragmentShader }
 
     window.addEventListener('message', (event) => {
         if (event.data.type === 'opened') {
             popup.postMessage(vertexJSON, '*')
             popup.postMessage(fragmentJSON, '*')
-        }else if (event.data.type === 'vertex') {
+        } else if (event.data.type === 'vertex') {
             console.log(event.data.value)
             object.editVertexShader(event.data.value)
-        }else if (event.data.type === 'fragment') {
+        } else if (event.data.type === 'fragment') {
             console.log(event.data.value)
             object.editFragmentShader(event.data.value)
         }
-    });
+    })
 }
 
 const html = `
