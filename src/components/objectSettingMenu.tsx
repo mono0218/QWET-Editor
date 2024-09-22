@@ -2,6 +2,7 @@ import NodeSetting from './node/nodeSetting'
 import SceneSetting from './scene/sceneSetting'
 import MeshSetting from './mesh/meshSetting'
 import { QwetEditer } from '@/lib/Editer'
+import { GizmoManager } from '@babylonjs/core'
 
 export default function ObjectSettingMenu({
     editer,
@@ -20,20 +21,39 @@ export default function ObjectSettingMenu({
     if (uniqueId === 0) {
         return <SceneSetting scene={editer.scene} />
     } else if (mesh) {
-        editer.gizmo.positionGizmoEnabled = true
-        editer.gizmo.usePointerToAttachGizmos = false
+        switchMode(editer.gizmo)
         editer.gizmo.attachToMesh(mesh)
         return <MeshSetting mesh={mesh} editer={editer} />
     } else if (light) {
-        editer.gizmo.positionGizmoEnabled = true
+        switchMode(editer.gizmo)
         editer.gizmo.attachToNode(light)
     } else if (camera) {
         return <>a</>
     } else if (node) {
-        editer.gizmo.positionGizmoEnabled = true
-
-        editer.gizmo.usePointerToAttachGizmos = false
+        switchMode(editer.gizmo)
         editer.gizmo.attachToNode(node)
         return <NodeSetting node={node} />
     }
+}
+
+function switchMode(gizmo: GizmoManager) {
+    gizmo.positionGizmoEnabled = true
+    gizmo.scaleGizmoEnabled = false
+    gizmo.rotationGizmoEnabled = false
+
+    document.addEventListener('keydown', function (event) {
+        if (event.key === 'p') {
+            gizmo.positionGizmoEnabled = true
+            gizmo.scaleGizmoEnabled = false
+            gizmo.rotationGizmoEnabled = false
+        } else if (event.key === 's') {
+            gizmo.positionGizmoEnabled = false
+            gizmo.scaleGizmoEnabled = true
+            gizmo.rotationGizmoEnabled = false
+        } else if (event.key === 'r') {
+            gizmo.positionGizmoEnabled = false
+            gizmo.scaleGizmoEnabled = false
+            gizmo.rotationGizmoEnabled = true
+        }
+    })
 }
