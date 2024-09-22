@@ -31,9 +31,9 @@ export default function Editor() {
                     <div>Loading...</div>
                 )}
 
-                <canvas className="w-full" />
+                <canvas className="w-2/3" />
                 {editer ? (
-                    <ObjectSettingMenu editer={editer} uniqueId={selectedObj} />
+                    <ObjectSettingMenu editer={editer} uniqueId={selectedObj}/>
                 ) : (
                     <div>Loading...</div>
                 )}
