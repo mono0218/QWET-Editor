@@ -28,7 +28,8 @@ export default function ObjectSettingMenu({
         switchMode(editor.gizmo)
         editor.gizmo.attachToNode(light)
     } else if (camera) {
-        return <>a</>
+        switchMode(editor.gizmo)
+        editor.gizmo.attachToNode(camera)
     } else if (node) {
         switchMode(editor.gizmo)
         editor.gizmo.attachToNode(node)
