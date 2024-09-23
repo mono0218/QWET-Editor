@@ -14,7 +14,9 @@ export default function ObjectSelector({
     )
     const [lightList, setLightList] = useState(editor.lightManager.allLight)
     const [meshList, setMeshList] = useState(editor.meshManager.allMeshs)
-    const [cameraList, setCameraList] = useState(editor.cameraManager.allCameras)
+    const [cameraList, setCameraList] = useState(
+        editor.cameraManager.allCameras
+    )
     setInterval(() => {
         const array = editor.mmdManager.allList.filter(
             (i) => ojbList.indexOf(i) == -1
@@ -103,9 +105,7 @@ export default function ObjectSelector({
                                     <button
                                         onClick={(e) => {
                                             e.preventDefault()
-                                            handleObjectSelect(
-                                                object.uniqueId
-                                            )
+                                            handleObjectSelect(object.uniqueId)
                                         }}
                                     >
                                         {object.name}

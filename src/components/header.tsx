@@ -171,7 +171,14 @@ export default function Header({ editor }: { editor: QwetEditor }) {
                         </li>
 
                         <li>
-                            <button id="addbutton" onClick={()=>{editor.rttManager.addRtt().then()}}>Add Rtt</button>
+                            <button
+                                id="addbutton"
+                                onClick={() => {
+                                    editor.rttManager.addRtt().then()
+                                }}
+                            >
+                                Add Rtt
+                            </button>
                         </li>
                     </ul>
                 </div>
