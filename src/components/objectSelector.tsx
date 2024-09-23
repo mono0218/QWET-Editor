@@ -14,6 +14,9 @@ export default function ObjectSelector({
     )
     const [lightList, setLightList] = useState(editor.lightManager.allLight)
     const [meshList, setMeshList] = useState(editor.meshManager.allMeshs)
+    const [cameraList, setCameraList] = useState(
+        editor.cameraManager.allCameras
+    )
     setInterval(() => {
         const array = editor.mmdManager.allList.filter(
             (i) => ojbList.indexOf(i) == -1
@@ -29,6 +32,11 @@ export default function ObjectSelector({
             (i) => meshList.indexOf(i) == -1
         )
         setMeshList([...meshList, ...meshArray])
+
+        const cameraArray = editor.cameraManager.allCameras.filter(
+            (i) => cameraList.indexOf(i) == -1
+        )
+        setCameraList([...cameraList, ...cameraArray])
     }, 1000)
     return (
         <>
@@ -87,6 +95,20 @@ export default function ObjectSelector({
                                         }}
                                     >
                                         {object.mesh.name}
+                                    </button>
+                                </li>
+                            )
+                        })}
+                        {cameraList.map((object) => {
+                            return (
+                                <li className="mb-2" key={object.uniqueId}>
+                                    <button
+                                        onClick={(e) => {
+                                            e.preventDefault()
+                                            handleObjectSelect(object.uniqueId)
+                                        }}
+                                    >
+                                        {object.name}
                                     </button>
                                 </li>
                             )

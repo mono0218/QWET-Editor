@@ -11,6 +11,8 @@ import {
 import { MmdManager } from './manager/mmdManager'
 import { LightManager } from '@/lib/manager/lightManager'
 import { MeshManager } from '@/lib/manager/meshManager'
+import { CameraManager } from '@/lib/manager/cameraManager'
+import { RttManager } from '@/lib/manager/rttManager'
 
 export class QwetEditor {
     engine: Engine
@@ -19,8 +21,10 @@ export class QwetEditor {
     lightManager: LightManager
     gizmo: GizmoManager
     lightGizmo: LightGizmo
+    cameraManager: CameraManager
     postProcession: DefaultRenderingPipeline
     meshManager: MeshManager
+    rttManager: RttManager
 
     constructor() {
         const { engine, scene } = this.initEngine()
@@ -39,6 +43,8 @@ export class QwetEditor {
         )
         this.mmdManager = new MmdManager(scene)
         this.meshManager = new MeshManager(scene)
+        this.cameraManager = new CameraManager(scene)
+        this.rttManager = new RttManager(this)
     }
 
     initEngine() {

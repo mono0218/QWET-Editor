@@ -169,6 +169,17 @@ export default function Header({ editor }: { editor: QwetEditor }) {
                             />
                             <label htmlFor="input">Mesh</label>
                         </li>
+
+                        <li>
+                            <button
+                                id="addbutton"
+                                onClick={() => {
+                                    editor.rttManager.addRtt().then()
+                                }}
+                            >
+                                Add Rtt
+                            </button>
+                        </li>
                     </ul>
                 </div>
 
