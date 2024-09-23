@@ -1,37 +1,37 @@
 import NodeSetting from './node/nodeSetting'
 import SceneSetting from './scene/sceneSetting'
 import MeshSetting from './mesh/meshSetting'
-import { QwetEditer } from '@/lib/Editer'
+import { QwetEditor } from '@/lib/Editor'
 import { GizmoManager } from '@babylonjs/core'
 
 export default function ObjectSettingMenu({
-    editer,
+    editor,
     uniqueId,
 }: {
-    editer: QwetEditer
+    editor: QwetEditor
     uniqueId: number
 }) {
-    const mesh = editer.scene.getMeshByUniqueId(uniqueId)
-    const light = editer.scene.getLightByUniqueId(uniqueId)
-    const camera = editer.scene.getCameraByUniqueId(uniqueId)
-    const node = editer.scene.getTransformNodeByUniqueId(uniqueId)
-    editer.gizmo.positionGizmoEnabled = false
-    editer.gizmo.scaleGizmoEnabled = false
-    editer.gizmo.rotationGizmoEnabled = false
+    const mesh = editor.scene.getMeshByUniqueId(uniqueId)
+    const light = editor.scene.getLightByUniqueId(uniqueId)
+    const camera = editor.scene.getCameraByUniqueId(uniqueId)
+    const node = editor.scene.getTransformNodeByUniqueId(uniqueId)
+    editor.gizmo.positionGizmoEnabled = false
+    editor.gizmo.scaleGizmoEnabled = false
+    editor.gizmo.rotationGizmoEnabled = false
     if (uniqueId === 0) {
-        return <SceneSetting scene={editer.scene} />
+        return <SceneSetting scene={editor.scene} />
     } else if (mesh) {
-        switchMode(editer.gizmo)
-        editer.gizmo.attachToMesh(mesh)
-        return <MeshSetting mesh={mesh} editer={editer} />
+        switchMode(editor.gizmo)
+        editor.gizmo.attachToMesh(mesh)
+        return <MeshSetting mesh={mesh} editor={editor} />
     } else if (light) {
-        switchMode(editer.gizmo)
-        editer.gizmo.attachToNode(light)
+        switchMode(editor.gizmo)
+        editor.gizmo.attachToNode(light)
     } else if (camera) {
         return <>a</>
     } else if (node) {
-        switchMode(editer.gizmo)
-        editer.gizmo.attachToNode(node)
+        switchMode(editor.gizmo)
+        editor.gizmo.attachToNode(node)
         return <NodeSetting node={node} />
     }
 }

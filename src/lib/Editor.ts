@@ -12,7 +12,7 @@ import { MmdManager } from './manager/mmdManager'
 import { LightManager } from '@/lib/manager/lightManager'
 import { MeshManager } from '@/lib/manager/meshManager'
 
-export class QwetEditer {
+export class QwetEditor {
     engine: Engine
     scene: Scene
     mmdManager: MmdManager
