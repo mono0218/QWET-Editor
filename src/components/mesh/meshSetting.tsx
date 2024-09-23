@@ -4,15 +4,15 @@ import { AbstractMesh } from '@babylonjs/core'
 import changeMeshTransport, {
     IMeshTransport,
 } from '../../lib/object/meshTransports'
-import { QwetEditer } from '@/lib/Editer'
+import { QwetEditor } from '@/lib/Editor'
 import openTextEditor from '@/components/monaco/TextEditor'
 
 export default function MeshSetting({
     mesh,
-    editer,
+    editor,
 }: {
     mesh: AbstractMesh
-    editer: QwetEditer
+    editor: QwetEditor
 }) {
     if (!mesh) return <></>
 
@@ -149,7 +149,7 @@ export default function MeshSetting({
                         </div>
                     </div>
                 </div>
-                {editer.meshManager.getMeshByUniqueID(mesh.uniqueId) ? (
+                {editor.meshManager.getMeshByUniqueID(mesh.uniqueId) ? (
                     <div className="mb-4">
                         <div className="flex cursor-pointer items-center justify-between bg-gray-600 px-4 py-2">
                             <span className="flex-1 px-2 py-1 font-bold">
@@ -164,7 +164,7 @@ export default function MeshSetting({
                             className="flex items-center px-4 py-2 bg-gray-700 rounded-md cursor-pointer hover:bg-gray-600"
                             onClick={() =>
                                 openTextEditor(
-                                    editer.meshManager.getMeshByUniqueID(
+                                    editor.meshManager.getMeshByUniqueID(
                                         mesh.uniqueId
                                     )!
                                 )

@@ -1,14 +1,14 @@
 import { SceneSerializer } from '@babylonjs/core'
 import React from 'react'
-import { QwetEditer } from '@/lib/Editer'
+import { QwetEditor } from '@/lib/Editor'
 
-export default function Header({ editer }: { editer: QwetEditer }) {
+export default function Header({ editor }: { editor: QwetEditor }) {
     const onAvatarFile = (event: React.ChangeEvent<HTMLInputElement>) => {
         const files = event.currentTarget.files
 
         for (const file of files) {
             if (file.name.endsWith('.bpmx')) {
-                editer.mmdManager.loadAvatar(file).then()
+                editor.mmdManager.loadAvatar(file).then()
             }
         }
     }
@@ -17,7 +17,7 @@ export default function Header({ editer }: { editer: QwetEditer }) {
         const files = event.currentTarget.files
         for (const file of files) {
             if (file.name.endsWith('.bpmx')) {
-                editer.mmdManager.loadStage(file).then()
+                editor.mmdManager.loadStage(file).then()
             }
         }
     }
@@ -29,7 +29,7 @@ export default function Header({ editer }: { editer: QwetEditer }) {
         const file = files[0]
 
         if (file.name.endsWith('.vmd')) {
-            editer.mmdManager.loadMotion(file).then()
+            editor.mmdManager.loadMotion(file).then()
         }
     }
 
@@ -38,22 +38,22 @@ export default function Header({ editer }: { editer: QwetEditer }) {
         if (!files || files?.length === 0) return
 
         const file = files[0]
-        editer.meshManager.addMeshFile(file)
+        editor.meshManager.addMeshFile(file)
     }
 
     const onCreateLight = (text: string, select: string) => {
         switch (select) {
             case 'DirectionalLight':
-                editer.lightManager.addDirectionalLight(text)
+                editor.lightManager.addDirectionalLight(text)
                 break
             case 'HemisphericLight':
-                editer.lightManager.addHemisphericLight(text)
+                editor.lightManager.addHemisphericLight(text)
                 break
             case 'SpotLight':
-                editer.lightManager.addSpotLight(text)
+                editor.lightManager.addSpotLight(text)
                 break
             case 'PointLight':
-                editer.lightManager.addPointLight(text)
+                editor.lightManager.addPointLight(text)
                 break
         }
     }
@@ -176,7 +176,7 @@ export default function Header({ editer }: { editer: QwetEditer }) {
                     className="flex items-center px-4 py-2 bg-gray-700 rounded-md cursor-pointer hover:bg-gray-600"
                     onClick={() => {
                         const serializedScene = SceneSerializer.Serialize(
-                            editer.scene
+                            editor.scene
                         )
                         const strScene = JSON.stringify(serializedScene)
                         const blob = new Blob([strScene], {

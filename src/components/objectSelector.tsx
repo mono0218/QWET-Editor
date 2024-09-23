@@ -1,31 +1,31 @@
-import { QwetEditer } from '@/lib/Editer'
+import { QwetEditor } from '@/lib/Editor'
 import { MmdModel } from 'babylon-mmd'
 import { useState } from 'react'
 
 export default function ObjectSelector({
-    editer,
+    editor,
     handleObjectSelect,
 }: {
-    editer: QwetEditer
+    editor: QwetEditor
     handleObjectSelect: (uniqueId: number) => void
 }) {
     const [ojbList, setObjList] = useState<MmdModel[]>(
-        editer.mmdManager.allList
+        editor.mmdManager.allList
     )
-    const [lightList, setLightList] = useState(editer.lightManager.allLight)
-    const [meshList, setMeshList] = useState(editer.meshManager.allMeshs)
+    const [lightList, setLightList] = useState(editor.lightManager.allLight)
+    const [meshList, setMeshList] = useState(editor.meshManager.allMeshs)
     setInterval(() => {
-        const array = editer.mmdManager.allList.filter(
+        const array = editor.mmdManager.allList.filter(
             (i) => ojbList.indexOf(i) == -1
         )
         setObjList([...ojbList, ...array])
 
-        const lightArray = editer.lightManager.allLight.filter(
+        const lightArray = editor.lightManager.allLight.filter(
             (i) => lightList.indexOf(i) == -1
         )
         setLightList([...lightList, ...lightArray])
 
-        const meshArray = editer.meshManager.allMeshs.filter(
+        const meshArray = editor.meshManager.allMeshs.filter(
             (i) => meshList.indexOf(i) == -1
         )
         setMeshList([...meshList, ...meshArray])

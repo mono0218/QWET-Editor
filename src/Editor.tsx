@@ -2,15 +2,15 @@ import React, { useEffect, useState } from 'react'
 import ObjectSelector from './components/objectSelector'
 import ObjectSettingMenu from './components/objectSettingMenu'
 import Header from './components/header'
-import { QwetEditer } from './lib/Editer'
+import { QwetEditor } from './lib/Editor'
 import './global.css'
 
 export default function Editor() {
-    const [editer, setEditer] = useState<QwetEditer>()
+    const [editor, seteditor] = useState<QwetEditor>()
     const [selectedObj, setSelectedObj] = useState<number>(0)
 
     useEffect(() => {
-        setEditer(new QwetEditer())
+        seteditor(new QwetEditor())
     }, [])
 
     const handleObjectSelect = (uniqueId: number) => {
@@ -19,12 +19,12 @@ export default function Editor() {
 
     return (
         <>
-            {editer ? <Header editer={editer} /> : <div>Loading...</div>}
+            {editor ? <Header editor={editor} /> : <div>Loading...</div>}
 
             <div className="flex">
-                {editer ? (
+                {editor ? (
                     <ObjectSelector
-                        editer={editer}
+                        editor={editor}
                         handleObjectSelect={handleObjectSelect}
                     />
                 ) : (
@@ -32,8 +32,8 @@ export default function Editor() {
                 )}
 
                 <canvas className="w-2/3" />
-                {editer ? (
-                    <ObjectSettingMenu editer={editer} uniqueId={selectedObj} />
+                {editor ? (
+                    <ObjectSettingMenu editor={editor} uniqueId={selectedObj} />
                 ) : (
                     <div>Loading...</div>
                 )}
