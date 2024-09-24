@@ -7,6 +7,7 @@ jobs:
       - name: node_modules cache
         run: |
           rm -rf node_modules/
+          npm cache clean --force
       - uses: actions/checkout@v3
       - name: eslint
         uses: reviewdog/action-eslint@v1
