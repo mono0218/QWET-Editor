@@ -1,4 +1,4 @@
-import { QwetEditor } from '@/lib/Editor'
+import { QwetEditor } from '@/components/Editor'
 import {
     FreeCamera,
     MeshBuilder,

@@ -1,35 +1,39 @@
 import { SceneSerializer } from '@babylonjs/core'
 import React from 'react'
-import { QwetEditor } from '@/lib/Editor'
+import { QwetEditor } from '@/components/Editor'
+import { QwetObject } from '@/types/object'
+import { AvatarComponent } from '@/components/Objects/mmd/avatarComponent'
+import { PointLightComponent } from '@/components/Objects/light/pointLightComponent'
+import { DirectionalLightComponent } from '@/components/Objects/light/directionalLightComponent'
+import { MeshComponent } from '@/components/Objects/mesh/meshComponent'
+import { StageComponent } from '@/components/Objects/mmd/stageComponent'
 
 export default function Header({ editor }: { editor: QwetEditor }) {
     const onAvatarFile = (event: React.ChangeEvent<HTMLInputElement>) => {
         const files = event.currentTarget.files
+        if (!files || files?.length === 0) return
 
         for (const file of files) {
             if (file.name.endsWith('.bpmx')) {
-                editor.mmdManager.loadAvatar(file).then()
+                const object = new QwetObject(editor.scene)
+                object.name = file.name
+                object.addComponent(new AvatarComponent(null, file))
+                editor.objectList.push(object)
             }
         }
     }
 
     const onStageFile = (event: React.ChangeEvent<HTMLInputElement>) => {
         const files = event.currentTarget.files
-        for (const file of files) {
-            if (file.name.endsWith('.bpmx')) {
-                editor.mmdManager.loadStage(file).then()
-            }
-        }
-    }
-
-    const onMotionFile = (event: React.ChangeEvent<HTMLInputElement>) => {
-        const files = event.currentTarget.files
         if (!files || files?.length === 0) return
 
-        const file = files[0]
-
-        if (file.name.endsWith('.vmd')) {
-            editor.mmdManager.loadMotion(file).then()
+        for (const file of files) {
+            if (file.name.endsWith('.bpmx')) {
+                const object = new QwetObject(editor.scene)
+                object.name = file.name
+                object.addComponent(new StageComponent(null, file))
+                editor.objectList.push(object)
+            }
         }
     }
 
@@ -38,23 +42,50 @@ export default function Header({ editor }: { editor: QwetEditor }) {
         if (!files || files?.length === 0) return
 
         const file = files[0]
-        editor.meshManager.addMeshFile(file)
+        if (
+            file.name.endsWith('.obj') ||
+            file.name.endsWith('.gltf') ||
+            file.name.endsWith('.glb')
+        ) {
+            const object = new QwetObject(editor.scene)
+            object.name = file.name
+            object.addComponent(new MeshComponent(null, file))
+            editor.objectList.push(object)
+        }
     }
 
     const onCreateLight = (text: string, select: string) => {
         switch (select) {
-            case 'DirectionalLight':
-                editor.lightManager.addDirectionalLight(text)
+            case 'DirectionalLight': {
+                const direction = new QwetObject(editor.scene)
+                direction.name = text
+                direction.addComponent(new DirectionalLightComponent())
+                editor.objectList.push(direction)
                 break
-            case 'HemisphericLight':
-                editor.lightManager.addHemisphericLight(text)
+            }
+            case 'HemisphericLight': {
+                const hemispheric = new QwetObject(editor.scene)
+                hemispheric.name = text
+                const hemisphericLight = new DirectionalLightComponent()
+                hemispheric.addComponent(hemisphericLight)
                 break
-            case 'SpotLight':
-                editor.lightManager.addSpotLight(text)
+            }
+            case 'SpotLight': {
+                const spot = new QwetObject(editor.scene)
+                spot.name = text
+                const spotLight = new DirectionalLightComponent()
+                spot.addComponent(spotLight)
                 break
-            case 'PointLight':
-                editor.lightManager.addPointLight(text)
+            }
+            case 'PointLight': {
+                const point = new QwetObject(editor.scene)
+                point.name = text
+                const pointLight = new PointLightComponent()
+                point.addComponent(pointLight)
+
+                editor.objectList.push(point)
                 break
+            }
         }
     }
 
@@ -75,7 +106,7 @@ export default function Header({ editor }: { editor: QwetEditor }) {
                                 className="btn"
                                 onClick={() =>
                                     document
-                                        .getElementById('my_modal_1')
+                                        .getElementById('my_modal_1')!
                                         .showModal()
                                 }
                             >
@@ -121,7 +152,7 @@ export default function Header({ editor }: { editor: QwetEditor }) {
                                             )
 
                                             document
-                                                .getElementById('my_modal_1')
+                                                .getElementById('my_modal_1')!
                                                 .close()
                                         }}
                                     >
@@ -148,16 +179,6 @@ export default function Header({ editor }: { editor: QwetEditor }) {
                                 onChange={onStageFile}
                             />
                             <label htmlFor="fileInput">Stage</label>
-                        </li>
-
-                        <li>
-                            <input
-                                type="file"
-                                id="fileInput"
-                                style={{ display: 'none' }}
-                                onChange={onMotionFile}
-                            />
-                            <label htmlFor="fileInput">Motion</label>
                         </li>
 
                         <li>
