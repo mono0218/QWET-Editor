@@ -20,7 +20,7 @@ jobs:
             **/*.{ts,tsx,js,jsx,json}
       - uses: actions/setup-node@v3
         with:
-          node-version: 18
+          node-version: 22.3.0
           cache: "npm"
       - name: Run Prettier
         run: |
