@@ -11,7 +11,7 @@ import copy from 'rollup-plugin-copy';
 export default {
     input: 'src/index.ts',
     output: {
-        file: 'example/bundle.js',
+        file: 'example/build/bundle.js',
         format: 'iife',
         sourcemap: 'inline',
         inlineDynamicImports: true,
