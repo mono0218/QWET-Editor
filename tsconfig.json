@@ -1,10 +1,10 @@
 {
     "compilerOptions": {
         "target": "es6",
-        "outDir": "build",
+        "outDir": "example/build",
         "lib": ["dom", "dom.iterable", "esnext"],
         "declaration": true,
-        "declarationDir": "build",
+        "declarationDir": "example/build",
         "allowJs": true,
         "skipLibCheck": true,
         "esModuleInterop": true,
