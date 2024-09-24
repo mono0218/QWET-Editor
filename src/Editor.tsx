@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import ObjectSelector from './components/objectSelector'
 import ObjectSettingMenu from './components/objectSettingMenu'
 import Header from './components/header'
-import { QwetEditor } from './lib/Editor'
+import { QwetEditor } from './components/Editor'
 import './global.css'
 
 export default function Editor() {
