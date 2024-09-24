@@ -24,6 +24,7 @@ jobs:
           cache: "npm"
       - name: Run Prettier
         run: |
+          rm -rf node_modules/
           npm ci
           npx prettier --write ${{ env.GIT_DIFF_FILTERED }} # 環境変数GIT_DIFF_FILTEREDに差分のあるファイルが列挙されている
         if: env.GIT_DIFF
