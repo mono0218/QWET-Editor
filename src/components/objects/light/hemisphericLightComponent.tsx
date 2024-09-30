@@ -1,6 +1,7 @@
 import { HemisphericLight, Vector3 } from '@babylonjs/core'
 import { QwetObject } from '@/types/object'
 import { QwetComponent } from '@/types/component'
+import { basicInspector } from '@/components/uiComponents/basicInspector'
 
 export class HemisphericLightComponent implements QwetComponent {
     object: QwetObject
@@ -14,6 +15,7 @@ export class HemisphericLightComponent implements QwetComponent {
             new Vector3(0, 0, 0),
             this.object.scene
         )
+        this.uiComponentList.push(basicInspector(this))
     }
 
     update(): void {}
@@ -23,7 +25,9 @@ export class HemisphericLightComponent implements QwetComponent {
         this.light.dispose()
     }
 
+    uiComponentList: JSX.Element[] = []
+
     ui(): JSX.Element {
-        return <></>
+        return <>{this.uiComponentList.map((uiComponent) => uiComponent)}</>
     }
 }

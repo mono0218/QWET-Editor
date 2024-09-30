@@ -1,6 +1,7 @@
 import { DirectionalLight, Vector3 } from '@babylonjs/core'
 import { QwetComponent } from '@/types/component'
 import { QwetObject } from '@/types/object'
+import { basicInspector } from '@/components/uiComponents/basicInspector'
 
 export class DirectionalLightComponent implements QwetComponent {
     object: QwetObject
@@ -14,6 +15,8 @@ export class DirectionalLightComponent implements QwetComponent {
             new Vector3(0, 0, 0),
             this.object.scene
         )
+
+        this.uiComponentList.push(basicInspector(this))
     }
 
     update(): void {
@@ -28,7 +31,8 @@ export class DirectionalLightComponent implements QwetComponent {
 
     destroy(): void {}
 
+    uiComponentList: JSX.Element[] = []
     ui(): JSX.Element {
-        return <>qqqqq</>
+        return <>{basicInspector(this)}</>
     }
 }

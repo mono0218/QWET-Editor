@@ -1,11 +1,14 @@
 import { QwetComponent } from '@/types/component'
 import { Scene } from '@babylonjs/core'
+import { QwetEditor } from '@/components/Editor'
 
 export class QwetObject {
     scene: Scene
+    editor: QwetEditor
 
-    constructor(scene: Scene) {
+    constructor(scene: Scene, editor: QwetEditor) {
         this.scene = scene
+        this.editor = editor
     }
 
     uniqueId: number

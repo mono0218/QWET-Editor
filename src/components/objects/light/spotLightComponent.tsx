@@ -2,6 +2,7 @@ import { QwetComponent } from '@/types/component'
 import React from 'react'
 import { QwetObject } from '@/types/object'
 import { SpotLight, Vector3 } from '@babylonjs/core'
+import { basicInspector } from '@/components/uiComponents/basicInspector'
 
 export class SpotLightComponent implements QwetComponent {
     object: QwetObject
@@ -15,6 +16,8 @@ export class SpotLightComponent implements QwetComponent {
             0,
             this.object.scene
         )
+
+        this.uiComponentList.push(basicInspector(this))
     }
 
     update(): void {
@@ -37,7 +40,9 @@ export class SpotLightComponent implements QwetComponent {
         this.light.dispose()
     }
 
-    ui(): React.JSX.Element {
-        return <></>
+    uiComponentList: JSX.Element[] = []
+
+    ui(): JSX.Element {
+        return <>{this.uiComponentList.map((uiComponent) => uiComponent)}</>
     }
 }

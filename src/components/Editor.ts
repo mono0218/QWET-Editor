@@ -9,6 +9,7 @@ import {
     Vector3,
 } from '@babylonjs/core'
 import { QwetObject } from '@/types/object'
+import { MmdRuntime } from 'babylon-mmd'
 
 export class QwetEditor {
     engine: Engine
@@ -17,6 +18,7 @@ export class QwetEditor {
     lightGizmo: LightGizmo
     postProcession: DefaultRenderingPipeline
     objectList: Array<QwetObject> = []
+    mmdRuntime: MmdRuntime
 
     constructor() {
         const { engine, scene } = this.initEngine()
@@ -32,6 +34,8 @@ export class QwetEditor {
             scene, // The scene instance
             this.scene.cameras // The list of cameras to be attached to
         )
+        this.mmdRuntime = new MmdRuntime(this.scene)
+        this.mmdRuntime.register(scene)
     }
 
     initEngine() {

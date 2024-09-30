@@ -1,5 +1,6 @@
 import { QwetEditor } from '@/components/Editor'
 import React from 'react'
+import SceneSetting from '@/components/scene/sceneSetting'
 
 export default function ObjectSettingMenu({
     editor,
@@ -9,7 +10,12 @@ export default function ObjectSettingMenu({
     uniqueId: number
 }) {
     const object = editor.objectList.find((obj) => obj.uniqueId === uniqueId)
-    if (!object) return <></>
+
+    if (uniqueId == 0) {
+        return <SceneSetting scene={editor.scene} />
+    } else if (!object) {
+        return <></>
+    }
 
     return (
         <>
