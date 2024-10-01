@@ -1,16 +1,17 @@
 import { QwetComponent } from '@/types/component'
 import { QwetObject } from '@/types/object'
 import { Mesh, SceneLoader, ShaderMaterial } from '@babylonjs/core'
-import { basicInspector } from '@/components/uiComponents/basicInspector'
+import { BasicInspector }  from '@/components/uiComponents/basicInspector'
 import React from 'react'
+import { QwetUiComponent } from '@/types/uiComponent'
 
 export class MeshComponent implements QwetComponent {
-    object: QwetObject
+    object: QwetObject | undefined
     mesh: Mesh | null = null
     file: File | null = null
     vertexShader: string = ''
     fragmentShader: string = ''
-    uiComponentList: JSX.Element[] = []
+    uiComponentList:Array<QwetUiComponent> = []
 
     constructor(mesh: Mesh | null = null, file: File | null = null) {
         if (!mesh && !file) throw new Error('mesh or file is required')
@@ -23,22 +24,28 @@ export class MeshComponent implements QwetComponent {
     }
 
     init(): void {
+        if (!this.object) throw new Error('Object is not initialized')
         if (!this.file) return
-        SceneLoader.ImportMeshAsync(
-            '',
-            this.file.name,
+        SceneLoader.ImportMesh (
+            "",
+            "",
             this.file,
-            this.object.scene
-        ).then((result) => {
-            this.mesh = result.meshes[0] as Mesh
-            this.initSet()
-        })
-        this.defaultShader()
+            this.object.scene,
+            (meshes)=>{
+                if (!this.object) throw new Error('Object is not initialized')
 
-        this.uiComponentList.push(basicInspector(this))
+                this.mesh = meshes[0] as Mesh
+                this.object.uniqueId = this.mesh.uniqueId
+                this.initSet()
+                this.defaultShader()
+            }
+        )
+
+        this.uiComponentList.push(new BasicInspector(this))
     }
 
-    private initSet() {
+    protected initSet() {
+        if (!this.object) throw new Error('Object is not initialized')
         if (!this.mesh) return
         this.object.setPos(
             this.mesh.position.x,
@@ -58,6 +65,7 @@ export class MeshComponent implements QwetComponent {
     }
 
     update(): void {
+        if (!this.object) throw new Error('Object is not initialized')
         if (!this.mesh) return
         const pos = this.object.position
         const rot = this.object.rotation

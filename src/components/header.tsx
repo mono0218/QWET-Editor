@@ -105,9 +105,7 @@ export default function Header({ editor }: { editor: QwetEditor }) {
                             <a
                                 className="btn"
                                 onClick={() =>
-                                    document
-                                        .getElementById('my_modal_1')!
-                                        .showModal()
+                                    (document.getElementById('my_modal_1')! as HTMLDialogElement).showModal()
                                 }
                             >
                                 Light
@@ -151,9 +149,8 @@ export default function Header({ editor }: { editor: QwetEditor }) {
                                                 select.value
                                             )
 
-                                            document
-                                                .getElementById('my_modal_1')!
-                                                .close()
+                                            const dialog = document.getElementById('my_modal_1')as HTMLDialogElement
+                                            dialog.close()
                                         }}
                                     >
                                         Create
@@ -195,7 +192,6 @@ export default function Header({ editor }: { editor: QwetEditor }) {
                             <button
                                 id="addbutton"
                                 onClick={() => {
-                                    editor.rttManager.addRtt().then()
                                 }}
                             >
                                 Add Rtt

@@ -11,8 +11,8 @@ export class QwetObject {
         this.editor = editor
     }
 
-    uniqueId: number
-    name: string
+    uniqueId: number | undefined
+    name: string | undefined
     components: Array<QwetComponent> = []
 
     position: {
@@ -35,8 +35,8 @@ export class QwetObject {
 
     addComponent(component: QwetComponent) {
         component.object = this
-        this.components.push(component)
         component.init()
+        this.components.push(component)
     }
 
     setPos(x: number, y: number, z: number) {
