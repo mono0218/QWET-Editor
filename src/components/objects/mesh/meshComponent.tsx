@@ -1,7 +1,7 @@
 import { QwetComponent } from '@/types/component'
 import { QwetObject } from '@/types/object'
 import { Mesh, SceneLoader, ShaderMaterial } from '@babylonjs/core'
-import { BasicInspector }  from '@/components/uiComponents/basicInspector'
+import { BasicInspector } from '@/components/uiComponents/basicInspector'
 import React from 'react'
 import { QwetUiComponent } from '@/types/uiComponent'
 
@@ -11,7 +11,7 @@ export class MeshComponent implements QwetComponent {
     file: File | null = null
     vertexShader: string = ''
     fragmentShader: string = ''
-    uiComponentList:Array<QwetUiComponent> = []
+    uiComponentList: Array<QwetUiComponent> = []
 
     constructor(mesh: Mesh | null = null, file: File | null = null) {
         if (!mesh && !file) throw new Error('mesh or file is required')
@@ -26,12 +26,12 @@ export class MeshComponent implements QwetComponent {
     init(): void {
         if (!this.object) throw new Error('Object is not initialized')
         if (!this.file) return
-        SceneLoader.ImportMesh (
-            "",
-            "",
+        SceneLoader.ImportMesh(
+            '',
+            '',
             this.file,
             this.object.scene,
-            (meshes)=>{
+            (meshes) => {
                 if (!this.object) throw new Error('Object is not initialized')
 
                 this.mesh = meshes[0] as Mesh

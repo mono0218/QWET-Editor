@@ -42,17 +42,20 @@ export class BasicInspector implements QwetUiComponent {
                 z: this.component.object.scale.z,
             },
             setPos: (x: number, y: number, z: number) => {
-                if (!this.component.object) throw new Error('Object is not initialized')
+                if (!this.component.object)
+                    throw new Error('Object is not initialized')
                 this.component.object.setPos(x, y, z)
                 this.component.update()
             },
             setRot: (x: number, y: number, z: number) => {
-                if (!this.component.object) throw new Error('Object is not initialized')
+                if (!this.component.object)
+                    throw new Error('Object is not initialized')
                 this.component.object.setRot(x, y, z)
                 this.component.update()
             },
             setScale: (x: number, y: number, z: number) => {
-                if (!this.component.object) throw new Error('Object is not initialized')
+                if (!this.component.object)
+                    throw new Error('Object is not initialized')
                 this.component.object.setScale(x, y, z)
                 this.component.update()
             },
@@ -66,7 +69,8 @@ export class BasicInspector implements QwetUiComponent {
         }
 
         useEffect(() => {
-            if (!this.component.object) throw new Error('Object is not initialized')
+            if (!this.component.object)
+                throw new Error('Object is not initialized')
             objectRef.current = {
                 position: {
                     x: this.component.object.position.x,
@@ -84,22 +88,25 @@ export class BasicInspector implements QwetUiComponent {
                     z: this.component.object.scale.z,
                 },
                 setPos: (x: number, y: number, z: number) => {
-                    if (!this.component.object) throw new Error('Object is not initialized')
+                    if (!this.component.object)
+                        throw new Error('Object is not initialized')
                     this.component.object.setPos(x, y, z)
                     this.component.update()
                 },
                 setRot: (x: number, y: number, z: number) => {
-                    if (!this.component.object) throw new Error('Object is not initialized')
+                    if (!this.component.object)
+                        throw new Error('Object is not initialized')
                     this.component.object.setRot(x, y, z)
                     this.component.update()
                 },
                 setScale: (x: number, y: number, z: number) => {
-                    if (!this.component.object) throw new Error('Object is not initialized')
+                    if (!this.component.object)
+                        throw new Error('Object is not initialized')
                     this.component.object.setScale(x, y, z)
                     this.component.update()
                 },
-            }; // リセット
-        }, [this.component]);
+            } // リセット
+        }, [this.component])
 
         useEffect(() => {
             const subscription = watch((values) => {
@@ -163,4 +170,3 @@ export class BasicInspector implements QwetUiComponent {
         )
     }
 }
-

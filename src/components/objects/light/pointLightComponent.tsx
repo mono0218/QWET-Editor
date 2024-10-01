@@ -41,8 +41,6 @@ export class PointLightComponent implements QwetComponent {
         this.pointLight.dispose()
     }
 
-
-
     ui(): JSX.Element {
         return <>{this.uiComponentList.map((uiComponent) => uiComponent)}</>
     }

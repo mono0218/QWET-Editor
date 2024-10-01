@@ -45,8 +45,6 @@ export class SpotLightComponent implements QwetComponent {
         this.light.dispose()
     }
 
-
-
     ui(): JSX.Element {
         return <>{this.uiComponentList.map((uiComponent) => uiComponent)}</>
     }

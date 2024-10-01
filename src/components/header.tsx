@@ -105,7 +105,11 @@ export default function Header({ editor }: { editor: QwetEditor }) {
                             <a
                                 className="btn"
                                 onClick={() =>
-                                    (document.getElementById('my_modal_1')! as HTMLDialogElement).showModal()
+                                    (
+                                        document.getElementById(
+                                            'my_modal_1'
+                                        )! as HTMLDialogElement
+                                    ).showModal()
                                 }
                             >
                                 Light
@@ -149,7 +153,10 @@ export default function Header({ editor }: { editor: QwetEditor }) {
                                                 select.value
                                             )
 
-                                            const dialog = document.getElementById('my_modal_1')as HTMLDialogElement
+                                            const dialog =
+                                                document.getElementById(
+                                                    'my_modal_1'
+                                                ) as HTMLDialogElement
                                             dialog.close()
                                         }}
                                     >
@@ -189,11 +196,7 @@ export default function Header({ editor }: { editor: QwetEditor }) {
                         </li>
 
                         <li>
-                            <button
-                                id="addbutton"
-                                onClick={() => {
-                                }}
-                            >
+                            <button id="addbutton" onClick={() => {}}>
                                 Add Rtt
                             </button>
                         </li>

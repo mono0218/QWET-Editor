@@ -26,7 +26,8 @@ export default function ObjectSettingMenu({
                         return (
                             <React.Fragment key={object.uniqueId}>
                                 {UI}
-                            </React.Fragment>)
+                            </React.Fragment>
+                        )
                     })
                 })}
             </div>
