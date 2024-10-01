@@ -1,15 +1,18 @@
 import { QwetComponent } from '@/types/component'
 import { Scene } from '@babylonjs/core'
+import { QwetEditor } from '@/components/Editor'
 
 export class QwetObject {
     scene: Scene
+    editor: QwetEditor
 
-    constructor(scene: Scene) {
+    constructor(scene: Scene, editor: QwetEditor) {
         this.scene = scene
+        this.editor = editor
     }
 
-    uniqueId: number
-    name: string
+    uniqueId: number | undefined
+    name: string | undefined
     components: Array<QwetComponent> = []
 
     position: {
@@ -32,8 +35,8 @@ export class QwetObject {
 
     addComponent(component: QwetComponent) {
         component.object = this
-        this.components.push(component)
         component.init()
+        this.components.push(component)
     }
 
     setPos(x: number, y: number, z: number) {

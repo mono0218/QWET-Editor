@@ -37,11 +37,11 @@ export default function ObjectSelector({
                     <ul className="m-0 list-none p-0">
                         {objectList.map((object) => {
                             return (
-                                <li className="mb-2" key={object.uniqueId}>
+                                <li className="mb-2" key={object.uniqueId!}>
                                     <button
                                         onClick={(e) => {
                                             e.preventDefault()
-                                            handleObjectSelect(object.uniqueId)
+                                            handleObjectSelect(object.uniqueId!)
                                         }}
                                     >
                                         {object.name}

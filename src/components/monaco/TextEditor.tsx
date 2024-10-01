@@ -1,6 +1,6 @@
-import { qwetObject } from '@/lib/manager/meshManager'
+import { MeshComponent } from '@/components/objects/mesh/meshComponent'
 
-export default function openTextEditor(object: qwetObject) {
+export default function openTextEditor(object: MeshComponent) {
     const popup = window.open('', 'popupWindow', 'width=800,height=600')
 
     if (!popup) {

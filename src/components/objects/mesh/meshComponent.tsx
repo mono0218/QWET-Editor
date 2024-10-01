@@ -1,17 +1,20 @@
+import { QwetComponent } from '@/types/component'
 import { QwetObject } from '@/types/object'
 import { Mesh, SceneLoader, ShaderMaterial } from '@babylonjs/core'
-import { QwetComponent } from '@/types/component'
+import { BasicInspector } from '@/components/uiComponents/basicInspector'
+import React from 'react'
+import { QwetUiComponent } from '@/types/uiComponent'
 
 export class MeshComponent implements QwetComponent {
-    object: QwetObject
-    mesh: Mesh
-    file: File
+    object: QwetObject | undefined
+    mesh: Mesh | null = null
+    file: File | null = null
     vertexShader: string = ''
     fragmentShader: string = ''
+    uiComponentList: Array<QwetUiComponent> = []
 
     constructor(mesh: Mesh | null = null, file: File | null = null) {
         if (!mesh && !file) throw new Error('mesh or file is required')
-
         if (mesh) {
             this.mesh = mesh
             this.initSet()
@@ -21,19 +24,29 @@ export class MeshComponent implements QwetComponent {
     }
 
     init(): void {
-        SceneLoader.ImportMeshAsync(
+        if (!this.object) throw new Error('Object is not initialized')
+        if (!this.file) return
+        SceneLoader.ImportMesh(
             '',
-            this.file.name,
+            '',
             this.file,
-            this.object.scene
-        ).then((result) => {
-            this.mesh = result.meshes[0] as Mesh
-            this.initSet()
-        })
-        this.defaultShader()
+            this.object.scene,
+            (meshes) => {
+                if (!this.object) throw new Error('Object is not initialized')
+
+                this.mesh = meshes[0] as Mesh
+                this.object.uniqueId = this.mesh.uniqueId
+                this.initSet()
+                this.defaultShader()
+            }
+        )
+
+        this.uiComponentList.push(new BasicInspector(this))
     }
 
-    private initSet() {
+    protected initSet() {
+        if (!this.object) throw new Error('Object is not initialized')
+        if (!this.mesh) return
         this.object.setPos(
             this.mesh.position.x,
             this.mesh.position.y,
@@ -52,6 +65,8 @@ export class MeshComponent implements QwetComponent {
     }
 
     update(): void {
+        if (!this.object) throw new Error('Object is not initialized')
+        if (!this.mesh) return
         const pos = this.object.position
         const rot = this.object.rotation
         const scale = this.object.scale
@@ -62,6 +77,7 @@ export class MeshComponent implements QwetComponent {
     }
 
     destroy(): void {
+        if (!this.mesh) return
         this.mesh.dispose()
     }
 
@@ -102,6 +118,7 @@ export class MeshComponent implements QwetComponent {
     }
 
     editVertexShader(vertexShader: string) {
+        if (!this.mesh) return
         this.vertexShader = vertexShader
         this.mesh.material = new ShaderMaterial('shader', this.mesh._scene, {
             vertex: this.vertexShader,
@@ -110,6 +127,7 @@ export class MeshComponent implements QwetComponent {
     }
 
     editFragmentShader(fragmentShader: string) {
+        if (!this.mesh) return
         this.fragmentShader = fragmentShader
         this.mesh.material = new ShaderMaterial('shader', this.mesh._scene, {
             vertex: this.vertexShader,
@@ -117,7 +135,11 @@ export class MeshComponent implements QwetComponent {
         })
     }
 
+    openShaderUI(): JSX.Element {
+        return <button onClick={() => {}}> Open Shader Editor</button>
+    }
+
     ui(): JSX.Element {
-        return <></>
+        return <>{this.uiComponentList.map((value) => value)}</>
     }
 }
