@@ -25,6 +25,8 @@
         "clsx": "^2.1.1",
         "lucide-react": "^0.445.0",
         "postcss": "^8.4.35",
+        "react-dnd": "^16.0.1",
+        "react-dnd-html5-backend": "^16.0.1",
         "react-dom": "^18.2.0",
         "react-hook-form": "^7.51.1",
         "react-monaco-editor": "^0.56.1",
