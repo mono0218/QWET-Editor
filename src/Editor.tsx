@@ -4,7 +4,7 @@ import ObjectSettingMenu from './components/objectSettingMenu'
 import Header from './components/header'
 import { QwetEditor } from './components/Editor'
 import './global.css'
-import Timeline from '@/components/timeline'
+import Timeline, { rows } from '@/components/timeline'
 
 export default function Editor() {
     const [editor, seteditor] = useState<QwetEditor>()
@@ -39,7 +39,7 @@ export default function Editor() {
                     <div>Loading...</div>
                 )}
             </div>
-            <Timeline></Timeline>
+            <Timeline rows={rows}></Timeline>
         </>
     )
 }
