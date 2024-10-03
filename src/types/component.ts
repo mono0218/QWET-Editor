@@ -1,10 +1,8 @@
 import { QwetObject } from '@/types/object'
 import { JSX } from 'react'
-import { QwetUiComponent } from '@/types/uiComponent'
 
 export interface QwetComponent {
-    object: QwetObject | undefined
-    uiComponentList: Array<QwetUiComponent>
+    object: QwetObject
 
     init: () => void
     update: () => void

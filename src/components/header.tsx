@@ -2,11 +2,11 @@ import { SceneSerializer } from '@babylonjs/core'
 import React from 'react'
 import { QwetEditor } from '@/components/Editor'
 import { QwetObject } from '@/types/object'
-import { AvatarComponent } from '@/components/objects/mesh/mmd/avatarComponent'
-import { PointLightComponent } from '@/components/objects/light/pointLightComponent'
-import { DirectionalLightComponent } from '@/components/objects/light/directionalLightComponent'
-import { MeshComponent } from '@/components/objects/mesh/meshComponent'
-import { StageComponent } from '@/components/objects/mesh/mmd/stageComponent'
+import { AvatarComponent } from '@/components/Objects/mmd/avatarComponent'
+import { PointLightComponent } from '@/components/Objects/light/pointLightComponent'
+import { DirectionalLightComponent } from '@/components/Objects/light/directionalLightComponent'
+import { MeshComponent } from '@/components/Objects/mesh/meshComponent'
+import { StageComponent } from '@/components/Objects/mmd/stageComponent'
 
 export default function Header({ editor }: { editor: QwetEditor }) {
     const onAvatarFile = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -15,9 +15,9 @@ export default function Header({ editor }: { editor: QwetEditor }) {
 
         for (const file of files) {
             if (file.name.endsWith('.bpmx')) {
-                const object = new QwetObject(editor.scene, editor)
+                const object = new QwetObject(editor.scene)
                 object.name = file.name
-                object.addComponent(new AvatarComponent(file))
+                object.addComponent(new AvatarComponent(null, file))
                 editor.objectList.push(object)
             }
         }
@@ -29,9 +29,9 @@ export default function Header({ editor }: { editor: QwetEditor }) {
 
         for (const file of files) {
             if (file.name.endsWith('.bpmx')) {
-                const object = new QwetObject(editor.scene, editor)
+                const object = new QwetObject(editor.scene)
                 object.name = file.name
-                object.addComponent(new StageComponent(file))
+                object.addComponent(new StageComponent(null, file))
                 editor.objectList.push(object)
             }
         }
@@ -47,7 +47,7 @@ export default function Header({ editor }: { editor: QwetEditor }) {
             file.name.endsWith('.gltf') ||
             file.name.endsWith('.glb')
         ) {
-            const object = new QwetObject(editor.scene, editor)
+            const object = new QwetObject(editor.scene)
             object.name = file.name
             object.addComponent(new MeshComponent(null, file))
             editor.objectList.push(object)
@@ -57,28 +57,28 @@ export default function Header({ editor }: { editor: QwetEditor }) {
     const onCreateLight = (text: string, select: string) => {
         switch (select) {
             case 'DirectionalLight': {
-                const direction = new QwetObject(editor.scene, editor)
+                const direction = new QwetObject(editor.scene)
                 direction.name = text
                 direction.addComponent(new DirectionalLightComponent())
                 editor.objectList.push(direction)
                 break
             }
             case 'HemisphericLight': {
-                const hemispheric = new QwetObject(editor.scene, editor)
+                const hemispheric = new QwetObject(editor.scene)
                 hemispheric.name = text
                 const hemisphericLight = new DirectionalLightComponent()
                 hemispheric.addComponent(hemisphericLight)
                 break
             }
             case 'SpotLight': {
-                const spot = new QwetObject(editor.scene, editor)
+                const spot = new QwetObject(editor.scene)
                 spot.name = text
                 const spotLight = new DirectionalLightComponent()
                 spot.addComponent(spotLight)
                 break
             }
             case 'PointLight': {
-                const point = new QwetObject(editor.scene, editor)
+                const point = new QwetObject(editor.scene)
                 point.name = text
                 const pointLight = new PointLightComponent()
                 point.addComponent(pointLight)
@@ -105,11 +105,9 @@ export default function Header({ editor }: { editor: QwetEditor }) {
                             <a
                                 className="btn"
                                 onClick={() =>
-                                    (
-                                        document.getElementById(
-                                            'my_modal_1'
-                                        )! as HTMLDialogElement
-                                    ).showModal()
+                                    document
+                                        .getElementById('my_modal_1')!
+                                        .showModal()
                                 }
                             >
                                 Light
@@ -153,11 +151,9 @@ export default function Header({ editor }: { editor: QwetEditor }) {
                                                 select.value
                                             )
 
-                                            const dialog =
-                                                document.getElementById(
-                                                    'my_modal_1'
-                                                ) as HTMLDialogElement
-                                            dialog.close()
+                                            document
+                                                .getElementById('my_modal_1')!
+                                                .close()
                                         }}
                                     >
                                         Create
@@ -196,7 +192,12 @@ export default function Header({ editor }: { editor: QwetEditor }) {
                         </li>
 
                         <li>
-                            <button id="addbutton" onClick={() => {}}>
+                            <button
+                                id="addbutton"
+                                onClick={() => {
+                                    editor.rttManager.addRtt().then()
+                                }}
+                            >
                                 Add Rtt
                             </button>
                         </li>
