@@ -10,6 +10,7 @@ import {
 } from '@babylonjs/core'
 import { QwetObject } from '@/types/object'
 import { MmdRuntime } from 'babylon-mmd'
+import { TimeLineManager } from '@/components/objects/timeline/timelineManager'
 
 export class QwetEditor {
     engine: Engine
@@ -19,6 +20,7 @@ export class QwetEditor {
     postProcession: DefaultRenderingPipeline
     objectList: Array<QwetObject> = []
     mmdRuntime: MmdRuntime
+    timeline:TimeLineManager
 
     constructor() {
         const { engine, scene } = this.initEngine()
@@ -29,13 +31,19 @@ export class QwetEditor {
         this.gizmo = new GizmoManager(this.scene)
         this.lightGizmo = new LightGizmo(this.gizmo.utilityLayer)
         this.postProcession = new DefaultRenderingPipeline(
-            'defaultPipeline', // The name of the pipeline
-            false, // Do you want the pipeline to use HDR texture?
-            scene, // The scene instance
-            this.scene.cameras // The list of cameras to be attached to
+            'defaultPipeline',
+            false,
+            scene,
+            this.scene.cameras
         )
+
+        this.timeline = new TimeLineManager(this)
         this.mmdRuntime = new MmdRuntime(this.scene)
         this.mmdRuntime.register(scene)
+
+        setInterval(() => {
+            this.mmdRuntime.playAnimation()
+        },100)
     }
 
     initEngine() {

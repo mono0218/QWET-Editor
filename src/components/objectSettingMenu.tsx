@@ -21,7 +21,7 @@ export default function ObjectSettingMenu({
         <>
             <div>
                 {object.components.map((component) => {
-                    return component.uiComponentList.map((uiComponent) => {
+                    return component.uiComponentList.reverse().map((uiComponent) => {
                         const UI = uiComponent.getUI()
                         return (
                             <React.Fragment key={object.uniqueId}>
