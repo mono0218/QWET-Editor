@@ -42,6 +42,7 @@ export default {
         }),
         babel({
             babelHelpers: 'bundled',
+            presets: ['@babel/preset-react'],
             extensions: ['.ts', '.tsx']
         }),
     ],

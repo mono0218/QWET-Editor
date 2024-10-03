@@ -1,5 +1,4 @@
 import { QwetEditor } from '@/components/Editor'
-import SceneSetting from '@/components/scene/sceneSetting'
 import React from 'react'
 
 export default function ObjectSettingMenu({
@@ -9,28 +8,19 @@ export default function ObjectSettingMenu({
     editor: QwetEditor
     uniqueId: number
 }) {
-    const object = editor.objectList.find((i) => i.uniqueId == uniqueId)
-
-    if (uniqueId == 0) {
-        return <SceneSetting scene={editor.scene} />
-    } else if (!object) {
-        return <></>
-    }
+    const object = editor.objectList.find((obj) => obj.uniqueId === uniqueId)
+    if (!object) return <></>
 
     return (
         <>
-            <div>
-                {object.components.map((component) => {
-                    return component.uiComponentList.map((uiComponent) => {
-                        const UI = uiComponent.getUI()
-                        return (
-                            <React.Fragment key={object.uniqueId}>
-                                {UI}
-                            </React.Fragment>
-                        )
-                    })
-                })}
-            </div>
+            {object.components.map((component) => {
+                const Component: JSX.Element = component.ui()
+                return (
+                    <React.Fragment key={component.object.uniqueId}>
+                        {Component}
+                    </React.Fragment>
+                )
+            })}
         </>
     )
 }

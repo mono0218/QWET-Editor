@@ -1,7 +1,6 @@
 import { QwetObject } from '@/types/object'
 import { QwetComponent } from '@/types/component'
 import { FreeCamera } from '@babylonjs/core'
-import { basicInspector } from '@/components/uiComponents/basicInspector'
 
 export class CameraComponent implements QwetComponent {
     object: QwetObject
@@ -12,9 +11,7 @@ export class CameraComponent implements QwetComponent {
         this.object.uniqueId = camera.uniqueId
     }
 
-    init(): void {
-        this.uiComponentList.push(basicInspector(this))
-    }
+    init(): void {}
 
     update(): void {
         const pos = this.object.position
@@ -27,8 +24,6 @@ export class CameraComponent implements QwetComponent {
     destroy(): void {
         this.camera.dispose()
     }
-
-    uiComponentList: JSX.Element[] = []
 
     ui(): JSX.Element {
         return <p>aaa</p>
