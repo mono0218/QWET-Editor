@@ -276,5 +276,5 @@ export const rows = [
                 val: 2500
             },
         ]
-    }, {}, {}, {}, {}, {}, {}, {}
+    },
 ] as TimelineRow[];
