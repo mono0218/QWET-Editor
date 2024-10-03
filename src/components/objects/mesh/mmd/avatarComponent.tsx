@@ -47,7 +47,7 @@ export class AvatarComponent extends MeshComponent {
         this.mmdModel.addAnimation(this.motion)
         this.animationFile = animationFile
         console.log(this.motion.endFrame)
-        this.object.editor.timeline.addMmdMotion(animationName, this.motion.endFrame * 1000)
+        this.object.editor.timeline.addMmdMotion(animationName, this.motion.endFrame * 1000,this)
     }
 
     playMmdAnimation(animationName: string) {
