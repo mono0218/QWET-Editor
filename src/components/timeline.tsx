@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from 'react'
 import { QwetEditor } from '@/components/Editor'
-import TimeLineCanvas from '@/TimeLIneCanvas'
+import TimeLineCanvas from '@/TimeLineCanvas'
 
 export default function ReactTimeline({editor}:{editor:QwetEditor}) {
     const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -14,7 +14,7 @@ export default function ReactTimeline({editor}:{editor:QwetEditor}) {
         if (canvas && timelineWrapper) {
             // キャンバスの初期化は一度だけ行う
             canvas.width = 5000;
-            TimeLineCanvas({ canvas, timelineWrapper });
+            editor.timeline = new TimeLineCanvas(canvas, timelineWrapper);
 
             // スクロールイベントに requestAnimationFrame を使用
             const handleScroll = () => {
@@ -22,7 +22,7 @@ export default function ReactTimeline({editor}:{editor:QwetEditor}) {
                     isScrolling = true;
 
                     requestAnimationFrame(() => {
-                        TimeLineCanvas({ canvas, timelineWrapper });
+                        editor.timeline.render(0);
                         isScrolling = false;
                     });
                 }

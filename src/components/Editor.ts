@@ -10,7 +10,7 @@ import {
 } from '@babylonjs/core'
 import { QwetObject } from '@/types/object'
 import { MmdRuntime } from 'babylon-mmd'
-import { TimeLineManager } from '@/components/objects/timeline/timelineManager'
+import TimeLineCanvas from '@/TimeLineCanvas'
 
 export class QwetEditor {
     engine: Engine
@@ -20,7 +20,7 @@ export class QwetEditor {
     postProcession: DefaultRenderingPipeline
     objectList: Array<QwetObject> = []
     mmdRuntime: MmdRuntime
-    timeline:TimeLineManager
+    timeline?:TimeLineCanvas
 
     constructor() {
         const { engine, scene } = this.initEngine()
@@ -36,8 +36,6 @@ export class QwetEditor {
             scene,
             this.scene.cameras
         )
-
-        this.timeline = new TimeLineManager(this)
         this.mmdRuntime = new MmdRuntime(this.scene)
         this.mmdRuntime.register(scene)
 
