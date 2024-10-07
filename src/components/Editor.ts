@@ -1,4 +1,5 @@
 import {
+    Color4,
     DefaultRenderingPipeline,
     Engine,
     FlyCamera,
@@ -55,6 +56,31 @@ export class QwetEditor {
         engine.runRenderLoop(() => {
             scene.render()
         })
+
+        const defaultPipeline = new DefaultRenderingPipeline(
+            'default',
+            true,
+            scene,
+            [scene.activeCamera!]
+        )
+        defaultPipeline.samples = 4000
+        defaultPipeline.chromaticAberrationEnabled = true
+        defaultPipeline.chromaticAberration.aberrationAmount = 1
+        defaultPipeline.fxaaEnabled = true
+        defaultPipeline.imageProcessingEnabled = true
+        defaultPipeline.imageProcessing.colorCurvesEnabled=false;
+        defaultPipeline.bloomEnabled = true;
+        defaultPipeline.bloomKernel = 320;
+        defaultPipeline.bloomWeight = 0.8;
+        defaultPipeline.bloomThreshold=0.2;
+        defaultPipeline.bloomScale=0.2;
+        defaultPipeline.depthOfFieldEnabled = true;
+        defaultPipeline.imageProcessing.vignetteWeight = 0.5
+        defaultPipeline.imageProcessing.vignetteStretch = 0.5
+        defaultPipeline.imageProcessing.vignetteColor = new Color4(0, 0, 0, 0)
+        defaultPipeline.imageProcessing.vignetteEnabled = true
+        defaultPipeline.depthOfField.focalLength = 0
+
         return { engine, scene }
     }
 

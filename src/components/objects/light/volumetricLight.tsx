@@ -4,7 +4,7 @@ import "@babylonjs/loaders/glTF"
 import { QwetComponent } from '@/types/component'
 import React from 'react'
 import { QwetUiComponent } from '@/types/uiComponent'
-import {Inspector} from "@babylonjs/inspector"
+import { BasicInspector } from '@/components/uiComponents/basicInspector'
 
 export class VolumetricLight implements QwetComponent {
     light: Mesh | undefined
@@ -46,6 +46,7 @@ export class VolumetricLight implements QwetComponent {
 
             this.light!.scaling = new Vector3(2, 2, 2)
             this.shader()
+            this.uiComponentList.push(new BasicInspector(this))
         })
     }
 
@@ -63,7 +64,6 @@ export class VolumetricLight implements QwetComponent {
         this.shaderMaterial.setVector3("spotPosition", new Vector3(0, - this.beam!.position.y, 0))
         this.shaderMaterial.setFloat("attenuation", 10)
         this.shaderMaterial.setFloat("anglePower", 5)
-        Inspector.Show(this.object!.scene, {})
         this.beam!.material = this.shaderMaterial
         this.beam!.material.backFaceCulling = false;
     }
@@ -72,6 +72,15 @@ export class VolumetricLight implements QwetComponent {
     }
 
     update(): void {
+        if (!this.object) throw new Error('Object is not initialized')
+        if (!this.light) return
+        const pos = this.object.position
+        const rot = this.object.rotation
+        const scale = this.object.scale
+
+        this.light.position.set(pos.x, pos.y, pos.z)
+        this.light.rotation.set(rot.x, rot.y, rot.z)
+        this.light.scaling.set(scale.x, scale.y, scale.z)
     }
 
     destroy(): void {
