@@ -1,5 +1,6 @@
 import { ClipsData, TimelineClip } from '@/types/timelineClip'
 import { AvatarComponent } from '@/components/objects/mesh/mmd/avatarComponent'
+import { QwetComponent } from '@/types/component'
 
 export default class TimeLineCanvas {
     private canvas: HTMLCanvasElement;
@@ -30,8 +31,9 @@ export default class TimeLineCanvas {
     }
 
     addMmdClip(animationName:string,uniqueId:number,component:AvatarComponent,end:number):void {
+        const trackNumber = this.clips[-1].track.valueOf() + 1
         this.clips.push({
-            track: 0,
+            track: trackNumber,
             type: 'mmd',
             uniqueId: uniqueId.toString(),
             class: component,
@@ -42,6 +44,45 @@ export default class TimeLineCanvas {
                     data: {
                         animationName: animationName,
                     },
+                }
+            ],
+        })
+
+        this.render(this.time)
+    }
+
+    addEffectClip(position:{x:number,y:number,z:number},end:number,effectClass:QwetComponent):void {
+        const trackNumber = this.clips[-1].track.valueOf() + 1
+        this.clips.push({
+            track: trackNumber,
+            type: 'effect',
+            uniqueId: '1',
+            class: effectClass,
+            clips: [
+                {
+                    start: 0,
+                    end: end,
+                    data: {
+                        position:position,
+                    },
+                }
+            ],
+        })
+
+        this.render(this.time)
+    }
+
+    addSoundClip(soundName:string,end:number,soundClass:QwetComponent):void {
+        const trackNumber = this.clips[-1].track.valueOf() + 1
+        this.clips.push({
+            track: trackNumber,
+            type: 'sound',
+            uniqueId: '2',
+            class: soundClass,
+            clips: [
+                {
+                    start: 0,
+                    end: end
                 }
             ],
         })

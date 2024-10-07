@@ -7,6 +7,7 @@ import { PointLightComponent } from '@/components/objects/light/pointLightCompon
 import { DirectionalLightComponent } from '@/components/objects/light/directionalLightComponent'
 import { MeshComponent } from '@/components/objects/mesh/meshComponent'
 import { StageComponent } from '@/components/objects/mesh/mmd/stageComponent'
+import { VolumetricLight } from '@/components/objects/light/volumetricLight'
 
 export default function Header({ editor }: { editor: QwetEditor }) {
     const onAvatarFile = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -86,6 +87,15 @@ export default function Header({ editor }: { editor: QwetEditor }) {
                 editor.objectList.push(point)
                 break
             }
+
+            case 'VolumetricLight': {
+                const volumetric = new QwetObject(editor.scene, editor)
+                volumetric.name = text
+                const volumetricLight = new VolumetricLight()
+                volumetric.addComponent(volumetricLight)
+                editor.objectList.push(volumetric)
+                break
+            }
         }
     }
 
@@ -135,6 +145,7 @@ export default function Header({ editor }: { editor: QwetEditor }) {
                                         <option>HemisphericLight</option>
                                         <option>SpotLight</option>
                                         <option>PointLight</option>
+                                        <option>VolumetricLight</option>
                                     </select>
 
                                     <button

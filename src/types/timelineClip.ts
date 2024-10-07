@@ -12,7 +12,6 @@ export interface  ClipsData {
     end: number;
 }
 
-
 export interface BaseTimelineClip {
     track: number;
     uniqueId: string;
@@ -85,13 +84,28 @@ export interface SoundTimelineClip extends BaseTimelineClip {
         {
             start: number;
             end: number;
-            data: SoundClipData;
         },
     ],
     keys?:[
         {
             key: number;
-            data: SoundClipData;
+        },
+    ]
+}
+
+export interface LightTimelineClip extends BaseTimelineClip {
+    type: "light";
+    clips:[
+        {
+            start: number;
+            end: number;
+            data: LightClipData;
+        },
+    ],
+    keys?:[
+        {
+            key: number;
+            data: LightClipData;
         },
     ]
 }
@@ -101,13 +115,32 @@ export interface MmdClipData {
 }
 
 export interface EffectClipData {
-    // EffectClipData固有のプロパティを定義
+    position:{
+        x: number;
+        y: number;
+        z: number;
+    }
+}
+
+export interface LightClipData {
+    position:{
+        x: number;
+        y: number;
+        z: number;
+    }
+
+    color: string;
+    strong: number;
+    width: string;
+    height: string;
 }
 
 export interface MoveClipData {
-    // MoveClipData固有のプロパティを定義
-}
+    position:{
+        x: number;
+        y: number;
+        z: number;
+    }
 
-export interface SoundClipData {
-    // SoundClipData固有のプロパティを定義
+    objectUniqueId: string;
 }
