@@ -22,8 +22,10 @@ export class MmdSettings implements QwetUiComponent {
 
         return (
             <>
-                <input type="file" onChange={onFile}/>
-                <button onClick={this.AvatarComponent.stopMmdAnimation}></button>
+                <input type="file" onChange={onFile} />
+                <button
+                    onClick={this.AvatarComponent.stopMmdAnimation}
+                ></button>
             </>
         )
     }

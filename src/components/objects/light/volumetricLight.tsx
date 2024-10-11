@@ -1,6 +1,13 @@
 import { QwetObject } from '@/types/object'
-import { Mesh, MeshBuilder, SceneLoader, ShaderMaterial, TransformNode, Vector3 } from '@babylonjs/core'
-import "@babylonjs/loaders/glTF"
+import {
+    Mesh,
+    MeshBuilder,
+    SceneLoader,
+    ShaderMaterial,
+    TransformNode,
+    Vector3,
+} from '@babylonjs/core'
+import '@babylonjs/loaders/glTF'
 import { QwetComponent } from '@/types/component'
 import React from 'react'
 import { QwetUiComponent } from '@/types/uiComponent'
@@ -16,33 +23,41 @@ export class VolumetricLight implements QwetComponent {
     lightArm: TransformNode | undefined
     lightMesh: Mesh | undefined
 
-    constructor() {
-    }
+    constructor() {}
 
-    init(){
-        if  (!this.object) throw new Error('Object is not initialized')
-        SceneLoader.ImportMeshAsync("", "", "https://dev.storage-qwet.monodev.cloud/common/beamlight.glb", this.object.scene).then((result) => {
+    init() {
+        if (!this.object) throw new Error('Object is not initialized')
+        SceneLoader.ImportMeshAsync(
+            '',
+            '',
+            'https://dev.storage-qwet.monodev.cloud/common/beamlight.glb',
+            this.object.scene
+        ).then((result) => {
             this.light = result.meshes[0] as Mesh
             result.transformNodes.forEach((node) => {
-                if(node.id.includes("Light.001")){
+                if (node.id.includes('Light.001')) {
                     this.lightArm = node
                 }
             })
 
             result.meshes.forEach((mesh) => {
                 console.log(mesh.id)
-                if(mesh.id.includes("Arm")){
+                if (mesh.id.includes('Arm')) {
                     this.arm = mesh as Mesh
-                }else if(mesh.id.includes("Light.001_primitive2")){
+                } else if (mesh.id.includes('Light.001_primitive2')) {
                     this.lightMesh = mesh as Mesh
                 }
             })
 
-            if  (!this.lightMesh) throw new Error('lightMesh is not initialized')
-            const height =  15
-            this.beam = MeshBuilder.CreateCylinder("cone", { diameterTop: 0.1, diameterBottom: 5, height: height,}, this.object!.scene);
+            if (!this.lightMesh) throw new Error('lightMesh is not initialized')
+            const height = 15
+            this.beam = MeshBuilder.CreateCylinder(
+                'cone',
+                { diameterTop: 0.1, diameterBottom: 5, height: height },
+                this.object!.scene
+            )
             this.beam.parent = this.lightMesh
-            this.beam.position = new Vector3(0, - height / 2, 0)
+            this.beam.position = new Vector3(0, -height / 2, 0)
 
             this.light!.scaling = new Vector3(2, 2, 2)
             this.shader()
@@ -50,22 +65,37 @@ export class VolumetricLight implements QwetComponent {
         })
     }
 
-    shader(){
-        this.shaderMaterial = new ShaderMaterial("beamShader", this.object!.scene, {vertexSource: vertexShader, fragmentSource: fragmentShader},
+    shader() {
+        this.shaderMaterial = new ShaderMaterial(
+            'beamShader',
+            this.object!.scene,
+            { vertexSource: vertexShader, fragmentSource: fragmentShader },
             {
-                attributes: ["position", "normal", "uv"],
-                uniforms: ["worldViewProjection", "lightColor", "spotPosition", "attenuation", "anglePower" ],
+                attributes: ['position', 'normal', 'uv'],
+                uniforms: [
+                    'worldViewProjection',
+                    'lightColor',
+                    'spotPosition',
+                    'attenuation',
+                    'anglePower',
+                ],
                 needAlphaBlending: true,
-                needAlphaTesting: true
+                needAlphaTesting: true,
             }
-        );
+        )
 
-        this.shaderMaterial.setVector3("lightColor", new Vector3(225 / 225 , 225 / 225, 225 / 225))
-        this.shaderMaterial.setVector3("spotPosition", new Vector3(0, - this.beam!.position.y, 0))
-        this.shaderMaterial.setFloat("attenuation", 10)
-        this.shaderMaterial.setFloat("anglePower", 5)
+        this.shaderMaterial.setVector3(
+            'lightColor',
+            new Vector3(225 / 225, 225 / 225, 225 / 225)
+        )
+        this.shaderMaterial.setVector3(
+            'spotPosition',
+            new Vector3(0, -this.beam!.position.y, 0)
+        )
+        this.shaderMaterial.setFloat('attenuation', 10)
+        this.shaderMaterial.setFloat('anglePower', 5)
         this.beam!.material = this.shaderMaterial
-        this.beam!.material.backFaceCulling = false;
+        this.beam!.material.backFaceCulling = false
     }
     ui(): React.JSX.Element {
         return <></>
@@ -83,8 +113,7 @@ export class VolumetricLight implements QwetComponent {
         this.light.scaling.set(scale.x, scale.y, scale.z)
     }
 
-    destroy(): void {
-    }
+    destroy(): void {}
 }
 
 const vertexShader = `

@@ -5,142 +5,140 @@ export type TimelineClip =
     | MmdTimelineClip
     | EffectTimelineClip
     | MoveTimelineClip
-    | SoundTimelineClip;
+    | SoundTimelineClip
 
-export interface  ClipsData {
-    start: number;
-    end: number;
+export interface ClipsData {
+    start: number
+    end: number
 }
 
 export interface BaseTimelineClip {
-    track: number;
-    uniqueId: string;
-    class: QwetComponent;
-    clips: [
-        ClipsData
-    ];
+    track: number
+    uniqueId: string
+    class: QwetComponent
+    clips: [ClipsData]
     keys?: [
         {
-            key: number;
+            key: number
         },
-    ];
-    isDragging?: boolean;
+    ]
+    isDragging?: boolean
 }
 
 export interface MmdTimelineClip extends BaseTimelineClip {
-    type: "mmd";
-    clips:[
+    type: 'mmd'
+    clips: [
         {
-            start: number;
-            end: number;
-            data: MmdClipData;
+            start: number
+            end: number
+            data: MmdClipData
         },
-    ],
-    keys?:[
+    ]
+    keys?: [
         {
-            key: number;
-            data: MmdClipData;
+            key: number
+            data: MmdClipData
         },
     ]
 }
 
 export interface EffectTimelineClip extends BaseTimelineClip {
-    type: "effect";
-    clips:[
+    type: 'effect'
+    clips: [
         {
-            start: number;
-            end: number;
-            data: EffectClipData;
+            start: number
+            end: number
+            data: EffectClipData
         },
-    ],
-    keys?:[
+    ]
+    keys?: [
         {
-            key: number;
-            data: EffectClipData;
+            key: number
+            data: EffectClipData
         },
     ]
 }
 
 export interface MoveTimelineClip extends BaseTimelineClip {
-    type: "move";
-    clips:[
+    type: 'move'
+    clips: [
         {
-            start: number;
-            end: number;
-            data: MoveClipData;
+            start: number
+            end: number
+            data: MoveClipData
         },
-    ],
-    keys?:[
+    ]
+    keys?: [
         {
-            key: number;
-            data: MoveClipData;
+            key: number
+            data: MoveClipData
         },
     ]
 }
 
 export interface SoundTimelineClip extends BaseTimelineClip {
-    type: "sound";
-    clips:[
+    type: 'sound'
+    clips: [
         {
-            start: number;
-            end: number;
+            start: number
+            end: number
         },
-    ],
-    keys?:[
+    ]
+    keys?: [
         {
-            key: number;
+            key: number
         },
     ]
 }
 
 export interface LightTimelineClip extends BaseTimelineClip {
-    type: "light";
-    clips:[
+    type: 'light'
+    clips: [
         {
-            start: number;
-            end: number;
-            data: LightClipData;
+            start: number
+            end: number
+            data: LightClipData
         },
-    ],
-    keys?:[
+    ]
+    keys?: [
         {
-            key: number;
-            data: LightClipData;
+            key: number
+            data: LightClipData
         },
     ]
 }
 
 export interface MmdClipData {
-    animationName: string;
+    animationName: string
 }
 
 export interface EffectClipData {
-    position:{
-        x: number;
-        y: number;
-        z: number;
+    position: {
+        x: number
+        y: number
+        z: number
     }
 }
 
 export interface LightClipData {
-    position:{
-        x: number;
-        y: number;
-        z: number;
+    position: {
+        x: number
+        y: number
+        z: number
     }
 
-    color: string;
-    strong: number;
-    width: string;
-    height: string;
+    color: string
+    strong: number
+    width: string
+    height: string
 }
 
 export interface MoveClipData {
-    position:{
-        x: number;
-        y: number;
-        z: number;
+    position: {
+        x: number
+        y: number
+        z: number
     }
 
-    objectUniqueId: string;
+    objectUniqueId: string
 }

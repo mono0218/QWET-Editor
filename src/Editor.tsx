@@ -41,7 +41,7 @@ export default function Editor() {
             </div>
             {editor ? (
                 <Timeline editor={editor}></Timeline>
-                ) : (
+            ) : (
                 <div>Loading...</div>
             )}
         </div>
