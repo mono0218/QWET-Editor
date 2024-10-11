@@ -3,6 +3,7 @@ import { MeshComponent } from '@/components/objects/mesh/meshComponent'
 import { MmdAnimation, MmdModel, VmdLoader } from 'babylon-mmd'
 import { Mesh, SceneLoader } from '@babylonjs/core'
 import { BasicInspector } from '@/components/uiComponents/basicInspector'
+import { MmdSettings } from '@/components/uiComponents/mmdSettings'
 
 export class AvatarComponent extends MeshComponent {
     mmdModel: MmdModel | null = null
@@ -11,6 +12,7 @@ export class AvatarComponent extends MeshComponent {
 
     constructor(avatarFile: File) {
         super(null, avatarFile)
+        this.uiComponentList.push(new MmdSettings(this))
     }
 
     init() {
@@ -44,23 +46,25 @@ export class AvatarComponent extends MeshComponent {
         this.motion = await vmdLoader.loadAsync(animationName, animationFile)
         this.mmdModel.addAnimation(this.motion)
         this.animationFile = animationFile
+        console.log(this.motion.endFrame)
+        this.object.editor.timeline?.addMmdClip(
+            animationName,
+            this.mmdModel.mesh.uniqueId,
+            this,
+            this.motion.endFrame / 100
+        )
     }
 
-    setMmdAnimation(animationName: string) {
+    playMmdAnimation(animationName: string) {
         if (!this.object) throw new Error('Object is not initialized')
         if (!this.mmdModel) throw new Error('mmdModel is required')
         this.mmdModel.setAnimation(animationName)
     }
 
-    playMmdAnimation() {
-        if (!this.object) throw new Error('Object is not initialized')
-        if (!this.mmdModel) throw new Error('mmdModel is required')
-        this.object.editor.mmdRuntime.playAnimation().then()
-    }
-
     stopMmdAnimation() {
         if (!this.object) throw new Error('Object is not initialized')
         if (!this.mmdModel) throw new Error('mmdModel is required')
-        this.object.editor.mmdRuntime.pauseAnimation()
+        if (!this.motion) throw new Error('motion is required')
+        this.mmdModel.removeAnimation(0)
     }
 }

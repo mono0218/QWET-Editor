@@ -4,7 +4,7 @@ import ObjectSettingMenu from './components/objectSettingMenu'
 import Header from './components/header'
 import { QwetEditor } from './components/Editor'
 import './global.css'
-import Timeline, { rows } from '@/components/timeline'
+import Timeline from '@/components/timeline'
 
 export default function Editor() {
     const [editor, seteditor] = useState<QwetEditor>()
@@ -19,7 +19,7 @@ export default function Editor() {
     }
 
     return (
-        <>
+        <div className="overflow-hidden overflow-x-hidden overflow-y-hidden">
             {editor ? <Header editor={editor} /> : <div>Loading...</div>}
 
             <div className="flex">
@@ -39,7 +39,11 @@ export default function Editor() {
                     <div>Loading...</div>
                 )}
             </div>
-            <Timeline rows={rows}></Timeline>
-        </>
+            {editor ? (
+                <Timeline editor={editor}></Timeline>
+            ) : (
+                <div>Loading...</div>
+            )}
+        </div>
     )
 }
