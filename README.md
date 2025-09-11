@@ -1,30 +1,79 @@
-# React + TypeScript + Vite
+# QWET Live Space Editor
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+QWETライブシステム用のライブ空間作成エディターです。
 
-Currently, two official plugins are available:
+## 機能
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **GLBファイルのインポート**: 3Dステージモデルをインポート
+- **ムービングライトの配置**: スポットライト、ウォッシュライト、ビームライトの配置と設定
+- **アバターの配置**: パフォーマー用のアバターを配置
+- **アニメーションエディター**: ライトの動きとエフェクトのタイムライン編集
 
-## Expanding the ESLint configuration
+## 開発環境
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+- Rust 1.75+
+- Bevy 0.15.3
+- bevy_egui 0.32.0
 
-- Configure the top-level `parserOptions` property like this:
+## ビルドと実行
 
-```js
-export default {
-  // other rules...
-  parserOptions: {
-    ecmaVersion: 'latest',
-    sourceType: 'module',
-    project: ['./tsconfig.json', './tsconfig.node.json'],
-    tsconfigRootDir: __dirname,
-  },
-}
+```bash
+# 開発モード
+cargo run
+
+# リリースビルド
+cargo run --release
 ```
 
-- Replace `plugin:@typescript-eslint/recommended` to `plugin:@typescript-eslint/recommended-type-checked` or `plugin:@typescript-eslint/strict-type-checked`
-- Optionally add `plugin:@typescript-eslint/stylistic-type-checked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and add `plugin:react/recommended` & `plugin:react/jsx-runtime` to the `extends` list
+## 操作方法
+
+### カメラコントロール
+- `W/A/S/D`: カメラ移動
+- `Right Click + Mouse`: カメラ視点変更
+
+### ツール
+- **Select**: オブジェクト選択モード
+- **Moving Light**: ムービングライト配置モード
+- **Avatar**: アバター配置モード
+- **Animation**: アニメーション編集モード
+
+### ファイル操作
+- **File → Import GLB**: GLB/GLTFファイルのインポート
+- **File → Save Scene**: シーン保存
+- **File → Open Scene**: シーン読み込み
+
+## プロジェクト構造
+
+```
+src/
+├── main.rs              # メインアプリケーション
+├── components.rs        # ゲームコンポーネント定義
+├── resources.rs         # リソース定義
+├── systems/            
+│   ├── mod.rs
+│   └── selection.rs     # オブジェクト選択システム
+└── plugins/            # 機能別プラグイン
+    ├── mod.rs
+    ├── editor.rs        # メインエディター
+    ├── gltf_import.rs   # GLBインポート
+    ├── moving_light.rs  # ムービングライト
+    ├── avatar.rs        # アバター
+    └── animation_editor.rs # アニメーション
+
+assets/
+├── models/             # 3Dモデル
+├── textures/          # テクスチャ
+└── audio/            # オーディオファイル
+```
+
+## 今後の拡張予定
+
+- [ ] より詳細なライト制御（DMX対応）
+- [ ] 音楽同期機能
+- [ ] より多くの3Dモデル形式サポート
+- [ ] リアルタイムプレビュー機能
+- [ ] ネットワーク同期機能
+
+## ライセンス
+
+このプロジェクトはQWETシステムの一部として開発されています。
