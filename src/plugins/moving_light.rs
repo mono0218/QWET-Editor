@@ -1,0 +1,390 @@
+use bevy::prelude::*;
+use bevy_egui::{egui, EguiContexts};
+use bevy::math::EulerRot;
+use crate::{components::*, resources::*, plugins::editor::EditorCamera};
+
+pub struct MovingLightPlugin;
+
+impl Plugin for MovingLightPlugin {
+    fn build(&self, app: &mut App) {
+        app
+            .add_event::<PlaceLightEvent>()
+            .add_event::<AddLightEvent>()
+            .add_systems(Update, (
+                moving_light_placement_ui,
+                handle_light_placement,
+                handle_add_light_event,
+                moving_light_controls,
+                update_moving_light_mesh_transforms,
+                ensure_moving_light_root_only_selectable,
+            ));
+    }
+}
+
+#[derive(Event)]
+pub struct PlaceLightEvent {
+    pub position: Vec3,
+}
+
+#[derive(Event)]
+pub struct AddLightEvent;
+
+fn moving_light_placement_ui(
+    // This function is now empty but kept for potential future UI
+) {
+    // MovingLight placement is now handled via Edit menu
+}
+
+fn handle_add_light_event(
+    mut add_light_events: EventReader<AddLightEvent>,
+    mut place_light_events: EventWriter<PlaceLightEvent>,
+) {
+    for _event in add_light_events.read() {
+        // Place light at default position (center, 2m above ground)
+        let default_position = Vec3::new(0.0, 2.0, 0.0);
+        place_light_events.send(PlaceLightEvent {
+            position: default_position,
+        });
+        info!("Added MovingLight at default position: {:?}", default_position);
+    }
+}
+
+fn handle_light_placement(
+    mut commands: Commands,
+    mut place_light_events: EventReader<PlaceLightEvent>,
+    asset_server: Res<AssetServer>,
+    mut scene_data: ResMut<SceneData>,
+) {
+    for event in place_light_events.read() {
+        let transform = Transform::from_translation(event.position);
+        
+        // Create MovingLight with default values (single beam light type)
+        let moving_light = MovingLight {
+            name: format!("BeamLight_{}", scene_data.lights.len() + 1),
+            light_type: MovingLightType::Beam, // Always beam light
+            intensity: 1.0,
+            color: Color::WHITE,
+            pan: 0.0,
+            tilt: 0.0,
+            beam_angle: 30.0,
+            group_id: None,
+        };
+
+        // Load the 3D model from QWET-DMX
+        let scene_handle: Handle<Scene> = asset_server.load(
+            GltfAssetLabel::Scene(0).from_asset("models/beamlight.glb")
+        );
+
+        let entity = commands.spawn((
+            SceneRoot(scene_handle),
+            transform,
+            moving_light.clone(),
+            Name::new(moving_light.name.clone()),
+            crate::components::Selectable,
+        )).id();
+
+        // Add SpotLight component for actual illumination
+        commands.entity(entity).insert(SpotLight {
+            intensity: moving_light.intensity * 1000.0,
+            color: moving_light.color,
+            shadows_enabled: true,
+            inner_angle: (moving_light.beam_angle * 0.8).to_radians(),
+            outer_angle: moving_light.beam_angle.to_radians(),
+            ..default()
+        });
+
+        // Store in scene data
+        scene_data.lights.push((transform, moving_light));
+        
+        info!("Created BeamLight: {} at {:?}", scene_data.lights.last().unwrap().1.name, event.position);
+    }
+}
+
+fn moving_light_controls(
+    mut contexts: EguiContexts,
+    editor_state: Res<EditorState>,
+    mut light_query: Query<(&mut MovingLight, &mut Transform, &mut SpotLight), With<Selected>>,
+    light_groups: Res<crate::plugins::timeline_editor::LightGroups>,
+) {
+    // MovingLight controls are only available in Select mode (not in Animation mode)
+    // This prevents overlap with timeline editor
+    
+    if let Some(_selected_entity) = editor_state.selected_entity {
+        if editor_state.show_properties {
+        if let Ok((mut moving_light, mut transform, mut spot_light)) = light_query.get_single_mut() {
+            let ctx = contexts.ctx_mut();
+            
+            egui::Window::new("🎭 BeamLight Controls")
+                .default_width(350.0)
+                .max_height(600.0)
+                .resizable(true)
+                .scroll(true)
+                .show(ctx, |ui| {
+                    ui.heading("BeamLight Controls");
+                    ui.label(format!("🏷️ Name: {}", moving_light.name));
+                    
+                    ui.separator();
+                    
+                    // Pan/Tilt Section - Blender-style
+                    ui.heading("🔄 Pan & Tilt");
+                    
+                    // Large visual pan/tilt control area
+                    let (rect, response) = ui.allocate_exact_size(
+                        egui::Vec2::new(200.0, 150.0),
+                        egui::Sense::click_and_drag()
+                    );
+                    
+                    if ui.is_rect_visible(rect) {
+                        let painter = ui.painter();
+                        painter.rect_filled(rect, 5.0, egui::Color32::from_gray(40));
+                        
+                        // Draw crosshairs
+                        let center = rect.center();
+                        painter.line_segment(
+                            [egui::pos2(rect.left(), center.y), egui::pos2(rect.right(), center.y)],
+                            egui::Stroke::new(1.0, egui::Color32::GRAY)
+                        );
+                        painter.line_segment(
+                            [egui::pos2(center.x, rect.top()), egui::pos2(center.x, rect.bottom())],
+                            egui::Stroke::new(1.0, egui::Color32::GRAY)
+                        );
+                        
+                        // Draw current position
+                        let pan_norm = (moving_light.pan.to_degrees() + 180.0) / 360.0;
+                        let tilt_norm = (moving_light.tilt.to_degrees() + 90.0) / 180.0;
+                        let pos = egui::pos2(
+                            rect.left() + rect.width() * pan_norm,
+                            rect.top() + rect.height() * (1.0 - tilt_norm)
+                        );
+                        painter.circle_filled(pos, 8.0, egui::Color32::YELLOW);
+                        
+                        // Handle drag interaction
+                        if response.dragged() {
+                            if let Some(pointer_pos) = response.interact_pointer_pos() {
+                                let rel_x = (pointer_pos.x - rect.left()) / rect.width();
+                                let rel_y = 1.0 - (pointer_pos.y - rect.top()) / rect.height();
+                                
+                                moving_light.pan = ((rel_x * 360.0) - 180.0).to_radians().clamp(-std::f32::consts::PI, std::f32::consts::PI);
+                                moving_light.tilt = ((rel_y * 180.0) - 90.0).to_radians().clamp(-std::f32::consts::FRAC_PI_2, std::f32::consts::FRAC_PI_2);
+                                
+                                // Pan/Tiltはメッシュのみ制御、ルートエンティティの回転は変更しない
+                            }
+                        }
+                    }
+                    
+                    // Precise sliders
+                    ui.horizontal(|ui| {
+                        ui.label("Pan:");
+                        let mut pan_degrees = moving_light.pan.to_degrees();
+                        if ui.add(egui::Slider::new(&mut pan_degrees, -180.0..=180.0).suffix("°")).changed() {
+                            moving_light.pan = pan_degrees.to_radians();
+                            // Pan/Tiltはメッシュのみ制御、ルートエンティティの回転は変更しない
+                        }
+                    });
+                    
+                    ui.horizontal(|ui| {
+                        ui.label("Tilt:");
+                        let mut tilt_degrees = moving_light.tilt.to_degrees();
+                        if ui.add(egui::Slider::new(&mut tilt_degrees, -90.0..=90.0).suffix("°")).changed() {
+                            moving_light.tilt = tilt_degrees.to_radians();
+                            // Pan/Tiltはメッシュのみ制御、ルートエンティティの回転は変更しない
+                        }
+                    });
+                    
+                    ui.separator();
+                    
+                    // Color & Intensity Section
+                    ui.heading("🌈 Color & Intensity");
+                    
+                    let mut color_array = [
+                        moving_light.color.to_linear().red,
+                        moving_light.color.to_linear().green,
+                        moving_light.color.to_linear().blue,
+                    ];
+                    
+                    if ui.color_edit_button_rgb(&mut color_array).changed() {
+                        moving_light.color = Color::LinearRgba(LinearRgba::rgb(
+                            color_array[0],
+                            color_array[1], 
+                            color_array[2]
+                        ));
+                        spot_light.color = moving_light.color;
+                    }
+                    
+                    ui.horizontal(|ui| {
+                        ui.label("💡 Intensity:");
+                        if ui.add(egui::Slider::new(&mut moving_light.intensity, 0.0..=5.0).suffix("x")).changed() {
+                            spot_light.intensity = moving_light.intensity * 1000.0;
+                        }
+                    });
+                    
+                    ui.horizontal(|ui| {
+                        ui.label("📐 Beam Angle:");
+                        if ui.add(egui::Slider::new(&mut moving_light.beam_angle, 5.0..=80.0).suffix("°")).changed() {
+                            spot_light.outer_angle = moving_light.beam_angle.to_radians();
+                            spot_light.inner_angle = (moving_light.beam_angle * 0.8).to_radians();
+                        }
+                    });
+                    
+                    ui.separator();
+                    
+                    // Quick Color Presets
+                    ui.heading("🎨 Color Presets");
+                    ui.horizontal(|ui| {
+                        if ui.button("⚪ White").clicked() {
+                            moving_light.color = Color::WHITE;
+                            spot_light.color = Color::WHITE;
+                        }
+                        if ui.button("🔴 Red").clicked() {
+                            moving_light.color = Color::srgb(1.0, 0.0, 0.0);
+                            spot_light.color = moving_light.color;
+                        }
+                        if ui.button("🟢 Green").clicked() {
+                            moving_light.color = Color::srgb(0.0, 1.0, 0.0);
+                            spot_light.color = moving_light.color;
+                        }
+                        if ui.button("🔵 Blue").clicked() {
+                            moving_light.color = Color::srgb(0.0, 0.0, 1.0);
+                            spot_light.color = moving_light.color;
+                        }
+                    });
+                    
+                    ui.horizontal(|ui| {
+                        if ui.button("🟡 Yellow").clicked() {
+                            moving_light.color = Color::srgb(1.0, 1.0, 0.0);
+                            spot_light.color = moving_light.color;
+                        }
+                        if ui.button("🟣 Magenta").clicked() {
+                            moving_light.color = Color::srgb(1.0, 0.0, 1.0);
+                            spot_light.color = moving_light.color;
+                        }
+                        if ui.button("🟠 Orange").clicked() {
+                            moving_light.color = Color::srgb(1.0, 0.5, 0.0);
+                            spot_light.color = moving_light.color;
+                        }
+                    });
+                    
+                    ui.separator();
+                    
+                    // Light Group Assignment
+                    ui.heading("🎯 Light Group");
+                    
+                    // Current group display
+                    let current_group = moving_light.group_id.as_ref()
+                        .map(|id| id.as_str())
+                        .unwrap_or("None");
+                    ui.label(format!("Current Group: {}", current_group));
+                    
+                    // Group selection dropdown
+                    egui::ComboBox::from_label("Assign to Group")
+                        .selected_text(current_group)
+                        .show_ui(ui, |ui| {
+                            // Option to remove from group
+                            if ui.selectable_label(moving_light.group_id.is_none(), "None").clicked() {
+                                moving_light.group_id = None;
+                            }
+                            
+                            // List all available groups
+                            for group_name in light_groups.groups.keys() {
+                                let is_selected = moving_light.group_id.as_ref() == Some(group_name);
+                                if ui.selectable_label(is_selected, group_name).clicked() {
+                                    moving_light.group_id = Some(group_name.clone());
+                                }
+                            }
+                        });
+                });
+            }
+        }
+    }
+}
+
+fn update_moving_light_mesh_transforms(
+    moving_light_query: Query<(&MovingLight, &Children), Changed<MovingLight>>,
+    mut transform_query: Query<&mut Transform>,
+    name_query: Query<&Name>,
+    children_query: Query<&Children>,
+) {
+    for (moving_light, children) in moving_light_query.iter() {
+        // Recursively search for specific mesh names and apply transformations
+        apply_pan_tilt_to_children(
+            children, 
+            moving_light, 
+            &mut transform_query, 
+            &name_query,
+            &children_query
+        );
+    }
+}
+
+fn apply_pan_tilt_to_children(
+    children: &Children,
+    moving_light: &MovingLight,
+    transform_query: &mut Query<&mut Transform>,
+    name_query: &Query<&Name>,
+    children_query: &Query<&Children>,
+) {
+    for &child in children.iter() {
+        // Check if this child has a name and apply pan/tilt transformations
+        if let Ok(name) = name_query.get(child) {
+            if let Ok(mut transform) = transform_query.get_mut(child) {
+                match name.as_str() {
+                    "Arm" => {
+                        // Pan制御 - Y軸回転（水平回転）のみ、位置は変更しない
+                        transform.rotation = Quat::from_rotation_y(moving_light.pan);
+                    }
+                    "Light.001" => {
+                        // Tilt制御 - Z軸回転（垂直回転）のみ、位置は変更しない
+                        transform.rotation = Quat::from_rotation_z(moving_light.tilt);
+                    }
+                    _ => {}
+                }
+            }
+        }
+        
+        // Recursively search children's children
+        if let Ok(grandchildren) = children_query.get(child) {
+            apply_pan_tilt_to_children(
+                grandchildren,
+                moving_light,
+                transform_query,
+                name_query,
+                children_query
+            );
+        }
+    }
+}
+
+fn ensure_moving_light_root_only_selectable(
+    mut commands: Commands,
+    moving_light_query: Query<Entity, (With<crate::components::MovingLight>, With<crate::components::Selectable>)>,
+    children_query: Query<&Children>,
+    child_selectable_query: Query<Entity, (With<crate::components::Selectable>, Without<crate::components::MovingLight>)>,
+) {
+    // Remove Selectable component from children of MovingLight entities
+    for light_entity in moving_light_query.iter() {
+        if let Ok(children) = children_query.get(light_entity) {
+            for &child in children.iter() {
+                remove_selectable_recursive(&mut commands, child, &children_query, &child_selectable_query);
+            }
+        }
+    }
+}
+
+fn remove_selectable_recursive(
+    commands: &mut Commands,
+    entity: Entity,
+    children_query: &Query<&Children>,
+    child_selectable_query: &Query<Entity, (With<crate::components::Selectable>, Without<crate::components::MovingLight>)>,
+) {
+    // Remove Selectable from this entity if it has it (but is not a MovingLight root)
+    if child_selectable_query.get(entity).is_ok() {
+        commands.entity(entity).remove::<crate::components::Selectable>();
+    }
+    
+    // Recursively remove from children
+    if let Ok(children) = children_query.get(entity) {
+        for &child in children.iter() {
+            remove_selectable_recursive(commands, child, children_query, child_selectable_query);
+        }
+    }
+}
