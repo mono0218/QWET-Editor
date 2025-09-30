@@ -5,6 +5,7 @@ mod plugins;
 mod components;
 mod resources;
 mod systems;
+mod export;
 
 use plugins::*;
 
@@ -27,6 +28,7 @@ fn main() {
             TimelineEditorPlugin,
             MovingLightPlugin,
             AudioPlayerPlugin,
+            ProjectExportPlugin,
         ))
         .run();
 }

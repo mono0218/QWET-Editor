@@ -4118,6 +4118,7 @@ dependencies = [
 name = "qwet-editor"
 version = "0.1.0"
 dependencies = [
+ "base64 0.22.1",
  "bevy",
  "bevy_egui",
  "futures-lite",
