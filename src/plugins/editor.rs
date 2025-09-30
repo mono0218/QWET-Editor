@@ -1,4 +1,7 @@
 use bevy::prelude::*;
+use bevy::core_pipeline::bloom::Bloom;
+use bevy::core_pipeline::tonemapping::Tonemapping;
+use bevy::render::camera::ClearColorConfig;
 use bevy_egui::{egui, EguiContexts};
 use crate::{resources::*};
 
@@ -16,6 +19,7 @@ impl Plugin for EditorPlugin {
             .add_systems(Update, (
                 camera_controller,
                 editor_ui,
+                toggle_bloom_system,
             ));
     }
 }
@@ -26,17 +30,19 @@ fn setup_scene(
     // Camera
     commands.spawn((
         Camera3d::default(),
-        Transform::from_xyz(0.0, 5.0, 10.0)
-            .looking_at(Vec3::ZERO, Vec3::Y),
+        Transform::from_xyz(0.7, 0.7, 1.0).looking_at(Vec3::new(0.0, 0.3, 0.0), Vec3::Y),
+        Camera {
+            hdr: true, // 1. HDR is required for bloom
+            clear_color: ClearColorConfig::Custom(Color::BLACK),
+            ..default()
+        },
+        Bloom::NATURAL,
+        Tonemapping::TonyMcMapface,
         EditorCamera,
     ));
 
     // Light
     commands.spawn((
-        DirectionalLight {
-            shadows_enabled: true,
-            ..default()
-        },
         Transform {
             translation: Vec3::new(0.0, 2.0, 0.0),
             rotation: Quat::from_rotation_x(-std::f32::consts::FRAC_PI_4),
@@ -178,6 +184,7 @@ fn editor_ui(
             ui.menu_button("View", |ui| {
                 ui.checkbox(&mut editor_state.show_gizmo, "Show Gizmos");
                 ui.checkbox(&mut editor_state.show_properties, "Show Properties");
+                ui.checkbox(&mut editor_state.bloom_enabled, "Enable Bloom");
             });
         });
     });
@@ -204,4 +211,19 @@ fn editor_ui(
     });
 
 
+}
+
+fn toggle_bloom_system(
+    editor_state: Res<EditorState>,
+    mut camera_query: Query<&mut Bloom, With<EditorCamera>>,
+) {
+    if editor_state.is_changed() {
+        if let Ok(mut bloom_settings) = camera_query.get_single_mut() {
+            if editor_state.bloom_enabled {
+                *bloom_settings = Bloom::NATURAL;
+            } else {
+                bloom_settings.intensity = 0.0;
+            }
+        }
+    }
 }

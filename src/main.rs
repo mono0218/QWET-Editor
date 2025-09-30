@@ -26,6 +26,7 @@ fn main() {
             SceneManagerPlugin,
             TimelineEditorPlugin,
             MovingLightPlugin,
+            AudioPlayerPlugin,
         ))
         .run();
 }
