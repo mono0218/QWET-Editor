@@ -114,6 +114,7 @@ fn remove_selectable_recursive(
 // ==================== アバターインポート ====================
 
 pub fn process_avatar_import(
+    mut commands: Commands,
     asset_server: Res<AssetServer>,
     mut import_events: EventReader<ImportAvatarEvent>,
     mut scene_data: ResMut<SceneData>,
@@ -122,21 +123,39 @@ pub fn process_avatar_import(
         let file_path = event.path.to_string_lossy();
         info!("Processing Avatar import: {}", file_path);
 
-        let gltf_handle: Handle<Gltf> = asset_server.load(file_path.as_ref());
+        let gltf_handle: Handle<Gltf> = asset_server.load(file_path.to_string());
+        let scene_handle: Handle<Scene> = asset_server.load(
+            GltfAssetLabel::Scene(0).from_asset(file_path.to_string())
+        );
 
-        let imported_gltf = ImportedGltf {
-            name: event.path.file_stem()
-                .unwrap_or_default()
-                .to_string_lossy()
-                .to_string() + " (Avatar)",
+        let avatar_name = event.path.file_stem()
+            .unwrap_or_default()
+            .to_string_lossy()
+            .to_string() + " (Avatar)";
+
+        // エンティティをスポーンして画面に表示
+        commands.spawn((
+            SceneRoot(scene_handle),
+            Transform::from_translation(Vec3::new(0.0, 0.0, 0.0)),
+            ImportedGltf {
+                name: avatar_name.clone(),
+                path: event.path.clone(),
+                handle: gltf_handle.clone(),
+                is_avatar: true,
+            },
+            Name::new("Avatar"),
+            Selectable,
+        ));
+
+        scene_data.imported_gltfs.push(ImportedGltf {
+            name: avatar_name,
             path: event.path.clone(),
             handle: gltf_handle,
             is_avatar: true,
-        };
+        });
+        scene_data.imported_models.push(file_path.to_string());
 
-        scene_data.imported_gltfs.push(imported_gltf);
-
-        info!("Avatar GLB loaded: {}", file_path);
+        info!("Avatar GLB loaded and spawned: {}", file_path);
     }
 }
 
