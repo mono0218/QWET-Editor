@@ -5,6 +5,7 @@ pub struct AudioPlayerPlugin;
 impl Plugin for AudioPlayerPlugin {
     fn build(&self, app: &mut App) {
         app
+            .init_resource::<crate::resources::AudioState>()
             .add_event::<super::events::LoadAudioEvent>()
             .add_event::<super::events::PlayAudioEvent>()
             .add_event::<super::events::StopAudioEvent>()
@@ -14,6 +15,7 @@ impl Plugin for AudioPlayerPlugin {
                 super::handlers::handle_load_audio_event,
                 super::handlers::handle_play_audio_event,
                 super::handlers::handle_stop_audio_event,
+                super::handlers::poll_audio_file_dialog,
             ));
     }
 }
