@@ -1,6 +1,60 @@
 use bevy::prelude::*;
-use bevy_egui::{egui, EguiContexts};
+use bevy::render::primitives::Aabb;
 use crate::{components::*, resources::*, EditorCamera};
+
+// Helper function to check ray-AABB intersection
+fn ray_aabb_intersection(ray_origin: Vec3, ray_direction: Vec3, aabb: &Aabb, transform: &GlobalTransform) -> Option<f32> {
+    // Transform AABB to world space
+    let aabb_min = transform.transform_point(aabb.min().into());
+    let aabb_max = transform.transform_point(aabb.max().into());
+
+    let mut tmin = (aabb_min.x - ray_origin.x) / ray_direction.x;
+    let mut tmax = (aabb_max.x - ray_origin.x) / ray_direction.x;
+
+    if tmin > tmax {
+        std::mem::swap(&mut tmin, &mut tmax);
+    }
+
+    let mut tymin = (aabb_min.y - ray_origin.y) / ray_direction.y;
+    let mut tymax = (aabb_max.y - ray_origin.y) / ray_direction.y;
+
+    if tymin > tymax {
+        std::mem::swap(&mut tymin, &mut tymax);
+    }
+
+    if (tmin > tymax) || (tymin > tmax) {
+        return None;
+    }
+
+    if tymin > tmin {
+        tmin = tymin;
+    }
+
+    if tymax < tmax {
+        tmax = tymax;
+    }
+
+    let mut tzmin = (aabb_min.z - ray_origin.z) / ray_direction.z;
+    let mut tzmax = (aabb_max.z - ray_origin.z) / ray_direction.z;
+
+    if tzmin > tzmax {
+        std::mem::swap(&mut tzmin, &mut tzmax);
+    }
+
+    if (tmin > tzmax) || (tzmin > tmax) {
+        return None;
+    }
+
+    if tzmin > tmin {
+        tmin = tzmin;
+    }
+
+    if tmin < 0.0 {
+        return None;
+    }
+
+    Some(tmin)
+}
 
 pub fn object_selection(
     mut commands: Commands,
@@ -10,14 +64,19 @@ pub fn object_selection(
     time: Res<Time>,
     windows: Query<&Window>,
     camera_query: Query<(&Camera, &GlobalTransform), With<EditorCamera>>,
-    selectable_query: Query<(Entity, &GlobalTransform), With<Selectable>>,
-    imported_gltf_query: Query<Entity, With<ImportedGltf>>,
-    moving_light_query: Query<Entity, With<crate::components::MovingLight>>,
-    barrier_mesh_query: Query<Entity, With<crate::components::BarrierMesh>>,
-    parent_query: Query<&Parent>,
+    selectable_query: Query<(
+        Entity,
+        &GlobalTransform,
+        Option<&Aabb>,
+        Option<&BarrierMesh>,
+        Option<&MovingLight>,
+        Option<&ImportedGltf>,
+    ), With<Selectable>>,
     selected_query: Query<Entity, With<Selected>>,
     entity_exists_query: Query<Entity>,
     mut egui_contexts: bevy_egui::EguiContexts,
+    children_query: Query<&Children>,
+    aabb_query: Query<(&Aabb, &GlobalTransform)>,
 ) {
     if !matches!(editor_state.tool_mode, ToolMode::Select) {
         return;
@@ -70,24 +129,47 @@ pub fn object_selection(
                 // シングルクリックで空の場所をクリックした場合、選択を解除
                 if let Ok((camera, camera_transform)) = camera_query.get_single() {
                     if let Ok(ray) = camera.viewport_to_world(camera_transform, cursor_position) {
+                        // AABBとの交差判定で何かにヒットしたかチェック
                         let mut hit_anything = false;
 
-                        // オブジェクトにヒットしたかチェック（簡易版）
-                        for (_entity, global_transform) in selectable_query.iter() {
-                            let entity_pos = global_transform.translation();
-                            let to_entity = entity_pos - ray.origin;
-                            let projected = ray.direction.dot(to_entity);
-
-                            if projected > 0.0 {
-                                let closest_point = ray.origin + ray.direction * projected;
-                                let distance_to_ray = closest_point.distance(entity_pos);
-
-                                // 広めの判定範囲で何かにヒットしたか確認
-                                if distance_to_ray < 15.0 {
+                        for (entity, transform, aabb_opt, _, _, _) in selectable_query.iter() {
+                            // エンティティ自身のAABBをチェック
+                            if let Some(aabb) = aabb_opt {
+                                if ray_aabb_intersection(ray.origin, *ray.direction, aabb, transform).is_some() {
                                     hit_anything = true;
-                                    info!("Single click hit something, distance: {:.2}", distance_to_ray);
                                     break;
                                 }
+                            }
+
+                            // 子エンティティのAABBもチェック（再帰的に）
+                            fn check_children_any_hit(
+                                entity: Entity,
+                                children_query: &Query<&Children>,
+                                aabb_query: &Query<(&Aabb, &GlobalTransform)>,
+                                ray_origin: Vec3,
+                                ray_direction: Vec3,
+                            ) -> bool {
+                                if let Ok(children) = children_query.get(entity) {
+                                    for &child in children.iter() {
+                                        // 子エンティティのAABBをチェック
+                                        if let Ok((child_aabb, child_transform)) = aabb_query.get(child) {
+                                            if ray_aabb_intersection(ray_origin, ray_direction, child_aabb, child_transform).is_some() {
+                                                return true;
+                                            }
+                                        }
+
+                                        // 孫エンティティもチェック
+                                        if check_children_any_hit(child, children_query, aabb_query, ray_origin, ray_direction) {
+                                            return true;
+                                        }
+                                    }
+                                }
+                                false
+                            }
+
+                            if check_children_any_hit(entity, &children_query, &aabb_query, ray.origin, *ray.direction) {
+                                hit_anything = true;
+                                break;
                             }
                         }
 
@@ -118,164 +200,152 @@ pub fn object_selection(
             editor_state.last_click_pos = None;
             if let Ok((camera, camera_transform)) = camera_query.get_single() {
                 if let Ok(ray) = camera.viewport_to_world(camera_transform, cursor_position) {
+                    // 子エンティティのAABBもチェック（再帰的に）
+                    fn check_children_for_hit(
+                        parent_entity: Entity,
+                        entity: Entity,
+                        children_query: &Query<&Children>,
+                        aabb_query: &Query<(&Aabb, &GlobalTransform)>,
+                        ray_origin: Vec3,
+                        ray_direction: Vec3,
+                        closest_distance: &mut f32,
+                    ) -> bool {
+                        let mut found_hit = false;
+
+                        if let Ok(children) = children_query.get(entity) {
+                            for &child in children.iter() {
+                                // 子エンティティのAABBをチェック
+                                if let Ok((child_aabb, child_transform)) = aabb_query.get(child) {
+                                    if let Some(distance) = ray_aabb_intersection(ray_origin, ray_direction, child_aabb, child_transform) {
+                                        if distance < *closest_distance {
+                                            *closest_distance = distance;
+                                            found_hit = true;
+                                            info!("Hit child {:?} of entity {:?} at distance {:.2}", child, parent_entity, distance);
+                                        }
+                                    }
+                                }
+
+                                // 孫エンティティもチェック
+                                if check_children_for_hit(parent_entity, child, children_query, aabb_query, ray_origin, ray_direction, closest_distance) {
+                                    found_hit = true;
+                                }
+                            }
+                        }
+                        found_hit
+                    }
+
+                    // AABBとの交差判定で最も近いエンティティを見つける
+                    // 優先順位: BarrierMesh > MovingLight > Avatar > ImportedGltf（ステージ）
                     let mut closest_entity = None;
                     let mut closest_distance = f32::INFINITY;
-                    
-                    let all_selectable: Vec<_> = selectable_query.iter().collect();
-                    info!("Checking {} selectable entities", all_selectable.len());
-                    
-                    // Helper function to check if entity is child of MovingLight
-                    let is_moving_light_child = |entity: Entity| -> bool {
-                        let mut current_entity = entity;
-                        for _ in 0..10 { // Prevent infinite loop
-                            if let Ok(parent) = parent_query.get(current_entity) {
-                                let parent_entity = parent.get();
-                                if moving_light_query.get(parent_entity).is_ok() {
-                                    return true;
+
+                    // エンティティを分類
+                    let mut barriers = Vec::new();
+                    let mut lights = Vec::new();
+                    let mut avatars = Vec::new();
+                    let mut stages = Vec::new();
+
+                    for (entity, transform, aabb_opt, barrier_opt, light_opt, gltf_opt) in selectable_query.iter() {
+                        // エンティティの種類を判定
+                        let mut entity_distance = f32::INFINITY;
+
+                        // エンティティ自身のAABBをチェック
+                        if let Some(aabb) = aabb_opt {
+                            if let Some(distance) = ray_aabb_intersection(ray.origin, *ray.direction, aabb, transform) {
+                                entity_distance = distance;
+                            }
+                        }
+
+                        // 子エンティティのAABBもチェック
+                        let mut child_distance = entity_distance;
+                        if check_children_for_hit(entity, entity, &children_query, &aabb_query, ray.origin, *ray.direction, &mut child_distance) {
+                            entity_distance = child_distance;
+                        }
+
+                        // ヒットした場合、種類ごとに分類
+                        if entity_distance < f32::INFINITY {
+                            if barrier_opt.is_some() {
+                                barriers.push((entity, entity_distance));
+                                info!("Found barrier hit: {:?} at distance {:.2}", entity, entity_distance);
+                            } else if light_opt.is_some() {
+                                lights.push((entity, entity_distance));
+                                info!("Found light hit: {:?} at distance {:.2}", entity, entity_distance);
+                            } else if let Some(gltf) = gltf_opt {
+                                if gltf.is_avatar {
+                                    avatars.push((entity, entity_distance));
+                                    info!("Found avatar hit: {:?} at distance {:.2}", entity, entity_distance);
+                                } else {
+                                    stages.push((entity, entity_distance));
+                                    info!("Found stage hit: {:?} at distance {:.2}", entity, entity_distance);
                                 }
-                                current_entity = parent_entity;
                             } else {
-                                break;
-                            }
-                        }
-                        false
-                    };
-                    
-                    // First priority: MovingLight entities (but not their children)
-                    for moving_light_entity in moving_light_query.iter() {
-                        if let Ok((_, global_transform)) = selectable_query.get(moving_light_entity) {
-                            let entity_pos = global_transform.translation();
-                            let to_entity = entity_pos - ray.origin;
-                            let projected = ray.direction.dot(to_entity);
-                            
-                            if projected > 0.0 {
-                                let closest_point = ray.origin + ray.direction * projected;
-                                let distance_to_ray = closest_point.distance(entity_pos);
-                                let distance_from_camera = entity_pos.distance(ray.origin);
-                                
-                                // MovingLights have highest priority with large selection radius
-                                if distance_to_ray < 15.0 && distance_from_camera < closest_distance {
-                                    closest_distance = distance_from_camera;
-                                    closest_entity = Some(moving_light_entity);
-                                    info!("Found MovingLight selection: Entity {:?}, distance: {:.2}", moving_light_entity, distance_from_camera);
-                                }
-                            }
-                        }
-                    }
-                    
-                    // Second priority: try to select BarrierMesh if no MovingLight found
-                    if closest_entity.is_none() {
-                        for barrier_entity in barrier_mesh_query.iter() {
-                            if let Ok((_, global_transform)) = selectable_query.get(barrier_entity) {
-                                let entity_pos = global_transform.translation();
-                                let to_entity = entity_pos - ray.origin;
-                                let projected = ray.direction.dot(to_entity);
-
-                                if projected > 0.0 {
-                                    let closest_point = ray.origin + ray.direction * projected;
-                                    let distance_to_ray = closest_point.distance(entity_pos);
-                                    let distance_from_camera = entity_pos.distance(ray.origin);
-
-                                    // BarrierMesh with large selection radius
-                                    if distance_to_ray < 12.0 && distance_from_camera < closest_distance {
-                                        closest_distance = distance_from_camera;
-                                        closest_entity = Some(barrier_entity);
-                                        info!("Found BarrierMesh selection: Entity {:?}, distance: {:.2}", barrier_entity, distance_from_camera);
-                                    }
-                                }
+                                // その他のオブジェクト（ステージと同じ扱い）
+                                stages.push((entity, entity_distance));
+                                info!("Found other object hit: {:?} at distance {:.2}", entity, entity_distance);
                             }
                         }
                     }
 
-                    // Third priority: try to select imported GLTF models if no MovingLight or BarrierMesh found
-                    if closest_entity.is_none() {
-                        for imported_entity in imported_gltf_query.iter() {
-                            if let Ok((_, global_transform)) = selectable_query.get(imported_entity) {
-                                let entity_pos = global_transform.translation();
-                                let to_entity = entity_pos - ray.origin;
-                                let projected = ray.direction.dot(to_entity);
-
-                                if projected > 0.0 {
-                                    let closest_point = ray.origin + ray.direction * projected;
-                                    let distance_to_ray = closest_point.distance(entity_pos);
-                                    let distance_from_camera = entity_pos.distance(ray.origin);
-
-                                    // Prioritize imported models with larger selection radius
-                                    if distance_to_ray < 10.0 && distance_from_camera < closest_distance {
-                                        closest_distance = distance_from_camera;
-                                        closest_entity = Some(imported_entity);
-                                        info!("Found ImportedGltf selection: Entity {:?}, distance: {:.2}", imported_entity, distance_from_camera);
-                                    }
+                    // 優先順位順にチェック（各カテゴリ内で最も近いものを選択）
+                    for entities in [&barriers, &lights, &avatars, &stages] {
+                        if !entities.is_empty() {
+                            // このカテゴリ内で最も近いものを見つける
+                            let mut category_closest: Option<(Entity, f32)> = None;
+                            for &(entity, distance) in entities {
+                                if category_closest.is_none() || distance < category_closest.unwrap().1 {
+                                    category_closest = Some((entity, distance));
                                 }
+                            }
+
+                            if let Some((entity, distance)) = category_closest {
+                                closest_entity = Some(entity);
+                                closest_distance = distance;
+                                info!("Selected entity {:?} from priority category at distance {:.2}", entity, distance);
+                                break; // より優先度の高いカテゴリで見つかったら終了
                             }
                         }
                     }
-                    
-                    // If no ImportedGltf found, check other entities (but exclude MovingLight children)
-                    if closest_entity.is_none() {
-                        for (entity, global_transform) in all_selectable {
-                            // Skip MovingLight child entities
-                            if is_moving_light_child(entity) {
-                                continue;
-                            }
-                            
-                            let entity_pos = global_transform.translation();
-                            let to_entity = entity_pos - ray.origin;
-                            let projected = ray.direction.dot(to_entity);
-                            
-                            if projected > 0.0 {
-                                let closest_point = ray.origin + ray.direction * projected;
-                                let distance_to_ray = closest_point.distance(entity_pos);
-                                let distance_from_camera = entity_pos.distance(ray.origin);
-                                
-                                // General selection with moderate radius
-                                if distance_to_ray < 5.0 && distance_from_camera < closest_distance {
-                                    closest_distance = distance_from_camera;
-                                    closest_entity = Some(entity);
-                                    info!("Found general selection: Entity {:?}, distance: {:.2}", entity, distance_from_camera);
-                                }
-                            }
-                        }
-                    }
-                    
+
                     // Clear previous selections
                     for entity in selected_query.iter() {
                         if entity_exists_query.get(entity).is_ok() {
                             commands.entity(entity).remove::<Selected>();
                         }
                     }
-                    
-                    // Select new entity
+
                     if let Some(entity) = closest_entity {
+                        info!("Selecting closest entity: {:?} at distance {:.2}", entity, closest_distance);
+
                         // Check if entity still exists before trying to select it
                         if entity_exists_query.get(entity).is_ok() {
                             commands.entity(entity).insert(Selected);
                             editor_state.selected_entity = Some(entity);
-                            
+
                             // Reset dragging state when selecting new entity
                             editor_state.is_dragging = false;
                             editor_state.drag_start_pos = None;
                             editor_state.drag_offset = Vec3::ZERO;
-                            
+
                             info!("Selected entity: {:?}", entity);
                         } else {
                             warn!("Tried to select non-existent entity: {:?}", entity);
                             editor_state.selected_entity = None;
-                            
+
                             // Reset dragging state when deselecting
                             editor_state.is_dragging = false;
                             editor_state.drag_start_pos = None;
                             editor_state.drag_offset = Vec3::ZERO;
                         }
                     } else {
+                        info!("No entity hit by ray");
                         editor_state.selected_entity = None;
-                        
+
                         // Reset dragging state when deselecting all
                         editor_state.is_dragging = false;
                         editor_state.drag_start_pos = None;
                         editor_state.drag_offset = Vec3::ZERO;
-                        
-                        info!("Deselected all entities");
+
+                        info!("Deselected all entities - no hit");
                     }
                 }
             }
