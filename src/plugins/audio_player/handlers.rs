@@ -1,161 +1,13 @@
 use bevy::prelude::*;
-use bevy_egui::{egui, EguiContexts};
 use crate::resources::*;
 use crate::plugins::timeline_editor::TimelineState;
-use std::path::{Path, PathBuf};
-use std::sync::{Arc, Mutex};
+use super::events::*;
+use super::init::*;
 use std::fs::File;
 use std::io::BufReader;
-use rodio::Source;
+use std::sync::{Arc, Mutex};
 
-pub struct AudioPlayerPlugin;
-
-impl Plugin for AudioPlayerPlugin {
-    fn build(&self, app: &mut App) {
-        app
-            .init_resource::<AudioState>()
-            .add_event::<LoadAudioEvent>()
-            .add_event::<PlayAudioEvent>()
-            .add_event::<StopAudioEvent>()
-            .add_systems(Startup, initialize_rodio)
-            .add_systems(Update, (
-                audio_player_ui,
-                handle_load_audio_event,
-                handle_play_audio_event,
-                handle_stop_audio_event,
-                update_audio_time,
-                sync_audio_with_timeline,
-                poll_audio_file_dialog,
-            ));
-    }
-}
-
-#[derive(Event)]
-pub struct LoadAudioEvent {
-    pub path: PathBuf,
-}
-
-#[derive(Event)]
-pub struct PlayAudioEvent;
-
-#[derive(Event)]
-pub struct StopAudioEvent;
-
-#[derive(Resource)]
-struct AudioFileDialogTask {
-    task: Option<bevy::tasks::Task<Option<rfd::FileHandle>>>,
-}
-
-fn initialize_rodio() {
-    info!("Rodio audio system is ready to use");
-}
-
-fn get_audio_duration(path: &Path) -> Result<f32, Box<dyn std::error::Error>> {
-    let file = File::open(path)?;
-    let source = rodio::Decoder::new(BufReader::new(file))?;
-    
-    // サンプル数とサンプルレートから長さを計算
-    let sample_rate = source.sample_rate() as f32;
-    let channels = source.channels() as f32;
-    let total_samples = source.into_iter().count() as f32;
-    
-    let duration = total_samples / (sample_rate * channels);
-    Ok(duration)
-}
-
-fn audio_player_ui(
-    mut contexts: EguiContexts,
-    mut audio_state: ResMut<AudioState>,
-    mut load_events: EventWriter<LoadAudioEvent>,
-    mut play_events: EventWriter<PlayAudioEvent>,
-    mut stop_events: EventWriter<StopAudioEvent>,
-) {
-    let ctx = contexts.ctx_mut();
-
-    egui::Window::new("🎵 Audio Player")
-        .default_width(400.0)
-        .resizable(true)
-        .show(ctx, |ui| {
-            ui.heading("Music Control");
-            
-            // ファイル読み込み
-            ui.horizontal(|ui| {
-                if ui.button("📁 Load Audio").clicked() {
-                    info!("Load Audio button clicked");
-                    // 空のパスでLoadAudioEventを送信（非同期ダイアログのトリガー）
-                    load_events.send(LoadAudioEvent { path: PathBuf::new() });
-                }
-                
-                if let Some(ref path) = audio_state.current_audio_path {
-                    ui.label(format!("🎵 {}", path.file_name().unwrap_or_default().to_string_lossy()));
-                } else {
-                    ui.label("No audio loaded");
-                }
-            });
-            
-            ui.separator();
-            
-            // 再生制御
-            ui.horizontal(|ui| {
-                if ui.button(if audio_state.is_playing { "⏸ Pause" } else { "▶ Play" }).clicked() {
-                    if audio_state.is_playing {
-                        stop_events.send(StopAudioEvent);
-                    } else {
-                        play_events.send(PlayAudioEvent);
-                    }
-                }
-                
-                if ui.button("⏹ Stop").clicked() {
-                    stop_events.send(StopAudioEvent);
-                    // current_timeはリセットしない（一時停止として動作）
-                }
-                
-                if ui.button("⏮ Reset").clicked() {
-                    stop_events.send(StopAudioEvent);
-                    audio_state.current_time = 0.0;
-                }
-            });
-            
-            // 音量制御
-            ui.horizontal(|ui| {
-                ui.label("🔊 Volume:");
-                ui.add(egui::Slider::new(&mut audio_state.volume, 0.0..=1.0).suffix("x"));
-            });
-            
-            // 再生時間表示
-            ui.horizontal(|ui| {
-                ui.label("⏱ Time:");
-                ui.label(format!("{:.1}s / {:.1}s", audio_state.current_time, audio_state.total_duration));
-            });
-            
-            // プログレスバー
-            if audio_state.total_duration > 0.0 {
-                let progress = audio_state.current_time / audio_state.total_duration;
-                ui.add(egui::ProgressBar::new(progress).show_percentage());
-            }
-            
-            ui.separator();
-            
-            // タイムライン同期設定
-            ui.checkbox(&mut audio_state.timeline_sync, "🔗 Sync with Timeline");
-            
-            if audio_state.timeline_sync {
-                ui.label("Music will play/stop with timeline");
-            }
-            
-            // エラーメッセージ表示
-            if let Some(ref error) = audio_state.last_error {
-                ui.separator();
-                ui.colored_label(egui::Color32::RED, format!("❌ Error: {}", error));
-                
-                if ui.button("Clear Error").clicked() {
-                    audio_state.last_error = None;
-                }
-            }
-        });
-}
-
-fn handle_load_audio_event(
+pub fn handle_load_audio_event(
     mut load_events: EventReader<LoadAudioEvent>,
     mut audio_state: ResMut<AudioState>,
     mut commands: Commands,
@@ -189,7 +41,7 @@ fn handle_load_audio_event(
     }
 }
 
-fn handle_play_audio_event(
+pub fn handle_play_audio_event(
     mut play_events: EventReader<PlayAudioEvent>,
     mut audio_state: ResMut<AudioState>,
 ) {
@@ -256,11 +108,7 @@ fn handle_play_audio_event(
                     continue;
                 }
             };
-            
-            // 現在の再生位置から開始するためにスキップ
-            let skip_duration = std::time::Duration::from_secs_f32(audio_state.current_time);
-            let source = source.skip_duration(skip_duration);
-            
+
             // 音量設定
             sink.set_volume(audio_state.volume);
             
@@ -278,7 +126,7 @@ fn handle_play_audio_event(
     }
 }
 
-fn handle_stop_audio_event(
+pub fn handle_stop_audio_event(
     mut stop_events: EventReader<StopAudioEvent>,
     mut audio_state: ResMut<AudioState>,
 ) {
@@ -299,7 +147,7 @@ fn handle_stop_audio_event(
     }
 }
 
-fn update_audio_time(
+pub fn update_audio_time(
     mut audio_state: ResMut<AudioState>,
     time: Res<Time>,
 ) {
@@ -330,7 +178,7 @@ fn update_audio_time(
     }
 }
 
-fn sync_audio_with_timeline(
+pub fn sync_audio_with_timeline(
     audio_state: Res<AudioState>,
     mut timeline_state: ResMut<TimelineState>,
     mut play_events: EventWriter<PlayAudioEvent>,
@@ -363,7 +211,7 @@ fn sync_audio_with_timeline(
     }
 }
 
-fn poll_audio_file_dialog(
+pub fn poll_audio_file_dialog(
     mut commands: Commands,
     task_resource: Option<ResMut<AudioFileDialogTask>>,
     mut load_events: EventWriter<LoadAudioEvent>,
