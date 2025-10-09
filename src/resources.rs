@@ -1,5 +1,5 @@
 use bevy::prelude::*;
-use serde::{Deserialize, Serialize};
+// use serde::{Deserialize, Serialize};
 use std::path::PathBuf;
 use std::sync::{Arc, Mutex};
 
@@ -37,10 +37,11 @@ pub enum ToolMode {
     Animation,
 }
 
-#[derive(Resource, Default, Serialize, Deserialize)]
+#[derive(Resource, Default)]
 pub struct SceneData {
     pub lights: Vec<(Transform, crate::components::MovingLight)>,
     pub imported_models: Vec<String>,
+    pub imported_gltfs: Vec<crate::components::ImportedGltf>,
 }
 
 #[derive(Resource)]

@@ -6,6 +6,7 @@ use std::collections::HashMap;
 pub struct QWETProject {
     pub version: String,
     pub stage: StageData,
+    pub avatars: Vec<AvatarData>,
     pub lights: Vec<LightData>,
     pub timeline: TimelineData,
     pub audio: Option<AudioData>,
@@ -18,6 +19,14 @@ pub struct StageData {
 
 #[derive(Serialize, Deserialize, Clone, Debug)]
 pub struct GltfModelData {
+    pub data: String, // base64エンコードされたGLBデータ
+    pub position: Vec3,
+    pub rotation: Quat,
+    pub scale: Vec3,
+}
+
+#[derive(Serialize, Deserialize, Clone, Debug)]
+pub struct AvatarData {
     pub data: String, // base64エンコードされたGLBデータ
     pub position: Vec3,
     pub rotation: Quat,
@@ -75,6 +84,7 @@ impl QWETProject {
             stage: StageData {
                 gltf_models: Vec::new(),
             },
+            avatars: Vec::new(),
             lights: Vec::new(),
             timeline: TimelineData {
                 groups: HashMap::new(),

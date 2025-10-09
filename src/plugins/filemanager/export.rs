@@ -1,120 +1,83 @@
 use bevy::prelude::*;
-use bevy_egui::{egui, EguiContexts};
 use crate::{components::*, resources::*, export::*};
 use crate::plugins::timeline_editor::{LightGroups, TimelineState};
 use std::path::PathBuf;
 use std::fs;
 use base64::{Engine as _, engine::general_purpose};
 
-pub struct ProjectExportPlugin;
-
-impl Plugin for ProjectExportPlugin {
-    fn build(&self, app: &mut App) {
-        app
-            .init_resource::<ExportState>()
-            .add_event::<ExportProjectEvent>()
-            .add_systems(Update, (
-                export_ui,
-                handle_export_project,
-                poll_export_file_dialog,
-                export_project_to_file,
-            ));
-    }
-}
-
-#[derive(Resource, Default)]
-struct ExportState {
-    export_trigger: bool,
-    last_export_path: Option<PathBuf>,
-    export_status: Option<String>,
-}
+// ==================== イベント定義 ====================
 
 #[derive(Event)]
 pub struct ExportProjectEvent {
     pub path: PathBuf,
 }
 
+// ==================== リソース定義 ====================
+
+#[derive(Resource, Default)]
+pub struct ExportState {
+    pub export_trigger: bool,
+    pub last_export_path: Option<PathBuf>,
+    pub export_status: Option<String>,
+}
+
 #[derive(Resource)]
-struct ExportFileDialogTask {
-    task: Option<bevy::tasks::Task<Option<rfd::FileHandle>>>,
+pub struct ExportFileDialogTask {
+    pub task: Option<bevy::tasks::Task<Option<rfd::FileHandle>>>,
 }
 
-fn export_ui(
-    mut contexts: EguiContexts,
-    mut export_state: ResMut<ExportState>,
-    _export_events: EventWriter<ExportProjectEvent>,
-) {
-    let ctx = contexts.ctx_mut();
-
-    egui::Window::new("💾 Project Export")
-        .default_width(300.0)
-        .resizable(true)
-        .show(ctx, |ui| {
-            ui.heading("Export QWET Project");
-            
-            ui.label("Export current project to .qwet file");
-            ui.separator();
-
-            if ui.button("💾 Export Project").clicked() {
-                export_state.export_trigger = true;
-            }
-
-            if let Some(ref path) = export_state.last_export_path {
-                ui.label(format!("Last exported: {}", path.display()));
-            }
-
-            if let Some(ref status) = export_state.export_status {
-                ui.separator();
-                if status.contains("successfully") {
-                    ui.colored_label(egui::Color32::GREEN, status);
-                } else {
-                    ui.colored_label(egui::Color32::RED, status);
-                }
-                
-                if ui.button("Clear Status").clicked() {
-                    export_state.export_status = None;
-                }
-            }
-        });
-
-    // キーボードショートカット (Ctrl+E)
-    ctx.input(|i| {
-        if i.key_pressed(egui::Key::E) && i.modifiers.ctrl {
-            export_state.export_trigger = true;
-        }
-    });
+#[derive(Resource)]
+pub struct ExportProjectTask {
+    pub task: Option<bevy::tasks::Task<PathBuf>>,
+    pub processing: bool,
 }
 
-fn handle_export_project(
-    mut export_state: ResMut<ExportState>,
-    _export_events: EventWriter<ExportProjectEvent>,
+// ==================== プロジェクトエクスポート ====================
+
+pub fn handle_export_project(
+    mut export_events: EventReader<ExportProjectEvent>,
     mut commands: Commands,
 ) {
-    if export_state.export_trigger {
-        export_state.export_trigger = false;
-        
-        info!("Triggering export file dialog...");
-        
-        let task = bevy::tasks::AsyncComputeTaskPool::get().spawn(async move {
-            rfd::AsyncFileDialog::new()
-                .add_filter("QWET Project", &["qwet"])
-                .set_file_name("project.qwet")
-                .save_file()
-                .await
-        });
-        
-        commands.insert_resource(ExportFileDialogTask { task: Some(task) });
+    for event in export_events.read() {
+        // Check if this is a dialog trigger (empty path)
+        if event.path.as_os_str().is_empty() {
+            info!("Triggering export file dialog...");
+
+            let task = bevy::tasks::AsyncComputeTaskPool::get().spawn(async move {
+                rfd::AsyncFileDialog::new()
+                    .add_filter("QWET Project", &["qwet"])
+                    .set_file_name("project.qwet")
+                    .save_file()
+                    .await
+            });
+
+            commands.insert_resource(ExportFileDialogTask { task: Some(task) });
+        } else {
+            // Process the actual file export
+            info!("Processing QWET project export to: {:?}", event.path);
+
+            // Start async export task
+            let path = event.path.clone();
+            let task = bevy::tasks::AsyncComputeTaskPool::get().spawn(async move {
+                path
+            });
+
+            commands.insert_resource(ExportProjectTask {
+                task: Some(task),
+                processing: false,
+            });
+        }
     }
 }
 
-fn poll_export_file_dialog(
+pub fn poll_export_file_dialog(
     mut commands: Commands,
     task_resource: Option<ResMut<ExportFileDialogTask>>,
     mut export_events: EventWriter<ExportProjectEvent>,
 ) {
     if let Some(mut task_res) = task_resource {
         if let Some(mut task) = task_res.task.take() {
-            if let Some(result) = bevy::tasks::block_on(bevy::tasks::futures_lite::future::poll_once(&mut task)) {
+            if let Some(result) = bevy::tasks::block_on(bevy::tasks::poll_once(&mut task)) {
                 if let Some(file_handle) = result {
                     let path = file_handle.path().to_path_buf();
                     info!("Export file selected: {:?}", path);
@@ -137,7 +100,7 @@ fn encode_file_to_base64(file_path: &str) -> Result<String, Box<dyn std::error::
 }
 
 fn export_project_data(
-    scene_data: &SceneData,
+    _scene_data: &SceneData,
     light_groups: &LightGroups,
     timeline_state: &TimelineState,
     audio_state: &AudioState,
@@ -146,20 +109,32 @@ fn export_project_data(
 ) -> QWETProject {
     let mut project = QWETProject::new();
 
-    // ステージデータの収集
+    // ステージとアバターデータの収集
     for (imported_gltf, transform) in gltf_query.iter() {
-        match encode_file_to_base64(&imported_gltf.path) {
+        match encode_file_to_base64(&imported_gltf.path.to_string_lossy()) {
             Ok(encoded_data) => {
-                let model_data = GltfModelData {
-                    data: encoded_data,
-                    position: transform.translation,
-                    rotation: transform.rotation,
-                    scale: transform.scale,
-                };
-                project.stage.gltf_models.push(model_data);
+                if imported_gltf.is_avatar {
+                    // アバターデータとして追加
+                    let avatar_data = AvatarData {
+                        data: encoded_data,
+                        position: transform.translation,
+                        rotation: transform.rotation,
+                        scale: transform.scale,
+                    };
+                    project.avatars.push(avatar_data);
+                } else {
+                    // ステージモデルとして追加
+                    let model_data = GltfModelData {
+                        data: encoded_data,
+                        position: transform.translation,
+                        rotation: transform.rotation,
+                        scale: transform.scale,
+                    };
+                    project.stage.gltf_models.push(model_data);
+                }
             }
             Err(e) => {
-                error!("Failed to encode GLB file {}: {}", imported_gltf.path, e);
+                error!("Failed to encode GLB file {}: {}", imported_gltf.path.display(), e);
                 // エラーが発生してもプロジェクトのエクスポートを続行
             }
         }
@@ -209,7 +184,7 @@ fn export_project_data(
 }
 
 #[allow(clippy::too_many_arguments)]
-fn export_project_to_file(
+pub fn export_project_to_file(
     mut export_events: EventReader<ExportProjectEvent>,
     mut export_state: ResMut<ExportState>,
     scene_data: Res<SceneData>,
@@ -249,12 +224,12 @@ fn export_project_to_file(
             Ok(json_content) => {
                 let content_size = json_content.len();
                 info!("JSON content size: {} KB", content_size / 1024);
-                
+
                 // ファイルに書き込み
                 match fs::write(&event.path, &json_content) {
                     Ok(_) => {
                         let success_msg = format!(
-                            "Project exported successfully to {} ({} KB)", 
+                            "Project exported successfully to {} ({} KB)",
                             event.path.display(),
                             content_size / 1024
                         );
@@ -277,4 +252,3 @@ fn export_project_to_file(
         }
     }
 }
-

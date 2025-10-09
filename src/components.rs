@@ -42,8 +42,14 @@ pub struct Selected;
 #[derive(Component)]
 pub struct Selectable;
 
-#[derive(Component)]
+#[derive(Component, Clone)]
 pub struct ImportedGltf {
-    pub path: String,
+    pub name: String,
+    pub path: std::path::PathBuf,
+    pub handle: Handle<Gltf>,
+    pub is_avatar: bool,
 }
+
+#[derive(Component)]
+pub struct Avatar;
 

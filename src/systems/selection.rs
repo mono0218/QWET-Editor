@@ -1,5 +1,5 @@
 use bevy::prelude::*;
-use crate::{components::*, resources::*};
+use crate::{components::*, resources::*, EditorCamera};
 
 pub fn object_selection(
     mut commands: Commands,
@@ -18,7 +18,7 @@ pub fn object_selection(
         let window = windows.single();
         if let Some(cursor_position) = window.cursor_position() {
             if let Ok((camera, camera_transform)) = camera_query.get_single() {
-                if let Some(ray) = camera.viewport_to_world(camera_transform, cursor_position) {
+                if let Ok(ray) = camera.viewport_to_world(camera_transform, cursor_position) {
                     let mut closest_entity = None;
                     let mut closest_distance = f32::INFINITY;
                     

@@ -1,34 +1,5 @@
-use bevy::prelude::*;
-use bevy_egui::EguiPlugin;
-
-mod plugins;
-mod components;
-mod resources;
-mod systems;
-mod export;
-
-use plugins::*;
+use qwet_editor::init_app;
 
 fn main() {
-    App::new()
-        .add_plugins((
-            DefaultPlugins.set(WindowPlugin {
-                primary_window: Some(Window {
-                    title: "QWET Live Space Editor".to_string(),
-                    resolution: (1280., 720.).into(),
-                    ..default()
-                }),
-                ..default()
-            }),
-            EguiPlugin,
-            EditorPlugin,
-            SelectionPlugin,
-            GltfImportPlugin,
-            SceneManagerPlugin,
-            TimelineEditorPlugin,
-            MovingLightPlugin,
-            AudioPlayerPlugin,
-            ProjectExportPlugin,
-        ))
-        .run();
+    init_app().run();
 }
