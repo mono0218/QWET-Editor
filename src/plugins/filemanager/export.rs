@@ -106,6 +106,7 @@ fn export_project_data(
     audio_state: &AudioState,
     light_query: &Query<(Entity, &MovingLight, &Transform), With<MovingLight>>,
     gltf_query: &Query<(&ImportedGltf, &Transform), With<ImportedGltf>>,
+    barrier_query: &Query<(&BarrierMesh, &Transform), With<BarrierMesh>>,
 ) -> QWETProject {
     let mut project = QWETProject::new();
 
@@ -164,6 +165,17 @@ fn export_project_data(
         project.timeline.groups.insert(group_name.clone(), group_data);
     }
 
+    // バリアメッシュデータの収集
+    for (barrier, transform) in barrier_query.iter() {
+        let barrier_data = BarrierData {
+            name: barrier.name.clone(),
+            position: transform.translation,
+            rotation: transform.rotation,
+            size: barrier.size,
+        };
+        project.barriers.push(barrier_data);
+    }
+
     // 音楽データの収集
     if let Some(ref audio_path) = audio_state.current_audio_path {
         match encode_file_to_base64(&audio_path.to_string_lossy()) {
@@ -193,6 +205,7 @@ pub fn export_project_to_file(
     audio_state: Res<AudioState>,
     light_query: Query<(Entity, &MovingLight, &Transform), With<MovingLight>>,
     gltf_query: Query<(&ImportedGltf, &Transform), With<ImportedGltf>>,
+    barrier_query: Query<(&BarrierMesh, &Transform), With<BarrierMesh>>,
 ) {
     for event in export_events.read() {
         info!("Exporting project to: {:?}", event.path);
@@ -206,12 +219,14 @@ pub fn export_project_to_file(
             &audio_state,
             &light_query,
             &gltf_query,
+            &barrier_query,
         );
 
         // 統計情報をログに出力
         info!("Export statistics:");
         info!("  - {} GLB models", project.stage.gltf_models.len());
         info!("  - {} lights", project.lights.len());
+        info!("  - {} barriers", project.barriers.len());
         info!("  - {} light groups", project.timeline.groups.len());
         if project.audio.is_some() {
             info!("  - Audio included");

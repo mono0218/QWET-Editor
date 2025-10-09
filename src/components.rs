@@ -53,3 +53,22 @@ pub struct ImportedGltf {
 #[derive(Component)]
 pub struct Avatar;
 
+#[derive(Component, Clone, Debug)]
+pub struct BarrierMesh {
+    pub name: String,
+    pub size: Vec3, // width, height, depth
+    pub color: Color,
+    pub visible: bool,
+}
+
+impl Default for BarrierMesh {
+    fn default() -> Self {
+        Self {
+            name: "Barrier".to_string(),
+            size: Vec3::new(2.0, 2.0, 0.1),
+            color: Color::srgba(1.0, 0.0, 0.0, 0.3),
+            visible: true,
+        }
+    }
+}
+

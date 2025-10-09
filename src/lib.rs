@@ -35,6 +35,7 @@ pub fn init_app() -> App {
         MovingLightPlugin,
         AudioPlayerPlugin,
         FileManagerPlugin,
+        BarrierMeshPlugin,
     ));
 
     app

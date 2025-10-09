@@ -8,6 +8,7 @@ pub struct QWETProject {
     pub stage: StageData,
     pub avatars: Vec<AvatarData>,
     pub lights: Vec<LightData>,
+    pub barriers: Vec<BarrierData>,
     pub timeline: TimelineData,
     pub audio: Option<AudioData>,
 }
@@ -77,6 +78,14 @@ pub struct AudioData {
     pub total_duration: f32,
 }
 
+#[derive(Serialize, Deserialize, Clone, Debug)]
+pub struct BarrierData {
+    pub name: String,
+    pub position: Vec3,
+    pub rotation: Quat,
+    pub size: Vec3,
+}
+
 impl QWETProject {
     pub fn new() -> Self {
         Self {
@@ -86,6 +95,7 @@ impl QWETProject {
             },
             avatars: Vec::new(),
             lights: Vec::new(),
+            barriers: Vec::new(),
             timeline: TimelineData {
                 groups: HashMap::new(),
                 total_time: 30.0,
