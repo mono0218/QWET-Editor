@@ -44,61 +44,64 @@ pub fn object_dragging(
     let Ok(window) = windows.get_single() else { return };
     let Some(cursor_position) = window.cursor_position() else { return };
 
-    if mouse_button_input.just_pressed(MouseButton::Left) {
-        // Start dragging - always get fresh position of currently selected object
-        editor_state.is_dragging = true;
-        editor_state.drag_start_pos = Some(cursor_position);
-        
-        // ALWAYS get the current object's position at drag start
-        if let Ok(selected_transform) = selected_query.get_single() {
-            editor_state.drag_offset = selected_transform.translation;
-        } else {
-            // No object selected, cancel drag
-            editor_state.is_dragging = false;
-            editor_state.drag_start_pos = None;
-            editor_state.drag_offset = Vec3::ZERO;
-            return;
+    // Don't interfere with just_pressed - let picking handle it for double-click detection
+    // Only handle continued dragging
+    if mouse_button_input.pressed(MouseButton::Left) && !mouse_button_input.just_pressed(MouseButton::Left) {
+        // If we're not already dragging, check if we should start
+        if !editor_state.is_dragging {
+            if let Ok(selected_transform) = selected_query.get_single() {
+                // Start dragging - get fresh position of currently selected object
+                editor_state.is_dragging = true;
+                editor_state.drag_start_pos = Some(cursor_position);
+                editor_state.drag_offset = selected_transform.translation;
+                info!("Started dragging selected object");
+            }
         }
-    } else if mouse_button_input.pressed(MouseButton::Left) && editor_state.is_dragging {
-        // Continue dragging on a horizontal plane (XZ plane at original Y height)
-        if let Ok((camera, camera_transform)) = camera_query.get_single() {
-            if let Ok(mut selected_transform) = selected_query.get_single_mut() {
-                if let Some(drag_start_pos) = editor_state.drag_start_pos {
-                    if let Ok(start_ray) = camera.viewport_to_world(camera_transform, drag_start_pos) {
-                        if let Ok(current_ray) = camera.viewport_to_world(camera_transform, cursor_position) {
-                            // Use the original Y position to maintain height
-                            let original_y = editor_state.drag_offset.y;
-                            
-                            // Calculate intersection with XZ plane at original Y height
-                            let plane_y = original_y;
-                            
-                            // Start position intersection with plane
-                            let start_world_pos = if start_ray.direction.y.abs() > 0.001 {
-                                let t = (plane_y - start_ray.origin.y) / start_ray.direction.y;
-                                start_ray.origin + start_ray.direction * t
-                            } else {
-                                Vec3::new(start_ray.origin.x, plane_y, start_ray.origin.z)
-                            };
-                            
-                            // Current position intersection with plane
-                            let current_world_pos = if current_ray.direction.y.abs() > 0.001 {
-                                let t = (plane_y - current_ray.origin.y) / current_ray.direction.y;
-                                current_ray.origin + current_ray.direction * t
-                            } else {
-                                Vec3::new(current_ray.origin.x, plane_y, current_ray.origin.z)
-                            };
-                            
-                            // Calculate movement delta
-                            let movement_delta = current_world_pos - start_world_pos;
-                            
-                            // Apply movement to original position
-                            selected_transform.translation = editor_state.drag_offset + movement_delta;
+
+        // Continue dragging if already started
+        if editor_state.is_dragging {
+            // Continue dragging on a horizontal plane (XZ plane at original Y height)
+            if let Ok((camera, camera_transform)) = camera_query.get_single() {
+                if let Ok(mut selected_transform) = selected_query.get_single_mut() {
+                    if let Some(drag_start_pos) = editor_state.drag_start_pos {
+                        if let Ok(start_ray) = camera.viewport_to_world(camera_transform, drag_start_pos) {
+                            if let Ok(current_ray) = camera.viewport_to_world(camera_transform, cursor_position) {
+                                // Use the original Y position to maintain height
+                                let original_y = editor_state.drag_offset.y;
+
+                                // Calculate intersection with XZ plane at original Y height
+                                let plane_y = original_y;
+
+                                // Start position intersection with plane
+                                let start_world_pos = if start_ray.direction.y.abs() > 0.001 {
+                                    let t = (plane_y - start_ray.origin.y) / start_ray.direction.y;
+                                    start_ray.origin + start_ray.direction * t
+                                } else {
+                                    Vec3::new(start_ray.origin.x, plane_y, start_ray.origin.z)
+                                };
+
+                                // Current position intersection with plane
+                                let current_world_pos = if current_ray.direction.y.abs() > 0.001 {
+                                    let t = (plane_y - current_ray.origin.y) / current_ray.direction.y;
+                                    current_ray.origin + current_ray.direction * t
+                                } else {
+                                    Vec3::new(current_ray.origin.x, plane_y, current_ray.origin.z)
+                                };
+
+                                // Calculate movement delta
+                                let movement_delta = current_world_pos - start_world_pos;
+
+                                // Apply movement to original position
+                                selected_transform.translation = editor_state.drag_offset + movement_delta;
+                            }
                         }
                     }
                 }
             }
         }
-    } else if mouse_button_input.just_released(MouseButton::Left) {
+    }
+
+    if mouse_button_input.just_released(MouseButton::Left) {
         // Stop dragging
         editor_state.is_dragging = false;
         editor_state.drag_start_pos = None;

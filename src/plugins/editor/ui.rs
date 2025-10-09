@@ -17,6 +17,7 @@ pub fn editor_ui(
     mut avatar_import_events: EventWriter<crate::plugins::filemanager::ImportAvatarEvent>,
     mut export_events: EventWriter<crate::plugins::filemanager::ExportProjectEvent>,
     mut project_import_events: EventWriter<crate::plugins::filemanager::ImportProjectEvent>,
+    mut add_barrier_events: EventWriter<crate::plugins::barrier_mesh::AddBarrierEvent>,
 ) {
     let ctx = contexts.ctx_mut();
 
@@ -96,6 +97,11 @@ pub fn editor_ui(
                     // Send event to trigger light placement
                     add_light_events.send(crate::plugins::moving_light::AddLightEvent);
                     info!("Add MovingLight selected");
+                }
+                if ui.button("Add Barrier Mesh").clicked() {
+                    editor_state.tool_mode = ToolMode::Select;
+                    add_barrier_events.send(crate::plugins::barrier_mesh::AddBarrierEvent);
+                    info!("Add Barrier Mesh clicked");
                 }
                 ui.separator();
                 if ui.button("Undo").clicked() {

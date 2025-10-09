@@ -13,6 +13,8 @@ pub struct EditorState {
     pub drag_offset: Vec3,
     pub show_properties: bool,
     pub bloom_enabled: bool,
+    pub last_click_time: f64,
+    pub last_click_pos: Option<Vec2>,
 }
 
 impl Default for EditorState {
@@ -26,6 +28,8 @@ impl Default for EditorState {
             drag_offset: Vec3::ZERO,
             show_properties: true,
             bloom_enabled: true,
+            last_click_time: 0.0,
+            last_click_pos: None,
         }
     }
 }
