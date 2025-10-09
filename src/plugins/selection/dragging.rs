@@ -44,17 +44,26 @@ pub fn object_dragging(
     let Ok(window) = windows.get_single() else { return };
     let Some(cursor_position) = window.cursor_position() else { return };
 
-    // Don't interfere with just_pressed - let picking handle it for double-click detection
-    // Only handle continued dragging
+    // Start tracking position when mouse is first pressed (but don't start dragging yet)
+    if mouse_button_input.just_pressed(MouseButton::Left) {
+        if let Ok(selected_transform) = selected_query.get_single() {
+            // Store initial position for potential drag
+            editor_state.drag_start_pos = Some(cursor_position);
+            editor_state.drag_offset = selected_transform.translation;
+        }
+    }
+
+    // Only handle continued dragging when mouse is pressed AND moved
     if mouse_button_input.pressed(MouseButton::Left) && !mouse_button_input.just_pressed(MouseButton::Left) {
-        // If we're not already dragging, check if we should start
+        // Check if mouse has moved enough to start dragging
         if !editor_state.is_dragging {
-            if let Ok(selected_transform) = selected_query.get_single() {
-                // Start dragging - get fresh position of currently selected object
-                editor_state.is_dragging = true;
-                editor_state.drag_start_pos = Some(cursor_position);
-                editor_state.drag_offset = selected_transform.translation;
-                info!("Started dragging selected object");
+            if let Some(start_pos) = editor_state.drag_start_pos {
+                let moved_distance = cursor_position.distance(start_pos);
+                // Start dragging only if mouse moved more than 3 pixels
+                if moved_distance > 3.0 && selected_query.get_single().is_ok() {
+                    editor_state.is_dragging = true;
+                    info!("Started dragging (moved {} pixels)", moved_distance);
+                }
             }
         }
 

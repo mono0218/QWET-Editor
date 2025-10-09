@@ -60,12 +60,55 @@ pub fn object_selection(
                 false
             };
 
-            // ダブルクリックの場合のみ選択処理を実行
+            // シングルクリックの場合
             if !is_double_click {
-                // シングルクリックの場合は時刻と位置だけ記録して終了
+                // 時刻と位置を記録
                 editor_state.last_click_time = current_time;
                 editor_state.last_click_pos = Some(cursor_position);
                 info!("Single click detected, waiting for double click");
+
+                // シングルクリックで空の場所をクリックした場合、選択を解除
+                if let Ok((camera, camera_transform)) = camera_query.get_single() {
+                    if let Ok(ray) = camera.viewport_to_world(camera_transform, cursor_position) {
+                        let mut hit_anything = false;
+
+                        // オブジェクトにヒットしたかチェック（簡易版）
+                        for (_entity, global_transform) in selectable_query.iter() {
+                            let entity_pos = global_transform.translation();
+                            let to_entity = entity_pos - ray.origin;
+                            let projected = ray.direction.dot(to_entity);
+
+                            if projected > 0.0 {
+                                let closest_point = ray.origin + ray.direction * projected;
+                                let distance_to_ray = closest_point.distance(entity_pos);
+
+                                // 広めの判定範囲で何かにヒットしたか確認
+                                if distance_to_ray < 15.0 {
+                                    hit_anything = true;
+                                    info!("Single click hit something, distance: {:.2}", distance_to_ray);
+                                    break;
+                                }
+                            }
+                        }
+
+                        info!("Single click hit check: hit_anything={}", hit_anything);
+
+                        // 何もヒットしなかった場合、選択を解除
+                        if !hit_anything {
+                            for entity in selected_query.iter() {
+                                if entity_exists_query.get(entity).is_ok() {
+                                    commands.entity(entity).remove::<Selected>();
+                                }
+                            }
+                            editor_state.selected_entity = None;
+                            editor_state.is_dragging = false;
+                            editor_state.drag_start_pos = None;
+                            editor_state.drag_offset = Vec3::ZERO;
+                            info!("Deselected all: clicked on empty space");
+                        }
+                    }
+                }
+
                 return;
             }
 
